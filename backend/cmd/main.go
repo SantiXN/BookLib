@@ -6,5 +6,5 @@ import (
 
 func main() {
 
-	fmt.Printf("App")
+	fmt.Printf("Menu")
 }

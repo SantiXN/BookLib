@@ -1,1 +1,1 @@
-DROP TABLE book_review;
+DROP TABLE `book_review`;

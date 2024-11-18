@@ -1,11 +1,85 @@
 openapi: 3.1.0
 info:
-  title: Title
-  description: Title
   version: 1.0.0
+  title: Book Lib public API
+security:
+  - bearerAuth: [ ]
 paths:
-  /api/languages:
-    # Описываемый путь
-    get:
+  # Добавить книгу в общую библиотеку
+  /api/book/{bookId}/add:
+    post:
+      tags:
+        - book
+      operationId: AddBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/...Data'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
 
+  /api/book/{bookId}/delete:
+    post:
+      tags:
+        - book
+      operationId: DeleteBook
+
+  /api/book/{bookId}/info:
+    get:
+      tags:
+        - book
+      operationId: GetBookInfo
+
+# TODO: Добавить параметр - userId, чтобы можно было получить книги из собственной библиотеки, добавить фильтры
+  /api/book/list:
+    get:
+      tags:
+        - book
+      operationId: ListBooks
+
+# Добавить книгу в собственную библиотеку
+# TODO подумать над названием
+  /api/book/{bookId}/library/add:
+    post:
+      tags:
+        - book
+      operationId: AddBookToLibrary
+
+  /api/book/search:
+    post:
+      tags:
+        - book
+      operationId: SearchBooks
+
+  /api/book/{bookId}/status:
+    post:
+      tags:
+        - book
+      operationId: ChangeReadingStatus
+
+# Оставить отзыв по книге (оценка и комментарий)
+  /api/book/{bookId}/feedback:
+    post:
+      tags:
+        - book
+      operationId: SaveBookFeedback
+
+  # Получить оценки и комментарии к книге
+  /api/book/{bookId}/feedback/list:
+    post:
+      tags:
+        - book
+      operationId: ListBookFeedback
+
+  # Получить статистику по книгам в библиотеке (Н: сколько книг прочитал)
+  /api/book/library/stats:
+    get:
+      tags:
+        - book
+      operationId: GetLibraryStats
 

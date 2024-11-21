@@ -544,7 +544,12 @@ components:
           type: integer
         comment:
           type: string
+        postedAt:
+          type: integer
+          format: int64
+          description: unix timestamp
       required:
         - id
         - userID
         - starCount
+        - postedAt

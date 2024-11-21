@@ -9,13 +9,12 @@ type BookRepository interface {
 	Remove(id int) error
 }
 
-//TODO добавить автора, категории. Подумать над путем к обложке
-
 type Book interface {
 	ID() int
 	Title() string
 	Description() *string
 	CoverPath() *string
+	AuthorIDs() []int
 }
 
 func NewBook(
@@ -37,6 +36,7 @@ type book struct {
 	title       string
 	description *string
 	coverPath   *string
+	authorIDs   []int
 }
 
 func (b *book) ID() int {
@@ -53,4 +53,8 @@ func (b *book) Description() *string {
 
 func (b *book) CoverPath() *string {
 	return b.coverPath
+}
+
+func (b *book) AuthorIDs() []int {
+	return b.authorIDs
 }

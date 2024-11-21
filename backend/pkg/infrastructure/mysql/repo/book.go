@@ -72,8 +72,11 @@ func (repo *bookRepository) Store(book model.Book) error {
 		book.CoverPath(),
 		repo.userID,
 	)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return repo.UpdateUserBook(book)
 }
 
 func (repo *bookRepository) StoreAll(books []model.Book) error {
@@ -175,6 +178,25 @@ func (repo *bookRepository) Remove(id int) error {
 	const sqlQuery = `DELETE FROM book WHERE id = ?`
 	_, err := repo.client.ExecContext(repo.ctx, sqlQuery, id)
 
+	return err
+}
+
+func (repo *bookRepository) UpdateUserBook(book model.Book) error {
+	const authorBookQuery = `
+		INSERT INTO author_book (author_id, book_id)
+		VALUES %s
+		ON DUPLICATE KEY UPDATE author_id = VALUES(author_id), book_id = VALUES(book_id)
+	`
+
+	args := make([]interface{}, 0, len(book.AuthorIDs()))
+	queryPlaceholders := make([]string, 0, len(book.AuthorIDs()))
+
+	for _, authorID := range book.AuthorIDs() {
+		queryPlaceholders = append(queryPlaceholders, "(?, ?)")
+		args = append(args, authorID, book.ID())
+	}
+
+	_, err := repo.client.ExecContext(repo.ctx, fmt.Sprintf(authorBookQuery, strings.Join(queryPlaceholders, ", ")), args...)
 	return err
 }
 

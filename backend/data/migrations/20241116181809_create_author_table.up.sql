@@ -5,4 +5,7 @@ CREATE TABLE `author`
     `last_name`   VARCHAR(256),
     `description` TEXT,
     PRIMARY KEY (`id`)
-);
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE utf8mb4_unicode_ci
+;

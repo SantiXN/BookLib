@@ -7,4 +7,7 @@ CREATE TABLE `book`
     `created_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `created_by`  INT          NOT NULL,
     PRIMARY KEY (`id`)
-);
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE utf8mb4_unicode_ci
+;

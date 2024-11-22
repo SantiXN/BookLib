@@ -7,4 +7,7 @@ CREATE TABLE `user_book`
     PRIMARY KEY (`user_id`, `book_id`),
     CONSTRAINT `user_id_user_fk` FOREIGN KEY (`user_id`) REFERENCES user (`id`) ON DELETE CASCADE,
     CONSTRAINT `user_book_book_id_book_fk` FOREIGN KEY (`book_id`) REFERENCES book (`id`) ON DELETE CASCADE
-);
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE utf8mb4_unicode_ci
+;

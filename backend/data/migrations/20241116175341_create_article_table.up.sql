@@ -8,4 +8,7 @@ CREATE TABLE `article`
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     CONSTRAINT `article_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`)
-);
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE utf8mb4_unicode_ci
+;

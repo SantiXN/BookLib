@@ -14,19 +14,16 @@ import (
 func NewAuthorRepository(
 	ctx context.Context,
 	client inframysql.ClientContext,
-	userID int,
 ) model.AuthorRepository {
 	return &authorRepository{
 		ctx:    ctx,
 		client: client,
-		userID: userID,
 	}
 }
 
 type authorRepository struct {
 	ctx    context.Context
 	client inframysql.ClientContext
-	userID int
 }
 
 func (repo *authorRepository) NextID() (int, error) {

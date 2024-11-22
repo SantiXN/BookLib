@@ -15,6 +15,7 @@ type Book interface {
 	Description() *string
 	CoverPath() *string
 	AuthorIDs() []int
+	CategoryIDs() []int
 }
 
 func NewBook(
@@ -22,12 +23,16 @@ func NewBook(
 	title string,
 	description *string,
 	coverPath *string,
+	authorIDs []int,
+	categoryIDs []int,
 ) Book {
 	return &book{
 		id:          id,
 		title:       title,
 		description: description,
 		coverPath:   coverPath,
+		authorIDs:   authorIDs,
+		categoryIDs: categoryIDs,
 	}
 }
 
@@ -37,6 +42,7 @@ type book struct {
 	description *string
 	coverPath   *string
 	authorIDs   []int
+	categoryIDs []int
 }
 
 func (b *book) ID() int {
@@ -57,4 +63,8 @@ func (b *book) CoverPath() *string {
 
 func (b *book) AuthorIDs() []int {
 	return b.authorIDs
+}
+
+func (b *book) CategoryIDs() []int {
+	return b.categoryIDs
 }

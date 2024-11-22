@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"strings"
+
+	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/domain/model"
 	inframysql "booklib/pkg/infrastructure/mysql"
@@ -24,7 +25,7 @@ func NewBookRepository(
 	}
 }
 
-//TODO добавить клиент
+//TODO добавить транзакцию
 
 type bookRepository struct {
 	ctx    context.Context
@@ -76,7 +77,11 @@ func (repo *bookRepository) Store(book model.Book) error {
 		return err
 	}
 
-	return repo.UpdateUserBook(book)
+	err = repo.updateAuthorBook(book)
+	if err != nil {
+		return err
+	}
+	return repo.updateCategoryBook(book)
 }
 
 func (repo *bookRepository) StoreAll(books []model.Book) error {
@@ -110,7 +115,21 @@ func (repo *bookRepository) StoreAll(books []model.Book) error {
 	}
 
 	_, err := repo.client.ExecContext(repo.ctx, fmt.Sprintf(query, strings.Join(queryPlaceholders, ", ")), args...)
-	return err
+	if err != nil {
+		return err
+	}
+
+	for _, b := range books {
+		err = repo.updateAuthorBook(b)
+		if err != nil {
+			return err
+		}
+		err = repo.updateCategoryBook(b)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (repo *bookRepository) FindOne(id int) (model.Book, error) {
@@ -133,11 +152,23 @@ func (repo *bookRepository) FindOne(id int) (model.Book, error) {
 		return nil, err
 	}
 
+	//TODO добавить метод для поиска id авторов по id книги
+	//TODO добавить метод для поиска id категорий по id книги
+	authorIDs, err := repo.findAuthorIDs(b.ID)
+	if err != nil {
+		return nil, err
+	}
+	categoryIDs, err := repo.findCategoryIDs(b.ID)
+	if err != nil {
+		return nil, err
+	}
 	return model.NewBook(
 		b.ID,
 		b.Title,
 		b.Description,
 		b.CoverPath,
+		authorIDs,
+		categoryIDs,
 	), nil
 }
 
@@ -168,7 +199,25 @@ func (repo *bookRepository) FindAll(ids []int) ([]model.Book, error) {
 
 	var books []model.Book
 	for _, book := range sqlxBooks {
-		books = append(books, model.NewBook(book.ID, book.Title, book.Description, book.CoverPath))
+		authorIDs, err := repo.findAuthorIDs(book.ID)
+		if err != nil {
+			return nil, err
+		}
+		categoryIDs, err := repo.findCategoryIDs(book.ID)
+		if err != nil {
+			return nil, err
+		}
+		books = append(
+			books,
+			model.NewBook(
+				book.ID,
+				book.Title,
+				book.Description,
+				book.CoverPath,
+				authorIDs,
+				categoryIDs,
+			),
+		)
 	}
 
 	return books, nil
@@ -181,7 +230,39 @@ func (repo *bookRepository) Remove(id int) error {
 	return err
 }
 
-func (repo *bookRepository) UpdateUserBook(book model.Book) error {
+func (repo *bookRepository) findAuthorIDs(bookID int) ([]int, error) {
+	const query = `
+		SELECT DISTINCT author_id
+		FROM author_book
+		WHERE book_id = ?
+	`
+
+	var authorIDs []int
+	err := repo.client.SelectContext(repo.ctx, &authorIDs, query, bookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return authorIDs, nil
+}
+
+func (repo *bookRepository) findCategoryIDs(bookID int) ([]int, error) {
+	const query = `
+		SELECT DISTINCT category_id
+		FROM category_book
+		WHERE book_id = ?
+	`
+
+	var categoryIDs []int
+	err := repo.client.SelectContext(repo.ctx, &categoryIDs, query, bookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return categoryIDs, nil
+}
+
+func (repo *bookRepository) updateAuthorBook(book model.Book) error {
 	const authorBookQuery = `
 		INSERT INTO author_book (author_id, book_id)
 		VALUES %s
@@ -197,6 +278,25 @@ func (repo *bookRepository) UpdateUserBook(book model.Book) error {
 	}
 
 	_, err := repo.client.ExecContext(repo.ctx, fmt.Sprintf(authorBookQuery, strings.Join(queryPlaceholders, ", ")), args...)
+	return err
+}
+
+func (repo *bookRepository) updateCategoryBook(book model.Book) error {
+	const categoryBookQuery = `
+		INSERT INTO category_book (category_id, book_id)
+		VALUES %s
+		ON DUPLICATE KEY UPDATE category_id = VALUES(category_id), book_id = VALUES(book_id)
+	`
+
+	args := make([]interface{}, 0, len(book.CategoryIDs()))
+	queryPlaceholders := make([]string, 0, len(book.CategoryIDs()))
+
+	for _, categoryID := range book.CategoryIDs() {
+		queryPlaceholders = append(queryPlaceholders, "(?, ?)")
+		args = append(args, categoryID, book.ID())
+	}
+
+	_, err := repo.client.ExecContext(repo.ctx, fmt.Sprintf(categoryBookQuery, strings.Join(queryPlaceholders, ", ")), args...)
 	return err
 }
 

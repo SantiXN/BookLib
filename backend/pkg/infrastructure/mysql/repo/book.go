@@ -25,8 +25,6 @@ func NewBookRepository(
 	}
 }
 
-//TODO добавить транзакцию
-
 type bookRepository struct {
 	ctx    context.Context
 	client inframysql.ClientContext

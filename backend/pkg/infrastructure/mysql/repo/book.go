@@ -152,8 +152,6 @@ func (repo *bookRepository) FindOne(id int) (model.Book, error) {
 		return nil, err
 	}
 
-	//TODO добавить метод для поиска id авторов по id книги
-	//TODO добавить метод для поиска id категорий по id книги
 	authorIDs, err := repo.findAuthorIDs(b.ID)
 	if err != nil {
 		return nil, err

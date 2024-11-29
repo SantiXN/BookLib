@@ -1,5 +1,5 @@
 import React from 'react';
-import "./BookCard.css"
+import s from './BookCard.module.css'
 
 interface BookCardProps {
     title: string;
@@ -12,14 +12,14 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ title, author, coverImage, rating, toDirect }) => {
     return (
         <div>
-            <div className="book-card">
-                <a href={toDirect} className='book-card__link' target="_blank">
-                    <img src={`/src/images/book/${coverImage}`} alt={`${title}`} className="book-card__image" />
-                    <p className="book-card__title">{title}</p>
-                    <div className='book-card__info'>
-                    <p className="book-card__author">{author}</p>
-                        <div className="book-card__rating">
-                            <div className='book-card__rating__logo'></div>
+            <div className={s.bookCard}>
+                <a href={toDirect} className={s.bookCardLink} target="_blank">
+                    <img src={`/src/images/book/${coverImage}`} alt={`${title}`} className={s.bookCardImage} />
+                    <p className={s.bookCardTitle}>{title}</p>
+                    <div className={s.bookCardInfo}>
+                    <p className={s.bookCardAuthor}>{author}</p>
+                        <div className={s.bookCardRating}>
+                            <div className={s.bookCardRatingLogo}></div>
                             <p>{rating}</p>
                         </div>
                     </div>

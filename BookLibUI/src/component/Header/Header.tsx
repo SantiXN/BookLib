@@ -26,8 +26,13 @@ const Header = () => {
     ];
 
     const catalogItems = [
-        {label: 'О нас', link: '/about'},
-        {label: 'Контакты', link: '/contact'},
+        {label: 'Статьи', link: '/about'},
+        {label: 'Романы', link: '/about'},
+        {label: 'Фэнтези', link: '/about'},
+        {label: 'Фантастика', link: '/about'},
+        {label: 'Классика', link: '/about'},
+        {label: 'Мистика', link: '/contact'},
+        {label: 'Детективы', link: '/contact'},
     ];
 
     return (

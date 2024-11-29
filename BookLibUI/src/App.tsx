@@ -1,16 +1,8 @@
 import './App.css'
-import '../src/component/menu/menu.tsx'
-import Menu from '../src/component/menu/menu.tsx'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
-const Main = () => {
-    return (
-        <div>
-            <h1>Добро пожаловать на главную страницу!</h1>
-            {/* Дополнительный контент */}
-        </div>
-    )
-};
+import Footer from '../src/component/Footer/Footer.tsx'
+import MainPage from './pages/MainPage/MainPage.tsx';
+import Header from './component/common/Header/Header.tsx';
 
 const PersonalAccount = () => {
     return (
@@ -51,14 +43,15 @@ const AdminEditor = () => {
 const App = () => {
   return (
       <Router>
-        <Menu />
+        <Header />
         <Routes>
-          <Route path="/" element={<Main />} />
           <Route path="/account" element={<PersonalAccount />} />
           <Route path="/book/:id" element={<Book />} />
           <Route path="/info" element={<Info />} />
           <Route path="/admin" element={<AdminEditor />} />
         </Routes>
+        <MainPage></MainPage>
+        <Footer />
       </Router>
   );
 };

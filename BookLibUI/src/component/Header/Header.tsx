@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 import s from './Header.module.css'
+import SearchBar from "../common/SearchBar/SearchBar";
 
 const HeaderItem = ({children, to}) => (
     <li>
@@ -33,28 +34,24 @@ const Header = () => {
     return (
         <header className={s.headerWrapper}>
             <div id="header" className={s.header}>
-                <Link to="/" className={s.logo}></Link>
-                <div className={s.catalog}>
+                <div className={`${s.logo} ${s.headerWrapperItem}`}>
+                    <Link to="/"></Link>
+                </div>
+                <div className={`${s.catalog} ${s.headerWrapperItem}`}>
                     <div className={s.catalogButton}>Каталог</div>
                     <MegaDropdown title="Каталог" items={catalogItems}/>
                 </div>
-                <form className={s.search} action="">
-                    <input
-                        className={s.searchInput}
-                        name="q"
-                        placeholder="Поиск..."
-                        type="search"
-                    />
-                    <button className={s.searchButton}>Поиск</button>
-                </form>
-                <div className={s.menuItem}>
+                <div className={s.headerWrapperItem}>
+                    <SearchBar></SearchBar>
+                </div>
+                <div className={`${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconBook}></div>
                     <Link to="/" className={s.link}>Мои книги</Link>
                 </div>
-                <div className={`${s.userMenu} ${s.menuItem}`}>
+                <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconUser}></div>
-                    <Link to="/my-books" className={s.link}>Мои книги</Link>
-                    <MegaDropdown title="Личный кабинет" items={userMenuItems}/>
+                    <Link to="/my-books" className={s.link}>Профиль</Link>
+                    <MegaDropdown title="Профиль" items={userMenuItems}/>
                 </div>
             </div>
         </header>

@@ -1,3 +1,10 @@
 .mainPageContainer {
     margin: 20px 0 20px 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mainPageItem {
+    margin: 0 20px 20px 20px;
 }

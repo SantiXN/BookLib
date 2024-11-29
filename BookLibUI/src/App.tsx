@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import s from './app.module.css';
 import Footer from '../src/component/Footer/Footer.tsx'
 import MainPage from './pages/MainPage/MainPage.tsx';
-import Header from './component/common/Header/Header.tsx';
+import Header from './component/Header/Header.tsx';
 
 const PersonalAccount = () => {
     return (

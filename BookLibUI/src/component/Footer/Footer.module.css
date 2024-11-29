@@ -1,0 +1,22 @@
+.footer {
+    border-top: 1px solid #ccc;
+    padding: 30px;
+}
+
+.logoLink {
+    display: flex;
+    justify-content: center;
+    margin-left: 50px;
+    text-decoration: none;
+
+    color: initial;
+}
+
+.logoText, .logoText:hover, .logoText:visited {
+    color: initial;
+}
+
+
+.logoImage {
+    margin-left: 50px;
+}

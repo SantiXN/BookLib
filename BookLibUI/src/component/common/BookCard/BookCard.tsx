@@ -7,11 +7,12 @@ interface BookCardProps {
     coverImage: string;
     rating: number;
     toDirect: string;
+    classname?: string
 }
 
-const BookCard: React.FC<BookCardProps> = ({ title, author, coverImage, rating, toDirect }) => {
+const BookCard: React.FC<BookCardProps> = ({ title, author, coverImage, rating, toDirect, classname }) => {
     return (
-        <div>
+        <div className={classname}> 
             <div className={s.bookCard}>
                 <a href={toDirect} className={s.bookCardLink} target="_blank">
                     <img src={`/src/images/book/${coverImage}`} alt={`${title}`} className={s.bookCardImage} />

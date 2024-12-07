@@ -1,6 +1,8 @@
 import {Link} from "react-router-dom";
 import s from './Header.module.css'
 import SearchBar from "../common/SearchBar/SearchBar";
+import { useState } from "react";
+import AuthMenu from "../AuthMenu/AuthMenu";
 
 const HeaderItem = ({children, to}) => (
     <li>
@@ -36,6 +38,13 @@ const Header = () => {
         {label: 'Детективы', link: '/contact'},
     ];
 
+    const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
+
+    const openAuthMenu = () => setIsAuthMenuOpen(true);
+    const closeAuthMenu = () => setIsAuthMenuOpen(false);
+
+    // последний элемент в блоке - для тестирования окна авторизации
+    // Окно авторизации должно всплывать при клике на иконку профиля
     return (
         <header className={s.headerWrapper}>
             <div id="header" className={s.header}>
@@ -57,6 +66,12 @@ const Header = () => {
                     <div className={s.iconUser}></div>
                     <Link to="/my-books" className={s.link}>Профиль</Link>
                     <MegaDropdown title="Профиль" items={userMenuItems}/>
+                </div>
+                <div className={s.headerWrapperItem}>
+                    <button onClick={openAuthMenu}>
+                        Авторизоваться
+                    </button>
+                    <AuthMenu isOpen={isAuthMenuOpen} onClose={closeAuthMenu} />
                 </div>
             </div>
         </header>

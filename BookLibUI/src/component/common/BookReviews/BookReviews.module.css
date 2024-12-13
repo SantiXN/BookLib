@@ -1,0 +1,79 @@
+.bookReviewsContainer {
+    border: 1px solid #C9C9C9;
+    border-radius: 10px;
+    padding: 30px 40px;
+}
+
+.bookReviewsHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bookReviewsHeaderTitle {
+    font-size: 28px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.bookReviewsAddReviewButton {
+    font-size: 24px;
+    font-weight: 400;
+    padding: 10px 25px;
+}
+
+.reviews {
+    margin: 30px 0;
+}
+
+.review {
+    border: 1px solid #BABABA;
+    border-radius: 5px;
+    padding: 30px;
+}
+
+.reviewHeader {
+    display: flex;
+}
+
+.reviewAvatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.reviewAuthor {
+    font-size: 26px;
+    font-weight: bold;
+    margin: auto 20px;
+}
+
+.reviewDate {
+    color: #7E7878;
+    margin: auto 10px;
+    font-size: 20px;
+}
+
+.reviewBody {
+    font-size: 20px;
+    background-color: #D9D9D9;
+    padding: 20px;
+}
+
+.reviewRatingContainer {
+    margin: auto 0;
+    display: flex;
+}
+
+.reviewRatingLogo {
+    background-image: url('../../images/svg/star.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 40px;
+    height: 40px;
+    border: none;
+}
+
+.reviewRating {
+    font-size: 20px;
+    margin: auto 0;
+}

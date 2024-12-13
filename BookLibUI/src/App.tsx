@@ -4,6 +4,7 @@ import s from './app.module.css';
 import Footer from '../src/component/Footer/Footer.tsx'
 import MainPage from './pages/MainPage/MainPage.tsx';
 import Header from './component/Header/Header.tsx';
+import BookCardPage from './pages/BookPage/BookCardPage.tsx';
 
 const PersonalAccount = () => {
     return (
@@ -53,7 +54,7 @@ const App = () => {
                   <Route path="/admin" element={<AdminEditor />} />
               </Routes>
 
-        <MainPage></MainPage>
+            <BookCardPage />
           </div>
         <Footer />
       </Router>

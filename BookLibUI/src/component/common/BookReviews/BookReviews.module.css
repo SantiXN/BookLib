@@ -22,13 +22,15 @@
 }
 
 .reviews {
-    margin: 30px 0;
+    max-height: 800px;
+    overflow-y: auto;
 }
 
 .review {
     border: 1px solid #BABABA;
     border-radius: 5px;
     padding: 30px;
+    margin: 30px auto;
 }
 
 .reviewHeader {
@@ -60,20 +62,21 @@
 }
 
 .reviewRatingContainer {
-    margin: auto 0;
     display: flex;
+    margin: auto 0;
+    margin-left: auto;
 }
 
 .reviewRatingLogo {
-    background-image: url('../../images/svg/star.svg');
+    background-image: url('../../../images/svg/star.svg');
     background-repeat: no-repeat;
     background-size: contain;
-    width: 40px;
-    height: 40px;
-    border: none;
+    width: 30px;
+    height: 30px;
 }
 
 .reviewRating {
     font-size: 20px;
     margin: auto 0;
+    margin-left: 10px;
 }

@@ -1,0 +1,75 @@
+.reviewFormContainer {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reviewForm {
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    background-color: #F6F6F6;
+    border-radius: 20px;
+    padding: 40px 50px;
+}
+
+.reviewFormTitle {
+    font-size: 32px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.fieldDescription {
+    font-size: 22px;
+    margin: 20px 0;
+}
+
+.reviewFormTextArea {
+    width: 960px;
+    height: 400px;
+    max-height: 600px;
+    max-width: 960px;
+    background-color: #F6F6F6;
+    border: 1px solid #C9C9C9;
+    border-radius: 5px;
+    color: #000;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    padding: 20px;
+}
+
+.reviewFormTextArea:focus {
+    outline: none;
+}
+
+.publicateReviewButton {
+    font-size: 20px;
+    margin: auto;
+    margin-top: 20px;
+}
+
+.publicateReviewButton:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.starRating {
+    width: 40px;
+    height: 40px;
+    margin: 0 5px;
+}
+
+.publicateReviewButtonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

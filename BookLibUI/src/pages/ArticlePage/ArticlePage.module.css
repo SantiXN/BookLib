@@ -1,0 +1,21 @@
+.articleContainer {
+    display: block;
+}
+
+.articleTitleContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.articleTitle {
+    font-size: 44px;
+}
+
+.articleAuthor {
+    font-size: 32px;
+}
+
+.articleBody {
+    font-size: 32px;
+}

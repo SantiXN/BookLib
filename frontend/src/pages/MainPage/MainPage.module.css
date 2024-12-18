@@ -1,11 +1,18 @@
 .container {
+    width: 100%;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
 }
 
+.bookCardByTheme {
+    width: 100%;
+}
+
 .block {
     display: flex;
+    width: 100%;
+    overflow-x: auto;
 }
 
 .mainPageItem {

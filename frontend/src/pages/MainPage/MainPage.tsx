@@ -1,7 +1,7 @@
 import s from './MainPage.module.css'
 import BookCard from '../../component/common/BookCard/BookCard'
 
-const firstGenreBooks = Array(16).fill({
+const firstGenreBooks = Array(6).fill({
     title: "Луна в ореховой скорлупе Луна в ореховой скорлупе",
     author: "Анастасия Пикина Анастасия Пикина",
     coverImage: "book.jpg",
@@ -43,7 +43,7 @@ const MainPage = () => {
                     ))}
                 </div>
             </div>
-            <div>
+            <div className={s.bookCardByTheme}>
                 <p className={s.title}>Мистика</p>
                 <div className={s.block}>
                     {secondGenreBooks.map((book, index) => (<BookCard 
@@ -58,7 +58,7 @@ const MainPage = () => {
                     ))}
                 </div>
             </div>
-            <div>
+            <div className={s.bookCardByTheme}>
                 <p className={s.title}>Детективы</p>
                 <div className={s.block}>
                     {thirdGenreBooks.map((book, index) => (<BookCard 

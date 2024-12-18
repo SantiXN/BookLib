@@ -1,0 +1,22 @@
+.authorContainer {
+    display: block;
+    width: 100%;
+}
+
+.authorBody {
+    display: flex;
+    justify-content: space-between;
+}
+
+.authorImage {
+    width: 600px;
+    height: 600px;
+}
+
+.authorInfo {
+    display: block;
+}
+
+.authorBooksCards {
+    display: flex;
+}

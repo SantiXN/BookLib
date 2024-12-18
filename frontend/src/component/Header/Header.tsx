@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import { Link } from 'react-router-dom'
 import s from './Header.module.css'
 import SearchBar from "../common/SearchBar/SearchBar";
 import { useState } from "react";

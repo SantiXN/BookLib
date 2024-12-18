@@ -1,10 +1,9 @@
-import './App.css'
+import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import s from './app.module.css';
-import Footer from '../src/component/Footer/Footer.tsx'
-import MainPage from './pages/MainPage/MainPage.tsx';
+import Footer from './component/Footer/Footer.tsx';
 import Header from './component/Header/Header.tsx';
-import BookCardPage from './pages/BookPage/BookCardPage.tsx';
+import AuthorPage from './pages/AuthorPage/AuthorPage.tsx';
 
 const PersonalAccount = () => {
     return (
@@ -54,7 +53,7 @@ const App = () => {
                   <Route path="/admin" element={<AdminEditor />} />
               </Routes>
 
-            <BookCardPage />
+            <AuthorPage />
           </div>
         <Footer />
       </Router>

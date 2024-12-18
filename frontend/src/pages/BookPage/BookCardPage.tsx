@@ -1,7 +1,14 @@
+import { useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
 import s from './BookCardPage.module.css'
 
 const BookCardPage = () => {
+    const [isAddedToRead, setIsAddedToRead] = useState(false);
+
+    const changeBookToReadStateHandleClick = ({ isAdded }: { isAdded: boolean }) => {
+        setIsAddedToRead(isAdded); 
+    };
+
     return (
         <div className={s.bookCardWrapper}>
             <div className={s.bookCard}>
@@ -16,7 +23,15 @@ const BookCardPage = () => {
                                 <span className={s.bookCardRating}>5,0</span>
                             </div>
                         </div>
-                        <button className={s.bookCardAddToReadButton}>Добавить в список к чтению</button>
+                        {!isAddedToRead ? 
+                        <button className={s.bookCardAddToReadButton} onClick={() => changeBookToReadStateHandleClick({ isAdded: true })}>
+                            Добавить в список к чтению
+                        </button>
+                        : 
+                        <div>
+                            <button className={s.bookCardReadButton}>Читать</button> 
+                            <button className={s.bookCardDeleteBookButton} onClick={() => changeBookToReadStateHandleClick({ isAdded: true })}>Удалить из списка чтения</button>   
+                        </div>}
                     </div>
                     <div className={s.descriptionContainer}>
                         <span className={s.descrpitionTitle}>Описание</span>

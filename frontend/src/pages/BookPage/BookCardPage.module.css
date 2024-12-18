@@ -64,6 +64,19 @@
     margin: auto;
     margin-left: 50px;
     font-size: 20px;
+    font-weight: 400;
+}
+
+.bookCardReadButton {
+    margin: auto;
+    margin-left: 50px;
+    font-size: 20px;
+    padding-inline: 40px;
+}
+
+.bookCardDeleteBookButton {
+    font-size: 20px;
+    margin-left: 10px;
 }
 
 .bookCardReviews {

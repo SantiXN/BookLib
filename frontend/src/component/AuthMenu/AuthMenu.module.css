@@ -52,10 +52,13 @@
     width: 100%;
 }
 
-.formSubtitle {
-    font-size: 18px;
+.formFieldContainer {
+    margin: 20px 0;
+}
+
+.formLabel {
+    font-size: 20px;
     color: #000;
-    margin: 10px 0 10px 0;
 }
 
 .formTextInput {
@@ -70,22 +73,6 @@
     color: #000;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     box-sizing: border-box;
-}
-
-.passwordDiv {
-    position: relative;
-}
-
-.viewPasswordIcon {
-    position: absolute;
-    background-image: url('../../images/icon/eye.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    width: 30px;
-    height: 30px;
-    right: 10px;
-    top: 55%;
 }
 
 .button {

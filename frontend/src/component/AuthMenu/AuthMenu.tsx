@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from './AuthMenu.module.css'
+import RegisterMenu from '../RegisterMenu/RegisterMenu';
+import PasswordInputField from '../common/PasswordInputField/PasswordInputField';
 
 interface AuthMenuProps {
     isOpen: boolean;
@@ -7,8 +9,10 @@ interface AuthMenuProps {
 }
 
 const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
-
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isRegisterMenuOpen, setIsRegisterMenuOpen] = useState(false);
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -26,34 +30,71 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);
 
-    if (!isOpen) return null;
+    const openRegisterMenu = () => setIsRegisterMenuOpen(true);
+    const closeRegisterMenu = () => setIsRegisterMenuOpen(false);
 
-    // Добавить показ пароля и смену иконки
+    const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLogin(e.target.value);
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value);
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        // Здесь можно добавить логику для авторизации
+        console.log('Логин:', login);
+        console.log('Пароль:', password);
+    };
+
+    if (!isOpen) return null;
 
     return (
         <div className={s.container}>
-            <div className={s.authMenu} ref={containerRef}>
-                <div className={s.menuHeader}>
-                    <p className={s.menuTitle}>Войти</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+            {!isRegisterMenuOpen ? (
+                <div id='auth-menu' className={s.authMenu} ref={containerRef}>
+                    <div className={s.menuHeader}>
+                        <p className={s.menuTitle}>Войти</p>
+                        <span onClick={onClose} className={s.closeIcon} />
+                    </div>
+                    <div className={s.menuContainer}>
+                        <form className={s.form} onSubmit={handleSubmit}>
+                            <div className={s.formFieldContainer}>
+                                <label className={s.formLabel}>
+                                    Логин
+                                    <input
+                                        id='login'
+                                        className={s.formTextInput}
+                                        type='text'
+                                        placeholder='Логин'
+                                        value={login}
+                                        onChange={handleLoginChange}
+                                    />
+                                </label>
+                            </div>
+                            <div className={s.formFieldContainer}>
+                                <label className={s.formLabel}>
+                                    Пароль
+                                    <PasswordInputField
+                                        id='password'
+                                        placeholder='Пароль'
+                                        value={password}
+                                        onChange={handlePasswordChange}
+                                    />
+                                </label>
+                            </div>
+                            <button type="submit" className={`${s.button} ${s.formButton}`}>Войти</button>
+                        </form>
+                        <div className={s.delimDivider}>или</div>
+                        <button className={s.button} onClick={openRegisterMenu}>Зарегистрироваться</button>
+                    </div>
                 </div>
-                <div className={s.menuContainer}>
-                    <form className={s.form}>
-                        <p className={s.formSubtitle}>Логин</p>
-                        <input id='login' className={s.formTextInput} type='text' placeholder='Логин'></input>
-                        <div className={s.passwordDiv}>
-                            <p className={s.formSubtitle}>Пароль</p>
-                            <input id='password' className={`${s.formTextInput} ${s.passwordInput}`} type='password' placeholder='Пароль'></input>
-                            <span className={s.viewPasswordIcon} />
-                        </div>
-                        <button className={`${s.button} ${s.formButton}`}>Войти</button>
-                    </form>
-                    <div className={s.delimDivider}>или</div>
-                    <button className={s.button}>Зарегистрироваться</button>
-                </div>
-            </div>
+            ) : (
+                <RegisterMenu isOpen={isRegisterMenuOpen} onClose={closeRegisterMenu} />
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default AuthMenu;

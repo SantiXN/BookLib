@@ -1,0 +1,181 @@
+import React, { useEffect, useRef, useState } from 'react';
+import s from './RegisterMenu.module.css';
+import PasswordInputField from '../common/PasswordInputField/PasswordInputField';
+
+interface RegisterMenuProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [formData, setFormData] = useState({
+        firstname: '',
+        lastname: '',
+        email: '',
+        login: '',
+        password: '',
+        repeatPassword: '',
+    });
+
+    const [errors, setErrors] = useState({
+        email: '',
+        password: '',
+        repeatPassword: '',
+        firstname: '',
+        lastname: '',
+    });
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            onClose();
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [id]: value,
+        }));
+        
+        // Reset error for the field being updated
+        setErrors(prevState => ({
+            ...prevState,
+            [id]: '',
+        }));
+    };
+
+    const validateForm = () => {
+        let valid = true;
+        const newErrors = { ...errors };
+
+        // Проверка имени
+        if (!formData.firstname) {
+            newErrors.firstname = 'Имя обязательно';
+            valid = false;
+        }
+
+        // Проверка фамилии
+        if (!formData.lastname) {
+            newErrors.lastname = 'Фамилия обязательна';
+            valid = false;
+        }
+
+        // Проверка email с регулярным выражением
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email || !emailRegex.test(formData.email)) {
+            newErrors.email = 'Введите корректный E-mail';
+            valid = false;
+        }
+
+        // Проверка пароля
+        if (!formData.password) {
+            newErrors.password = 'Пароль обязателен';
+            valid = false;
+        }
+
+        // Проверка повторного пароля
+        if (formData.repeatPassword !== formData.password) {
+            newErrors.repeatPassword = 'Пароли не совпадают';
+            valid = false;
+        }
+
+        setErrors(newErrors);
+        
+        return valid;
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        
+        if (validateForm()) {
+            // Отправка данных формы или дальнейшая обработка
+            console.log('Данные формы:', formData);
+            // Здесь можно добавить логику отправки данных на сервер
+            onClose(); // Закрыть меню после успешной регистрации
+        }
+    };
+
+    if (!isOpen) return null;
+
+    const isButtonDisabled =
+      !formData.firstname ||
+      !formData.lastname ||
+      !formData.email ||
+      !formData.login ||
+      !formData.password ||
+      !formData.repeatPassword ||
+      !!errors.email ||
+      !!errors.password ||
+      !!errors.repeatPassword;
+
+    return (
+        <div className={s.registerMenu} ref={containerRef}>
+            <div className={s.registerMenuHeader}>
+                <span className={s.registerMenuBackButton} onClick={onClose} />
+                <p className={s.menuTitle}>Регистрация</p>
+            </div>
+            <div className={s.formContainer}>
+                <form className={s.form} onSubmit={handleSubmit}>
+                    <div className={s.formFieldContainer}>
+                        <label className={s.formLabel}>
+                            Имя:
+                            <input id='firstname' className={s.formTextInput} type='text' placeholder='Имя' value={formData.firstname} onChange={handleChange} />
+                        </label>
+                        {errors.firstname && <p className={s.error}>{errors.firstname}</p>}
+                    </div>
+                    <div className={s.formFieldContainer}>
+                        <label className={s.formLabel}>
+                            Фамилия:
+                            <input id='lastname' className={s.formTextInput} type='text' placeholder='Фамилия' value={formData.lastname} onChange={handleChange} />
+                        </label>
+                        {errors.lastname && <p className={s.error}>{errors.lastname}</p>}
+                    </div>
+                    <div className={s.formFieldContainer}>
+                        <label className={s.formLabel}>
+                            E-mail:
+                            <input id='email' className={s.formTextInput} type='text' placeholder='E-mail' value={formData.email} onChange={handleChange} />
+                        </label>
+                        {errors.email && <p className={s.error}>{errors.email}</p>}
+                    </div>
+                    <div className={s.formFieldContainer}>
+                        <label className={s.formLabel}>
+                            Логин:
+                            <input id='login' className={s.formTextInput} type='text' placeholder='Логин' value={formData.login} onChange={handleChange} />
+                        </label>
+                    </div>
+                    <div className={s.formFieldContainer}>
+                        <label className={s.formLabel}>
+                            Пароль:
+                            <PasswordInputField id='password' placeholder='Пароль' value={formData.password} onChange={handleChange} />
+                        </label>
+                        {errors.password && <p className={s.error}>{errors.password}</p>}
+                    </div>
+                    <div className={s.formFieldContainer}>
+                        <label className={s.formLabel}>
+                            Повторите пароль:
+                            <PasswordInputField id='repeatPassword' placeholder='Повторите пароль' value={formData.repeatPassword} onChange={handleChange} />
+                        </label>
+                        {errors.repeatPassword && <p className={s.error}>{errors.repeatPassword}</p>}
+                    </div>
+                    <div className={s.registerButtonContainer}>
+                        <button type="submit" className={s.registerButton} disabled={isButtonDisabled}>Зарегистрироваться</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default RegisterMenu;

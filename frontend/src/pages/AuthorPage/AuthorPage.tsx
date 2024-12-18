@@ -1,7 +1,7 @@
 import BookCard from '../../component/common/BookCard/BookCard';
 import s from './AuthorPage.module.css'
 
-const books = Array(6).fill({
+const books = Array(12).fill({
     title: "Луна в ореховой скорлупе Луна в ореховой скорлупе",
     author: "Анастасия Пикина Анастасия Пикина",
     coverImage: "book.jpg",
@@ -16,7 +16,9 @@ const AuthorPage = () => {
                 <img className={s.authorImage} src='src/images/avatar/image.png'/>
                 <div className={s.authorInfo}>
                     <p className={s.authorName}>Вин дизель</p>
-                    <p className={s.authorDescription}>Пишет про машины.</p>
+                    <p className={s.authorDescription}>
+                        Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.Пишет про машины.
+                    </p>
                 </div>
             </div>
             <div className={s.authorBooksContainer}>
@@ -29,7 +31,7 @@ const AuthorPage = () => {
                         coverImage={book.coverImage} 
                         rating={book.rating} 
                         toDirect={book.toDirect}
-                        classname={s.mainPageItem}
+                        classname={s.authorsBook}
                     />
                     ))}
                 </div>

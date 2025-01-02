@@ -170,7 +170,7 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
                         {errors.repeatPassword && <p className={s.error}>{errors.repeatPassword}</p>}
                     </div>
                     <div className={s.registerButtonContainer}>
-                        <button type="submit" className={s.registerButton} disabled={isButtonDisabled}>Зарегистрироваться</button>
+                        <button type="submit" className={`${s.registerButton} ${isButtonDisabled ? s.disabledButton : ''}`} disabled={isButtonDisabled}>Зарегистрироваться</button>
                     </div>
                 </form>
             </div>

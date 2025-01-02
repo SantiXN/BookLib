@@ -13,6 +13,7 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
     const [isRegisterMenuOpen, setIsRegisterMenuOpen] = useState(false);
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
+    const isFormFieldsEmpty = !(login.trim() && password.trim());
 
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -84,7 +85,11 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
                                     />
                                 </label>
                             </div>
-                            <button type="submit" className={`${s.button} ${s.formButton}`}>Войти</button>
+                            <button type="submit" className={`${s.button} ${s.formButton} ${isFormFieldsEmpty ? s.disabledButton : ''}`}
+                            disabled={isFormFieldsEmpty}
+                            >
+                                Войти
+                            </button>
                         </form>
                         <div className={s.delimDivider}>или</div>
                         <button className={s.button} onClick={openRegisterMenu}>Зарегистрироваться</button>

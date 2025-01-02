@@ -102,3 +102,10 @@
     background-color: var(--content-gray-5, #e9ebf0);
     content: "";
 }
+
+.disabledButton {
+    background-color: #CCC;
+    color: #000;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

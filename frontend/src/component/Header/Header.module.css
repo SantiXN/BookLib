@@ -81,7 +81,6 @@
     align-items: center;
     font: 20px/1.2 Inter;
     padding: 13px 20px;
-    border-bottom: 1px solid #BCBCBC;
     color: #000000;
     cursor: pointer;
     transition: background-color 0.3s ease;

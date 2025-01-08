@@ -1,0 +1,69 @@
+.bookCard {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+    max-width: 180px;
+    height: 270px;
+    max-height: 270px;
+}
+
+.bookCardImage {
+    width: 100%;
+    height: 200px;
+}
+
+.bookCardLink, .bookCardLink:hover, .bookCardLink:visited {
+    text-decoration: none;
+    color: initial;
+}
+
+.bookCardTitle {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    margin: 0;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bookCardInfo {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bookCardAuthor {
+    color: #555;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    margin: 0;
+    white-space: nowrap;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+.bookCardRating {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.bookCardRating p{
+    margin: 0;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.bookCardRatingLogo {
+    background: url("../../../images/svg/star.svg");
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 14px;
+}

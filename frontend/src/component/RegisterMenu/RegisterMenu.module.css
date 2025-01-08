@@ -1,0 +1,73 @@
+.registerMenu {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    background-color: #F6F6F6;
+    border-radius: 20px;
+    padding: 40px;
+}
+
+.registerMenuHeader {
+    display: flex;
+    align-items: center;
+}
+
+.registerMenuBackButton {
+    background-image: url('src/images/icon/arrow_back.png');
+    background-size: contain;
+    width: 25px;
+    height: 25px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.menuTitle {
+    color: #000;
+    font-size: 32px;
+    margin: 0;
+    margin-left: 20px;
+}
+
+.form {
+    width: 100%;
+}
+
+.formFieldContainer {
+    margin: 20px 0;
+}
+
+.formLabel {
+    font-size: 20px;
+    color: #000;
+    margin: 10px 0 10px 0;
+}
+
+.formTextInput {
+    outline: none;
+    width: 100%;
+    height: 50px;
+    font-size: 20px;
+    border: 1px solid #E5E5E5;
+    border-radius: 10px;
+    padding: 0 15px;
+    background-color: #FFF;
+    color: #000;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.registerButtonContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.registerButton {
+    font-size: 20px;
+}
+
+.disabledButton {
+    background-color: #CCC;
+    color: #000;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

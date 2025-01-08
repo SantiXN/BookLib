@@ -1,0 +1,84 @@
+.bookCardWrapper {
+    margin-top: 20px;
+}
+
+.bookCard {
+    display: flex;
+}
+
+.bookCardImage {
+    width: 400px;
+    height: 500px;
+}
+
+.bookCardInfo {
+    margin: 0 0 0 30px;
+}
+
+.bookCardTitle {
+    font-size: 34px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.bookCardAuthor {
+    font-size: 22px;
+    margin: 20px 0;
+}
+
+.descrpitionTitle {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.bookCardDescription {
+    font-size: 22px;
+    margin-top: 0;
+}
+
+.bookCardAction {
+    display: flex;
+    margin: 20px auto;
+}
+
+.bookCardRatingContainer {
+    display: flex;
+}
+
+.bookCardRatingLogo {
+    background-image: url('../../images/svg/star.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 40px;
+    height: 40px;
+}
+
+.bookCardRating {
+    margin: auto 0;
+    margin-left: 20px;
+    font-size: 24px;
+}
+
+.bookCardAddToReadButton {
+    margin: auto;
+    margin-left: 50px;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.bookCardReadButton {
+    margin: auto;
+    margin-left: 50px;
+    font-size: 20px;
+    padding-inline: 40px;
+}
+
+.bookCardDeleteBookButton {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.bookCardReviews {
+    margin-top: 60px;
+}

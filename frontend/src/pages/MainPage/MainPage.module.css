@@ -1,0 +1,26 @@
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.bookCardByTheme {
+    width: 100%;
+}
+
+.block {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.mainPageItem {
+    margin: 0 20px 20px 20px;
+}
+
+.title {
+    font-size: 30px;
+    margin: 15px 0 5px 20px;
+    color: #000;
+}

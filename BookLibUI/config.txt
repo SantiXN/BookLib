@@ -1,5 +1,0 @@
--- Команды для настройки конфигурации проекта
-
-npm create vite@latest
-cd BookLibUI
-npm install

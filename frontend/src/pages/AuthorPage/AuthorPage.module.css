@@ -1,0 +1,47 @@
+.authorContainer {
+    display: block;
+    width: 100%;
+}
+
+.authorBody {
+    display: flex;
+}
+
+.authorImage {
+    width: 600px;
+    height: 600px;
+    max-width: 600px;
+    max-height: 800px;
+}
+
+.authorInfo {
+    display: block;
+    margin-left: 50px;
+}
+
+.authorName {
+    font-size: 40px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.authorDescription {
+    font-size: 32px;
+    margin: 0;
+    margin-top: 10px;
+}
+
+.authorBooksCards {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.authorBooksTitle {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.authorsBook {
+    margin-inline: 10px;
+}

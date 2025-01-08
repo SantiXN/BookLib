@@ -15,19 +15,34 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
     const [password, setPassword] = useState('');
     const isFormFieldsEmpty = !(login.trim() && password.trim());
 
+    const close = () => {
+        setLogin('');
+        setPassword('');
+
+        onClose();
+    }
+
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();
+            close();
+        }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            close();
         }
     };
 
     useEffect(() => {
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEscapeKey);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscapeKey);
         };
     }, [isOpen]);
 

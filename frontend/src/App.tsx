@@ -52,7 +52,7 @@ const App = () => {
                   <Route path="/info" element={<Info />} />
                   <Route path="/admin" element={<AdminEditor />} />
               </Routes>
-
+                
             <AuthorPage />
           </div>
         <Footer />

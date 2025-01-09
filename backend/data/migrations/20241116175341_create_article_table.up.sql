@@ -1,9 +1,14 @@
-CREATE TABLE article (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(256) NOT NULL,
-    content MEDIUMTEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by INT NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user_id FOREIGN KEY (created_by) REFERENCES user(id)
-);
+CREATE TABLE `article`
+(
+    `id`         INT AUTO_INCREMENT NOT NULL,
+    `name`       VARCHAR(256)       NOT NULL,
+    `content`    MEDIUMTEXT,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `created_by` INT                NOT NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `article_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`)
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE utf8mb4_unicode_ci
+;

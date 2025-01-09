@@ -1,1 +1,1 @@
-DROP TABLE category_book;
+DROP TABLE `category_book`;

@@ -1,1 +1,1 @@
-DROP TABLE author_book;
+DROP TABLE `author_book`;

@@ -9,6 +9,8 @@ interface BookReviewsProps {
 const BookReviews: React.FC<BookReviewsProps> = ({ id }) => {
     const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
     
+
+
     const openReviewForm = () => setIsReviewFormOpen(true);
     const closeReviewForm = () => setIsReviewFormOpen(false);
     //TODO: подгружать отзывы по ID книги
@@ -20,7 +22,7 @@ const BookReviews: React.FC<BookReviewsProps> = ({ id }) => {
                 <ReviewForm isOpen={isReviewFormOpen} onClose={closeReviewForm} />
             </div>
             <div className={s.reviews}>
-                <div className={s.review}>
+                <div className={s.review} id={id}>
                     <div className={s.reviewHeader}>
                         <img className={s.reviewAvatar} src='/src/images/avatar/image.png'/>
                         <p className={s.reviewAuthor}>Василий Пупкин</p>

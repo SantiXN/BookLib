@@ -8,8 +8,8 @@ RUN go mod vendor
 
 COPY . .
 
-RUN go build -v -o main ./cmd/main.go
+RUN go build -v -o ./bin/main ./cmd/main.go
 
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["./bin/main"]

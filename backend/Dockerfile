@@ -14,7 +14,7 @@ RUN go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 COPY . .
 
 # Генерируем код OpenAPI
-RUN oapi-codegen -config ./api/oapi-config.yaml ./api/api.yaml > ./api/generated.go
+RUN oapi-codegen -alias-types -config ./api/oapi-config.yaml ./api/api.yaml
 
 # Собираем приложение
 RUN go build -v -o ./bin/main ./cmd/main.go

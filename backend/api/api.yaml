@@ -42,7 +42,7 @@ paths:
           name: bookID
           required: true
           schema:
-            type: int
+            type: integer
       responses:
         '200':
           description: OK
@@ -65,7 +65,7 @@ paths:
           name: bookID
           required: true
           schema:
-            type: int
+            type: integer
       responses:
         '200':
           description: OK
@@ -111,7 +111,7 @@ paths:
           name: bookID
           required: true
           schema:
-            type: int
+            type: integer
       responses:
         '200':
           description: OK
@@ -184,7 +184,7 @@ paths:
           name: bookID
           required: true
           schema:
-            type: int
+            type: integer
       requestBody:
         content:
           application/json:
@@ -213,7 +213,7 @@ paths:
           name: bookID
           required: true
           schema:
-            type: int
+            type: integer
       requestBody:
         content:
           application/json:
@@ -245,7 +245,7 @@ paths:
           name: bookID
           required: true
           schema:
-            type: int
+            type: integer
       responses:
         '200':
           description: OK
@@ -465,7 +465,7 @@ components:
           items:
             $ref: '#/components/schemas/authorInfo'
         starCount:
-          type: float
+          type: number
       required:
         - id
         - title
@@ -490,7 +490,7 @@ components:
           items:
             $ref: '#/components/schemas/authorInfo'
         starCount:
-          type: float
+          type: number
         feedback:
           type: array
           items:
@@ -546,7 +546,7 @@ components:
           type: string
         postedAt:
           type: integer
-          format: int64
+          format: integer64
           description: unix timestamp
       required:
         - id

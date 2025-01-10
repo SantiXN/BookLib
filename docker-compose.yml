@@ -3,23 +3,50 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: backend_c
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
     volumes:
-      - ./backend:/app
+      - "./backend/data/migrations:/app/data/migrations"
+    networks:
+      - app-network
     depends_on:
-      - frontend
+      - db
     command: ["go", "run", "cmd/main.go"]
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev # для разработки
+    container_name: frontend_c
     ports:
       - "5173:5173" # для разработки
+    networks:
+      - app-network
     volumes:
       - ./frontend:/app
       - /app/node_modules
     command: ["npm", "run", "dev", "--", "--host"]
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    networks:
+      - app-network
+    container_name: db_c
+    volumes:
+      - db_data:/var/lib/mysql
+
+networks:
+  app-network:
+
+volumes:
+  db_data:

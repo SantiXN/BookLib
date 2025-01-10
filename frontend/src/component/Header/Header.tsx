@@ -23,13 +23,13 @@ const MegaDropdown = ({ title, items }: { title: string, items: { label: string,
 
 const Header = () => {
     const userMenuItems = [
-        { label: 'Профиль', link: '/profile' },
-        { label: 'Настройки', link: '/settings' },
+        { label: 'Профиль', link: '/author' },
+        { label: 'Настройки', link: '/admin' },
         { label: 'Выход', link: '/logout' },
     ];
 
     const catalogItems = [
-        { label: 'Статьи', link: '/articles' },
+        { label: 'Статьи', link: '/article' },
         { label: 'Романы', link: '/novels' },
         { label: 'Фэнтези', link: '/fantasy' },
         { label: 'Фантастика', link: '/sci-fi' },
@@ -60,12 +60,12 @@ const Header = () => {
 
                 <div className={`${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconBook}></div>
-                    <Link to="/my-books" className={s.link}>Мои книги</Link>
+                    <Link to="/editor" className={s.link}>Мои книги</Link>
                 </div>
 
                 <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconUser}></div>
-                    <Link to="/profile" className={s.link}>Профиль</Link>
+                    <Link to="/admin" className={s.link}>Профиль</Link>
                     <MegaDropdown title="Профиль" items={userMenuItems} />
                 </div>
 

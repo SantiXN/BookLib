@@ -7,7 +7,7 @@ import AuthorPage from './pages/AuthorPage/AuthorPage.tsx';
 import AdminMenu from './pages/AdminPages/AdminMenu/AdminMenu.tsx';
 import EditorMenu from './pages/AdminPages/EditorMenu/EditorMenu.tsx';
 import ArticlePage from './pages/ArticlePage/ArticlePage.tsx';
-import BookCardPagePage from './pages/BookPage/BookCardPage.module.css';
+import BookCardPagePage from './pages/BookPage/BookCardPage.tsx';
 import MainPage from './pages/MainPage/MainPage.tsx';
 
 
@@ -17,8 +17,8 @@ const App = () => {
         <Header />
           <div className={s.container}>
               <Routes>
-                  <Route path="/" element={<MainPage />} />
-                  <Route path="/book" element={<BookCardPagePage />} />
+                  <Route path="/:id" element={<MainPage />} />
+                  <Route path="/book/:id" element={<BookCardPagePage />} />
                   <Route path="/admin" element={<AdminMenu />} />
                   <Route path="/editor" element={<EditorMenu />} />
                   <Route path="/author" element={<AuthorPage />} />

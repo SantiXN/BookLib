@@ -24,29 +24,29 @@ import {
 /**
  * 
  * @export
- * @interface SearchBooksByOptionResponseData
+ * @interface ListBooksByCategoryResponseData
  */
-export interface SearchBooksByOptionResponseData {
+export interface ListBooksByCategoryResponseData {
     /**
      * 
      * @type {Array<BookData>}
-     * @memberof SearchBooksByOptionResponseData
+     * @memberof ListBooksByCategoryResponseData
      */
     books?: Array<BookData>;
 }
 
 /**
- * Check if a given object implements the SearchBooksByOptionResponseData interface.
+ * Check if a given object implements the ListBooksByCategoryResponseData interface.
  */
-export function instanceOfSearchBooksByOptionResponseData(value: object): value is SearchBooksByOptionResponseData {
+export function instanceOfListBooksByCategoryResponseData(value: object): value is ListBooksByCategoryResponseData {
     return true;
 }
 
-export function SearchBooksByOptionResponseDataFromJSON(json: any): SearchBooksByOptionResponseData {
-    return SearchBooksByOptionResponseDataFromJSONTyped(json, false);
+export function ListBooksByCategoryResponseDataFromJSON(json: any): ListBooksByCategoryResponseData {
+    return ListBooksByCategoryResponseDataFromJSONTyped(json, false);
 }
 
-export function SearchBooksByOptionResponseDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): SearchBooksByOptionResponseData {
+export function ListBooksByCategoryResponseDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListBooksByCategoryResponseData {
     if (json == null) {
         return json;
     }
@@ -56,11 +56,11 @@ export function SearchBooksByOptionResponseDataFromJSONTyped(json: any, ignoreDi
     };
 }
 
-export function SearchBooksByOptionResponseDataToJSON(json: any): SearchBooksByOptionResponseData {
-    return SearchBooksByOptionResponseDataToJSONTyped(json, false);
+export function ListBooksByCategoryResponseDataToJSON(json: any): ListBooksByCategoryResponseData {
+    return ListBooksByCategoryResponseDataToJSONTyped(json, false);
 }
 
-export function SearchBooksByOptionResponseDataToJSONTyped(value?: SearchBooksByOptionResponseData | null, ignoreDiscriminator: boolean = false): any {
+export function ListBooksByCategoryResponseDataToJSONTyped(value?: ListBooksByCategoryResponseData | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

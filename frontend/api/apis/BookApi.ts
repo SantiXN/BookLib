@@ -20,13 +20,15 @@ import type {
   BadRequestResponseData,
   ChangeReadingStatusRequest,
   GetBookInfoResponseData,
+  ListAuthorBooksResponseData,
   ListBookFeedbackResponseData,
+  ListBooksByCategoryResponseData,
   ListBooksResponseData,
+  ListLibraryBooksResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
   SaveBookFeedbackRequest,
   SaveBookFeedbackResponseData,
-  SearchBooksByOptionResponseData,
   SearchBooksRequest,
   SearchBooksResponseData,
   UnauthorizedResponseData,
@@ -42,10 +44,16 @@ import {
     ChangeReadingStatusRequestToJSON,
     GetBookInfoResponseDataFromJSON,
     GetBookInfoResponseDataToJSON,
+    ListAuthorBooksResponseDataFromJSON,
+    ListAuthorBooksResponseDataToJSON,
     ListBookFeedbackResponseDataFromJSON,
     ListBookFeedbackResponseDataToJSON,
+    ListBooksByCategoryResponseDataFromJSON,
+    ListBooksByCategoryResponseDataToJSON,
     ListBooksResponseDataFromJSON,
     ListBooksResponseDataToJSON,
+    ListLibraryBooksResponseDataFromJSON,
+    ListLibraryBooksResponseDataToJSON,
     NotFoundResponseDataFromJSON,
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
@@ -54,8 +62,6 @@ import {
     SaveBookFeedbackRequestToJSON,
     SaveBookFeedbackResponseDataFromJSON,
     SaveBookFeedbackResponseDataToJSON,
-    SearchBooksByOptionResponseDataFromJSON,
-    SearchBooksByOptionResponseDataToJSON,
     SearchBooksRequestFromJSON,
     SearchBooksRequestToJSON,
     SearchBooksResponseDataFromJSON,
@@ -85,8 +91,16 @@ export interface GetBookInfoRequest {
     bookID: number;
 }
 
+export interface ListAuthorBooksRequest {
+    authorID: number;
+}
+
 export interface ListBookFeedbackRequest {
     bookID: number;
+}
+
+export interface ListBooksByCategoryRequest {
+    categoryID: number;
 }
 
 export interface SaveBookFeedbackOperationRequest {
@@ -96,10 +110,6 @@ export interface SaveBookFeedbackOperationRequest {
 
 export interface SearchBooksOperationRequest {
     searchBooksRequest: SearchBooksRequest;
-}
-
-export interface SearchBooksByOptionRequest {
-    body: object;
 }
 
 /**
@@ -338,6 +348,45 @@ export class BookApi extends runtime.BaseAPI {
 
     /**
      */
+    async listAuthorBooksRaw(requestParameters: ListAuthorBooksRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListAuthorBooksResponseData>> {
+        if (requestParameters['authorID'] == null) {
+            throw new runtime.RequiredError(
+                'authorID',
+                'Required parameter "authorID" was null or undefined when calling listAuthorBooks().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/book/{authorID}/list`.replace(`{${"authorID"}}`, encodeURIComponent(String(requestParameters['authorID']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListAuthorBooksResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async listAuthorBooks(requestParameters: ListAuthorBooksRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListAuthorBooksResponseData> {
+        const response = await this.listAuthorBooksRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async listBookFeedbackRaw(requestParameters: ListBookFeedbackRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListBookFeedbackResponseData>> {
         if (requestParameters['bookID'] == null) {
             throw new runtime.RequiredError(
@@ -404,6 +453,77 @@ export class BookApi extends runtime.BaseAPI {
      */
     async listBooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListBooksResponseData> {
         const response = await this.listBooksRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async listBooksByCategoryRaw(requestParameters: ListBooksByCategoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListBooksByCategoryResponseData>> {
+        if (requestParameters['categoryID'] == null) {
+            throw new runtime.RequiredError(
+                'categoryID',
+                'Required parameter "categoryID" was null or undefined when calling listBooksByCategory().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/book/{categoryID}/list`.replace(`{${"categoryID"}}`, encodeURIComponent(String(requestParameters['categoryID']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListBooksByCategoryResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async listBooksByCategory(requestParameters: ListBooksByCategoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListBooksByCategoryResponseData> {
+        const response = await this.listBooksByCategoryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async listLibraryBooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListLibraryBooksResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/book/library/list`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListLibraryBooksResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async listLibraryBooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListLibraryBooksResponseData> {
+        const response = await this.listLibraryBooksRaw(initOverrides);
         return await response.value();
     }
 
@@ -488,48 +608,6 @@ export class BookApi extends runtime.BaseAPI {
      */
     async searchBooks(requestParameters: SearchBooksOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchBooksResponseData> {
         const response = await this.searchBooksRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async searchBooksByOptionRaw(requestParameters: SearchBooksByOptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchBooksByOptionResponseData>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling searchBooksByOption().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/api/book/search/option`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SearchBooksByOptionResponseDataFromJSON(jsonValue));
-    }
-
-    /**
-     */
-    async searchBooksByOption(requestParameters: SearchBooksByOptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchBooksByOptionResponseData> {
-        const response = await this.searchBooksByOptionRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

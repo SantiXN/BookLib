@@ -31,7 +31,7 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
-#TODO добавление категорий и авторов
+#TODO добавление авторов
   /api/book/{bookID}/delete:
     post:
       tags:
@@ -98,6 +98,33 @@ paths:
           $ref: '#/components/responses/unauthorized'
         '403':
           $ref: '#/components/responses/permissionDenied'
+
+  /api/book/{authorID}/list:
+    get:
+      tags:
+        - book
+      operationId: ListAuthorBooks
+      parameters:
+        - in: path
+          name: authorID
+          required: true
+          schema:
+            type: int
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthorBooksResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
 
 # Добавить книгу в собственную библиотеку
 # TODO подумать над названием
@@ -275,6 +302,20 @@ paths:
         '401':
           $ref: '#/components/responses/unauthorized'
 
+  /api/category/list:
+    get:
+      tags:
+        - category
+      operationId: ListCategories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCategoriesResponseData'
+        '401':
+          $ref: '#/components/responses/unauthorized'
 
 components:
   securitySchemes:
@@ -393,6 +434,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
+    ListAuthorBooksResponseData:
+      type: object
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/bookData'
     SearchBooksRequest:
       type: object
       properties:
@@ -450,6 +498,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/feedbackInfo'
+    ListCategoriesResponseData:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/categoryInfo'
 
     bookData:
       type: object

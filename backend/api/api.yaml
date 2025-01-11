@@ -31,7 +31,6 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
-#TODO добавление авторов
   /api/book/{bookID}/delete:
     post:
       tags:
@@ -194,8 +193,6 @@ paths:
           $ref: '#/components/responses/badRequest'
         '401':
           $ref: '#/components/responses/unauthorized'
-        '403':
-          $ref: '#/components/responses/permissionDenied'
 
   /api/book/library/list:
     get:
@@ -332,6 +329,57 @@ paths:
                 $ref: '#/components/schemas/ListCategoriesResponseData'
         '401':
           $ref: '#/components/responses/unauthorized'
+
+  /api/author/create:
+    post:
+      tags:
+        - author
+      operationId: CreateAuthor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthorRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAuthorResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+
+  /api/user/{userID}/data:
+    get:
+      tags:
+        - user
+      operationId: GetUserData
+      parameters:
+        - in: path
+          name: userID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserDataResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
 
 components:
   securitySchemes:
@@ -524,6 +572,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/categoryInfo'
+    CreateAuthorRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        description:
+          type: string
+      required:
+        - firstName
+    CreateAuthorResponseData:
+      type: object
+      properties:
+        id:
+          type: integer
+    GetUserDataResponseData:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/userData'
+
 
     bookData:
       type: object
@@ -606,7 +676,6 @@ components:
         - id
         - category
 
-#TODO подумать над возвращением данных о пользователе
     feedbackInfo:
       type: object
       properties:
@@ -627,3 +696,20 @@ components:
         - userID
         - starCount
         - postedAt
+
+    userData:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        avatarPath:
+          type: string
+      required:
+        - id
+        - username

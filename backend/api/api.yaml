@@ -172,27 +172,43 @@ paths:
         '401':
           $ref: '#/components/responses/unauthorized'
 
-# TODO: Можно вынести в отдельный запрос для получения книг из собств библиотеки. Добавить параметр - userId, чтобы можно было получить книги из собственной библиотеки, добавить фильтры
-
-# TODO: Получение по категории, автору. Обсудить
-  /api/book/search/option:
-    post:
+  /api/book/{categoryID}/list:
+    get:
       tags:
         - book
-      operationId: SearchBooksByOption
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SearchBooksByOptionRequest'
+      operationId: ListBooksByCategory
+      parameters:
+        - in: path
+          name: categoryID
+          required: true
+          schema:
+            type: int
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchBooksByOptionResponseData'
+                $ref: '#/components/schemas/ListBooksByCategoryResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+
+  /api/book/library/list:
+    get:
+      tags:
+        - book
+      operationId: ListLibraryBooks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLibraryBooksResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -455,11 +471,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
-    SearchBooksByOptionRequest:
+    ListBooksByCategoryResponseData:
       type: object
       properties:
-
-    SearchBooksByOptionResponseData:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/bookData'
+    ListLibraryBooksResponseData:
       type: object
       properties:
         books:

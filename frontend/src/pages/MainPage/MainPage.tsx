@@ -6,7 +6,7 @@ const firstGenreBooks = Array(6).fill({
     author: "Анастасия Пикина Анастасия Пикина",
     coverImage: "book.jpg",
     rating: 4.8,
-    toDirect: '/',
+    toDirect: '/book/:id',
 });
 
 const secondGenreBooks = Array(6).fill({
@@ -14,7 +14,7 @@ const secondGenreBooks = Array(6).fill({
     author: "Анастасия Пикина Анастасия Пикина",
     coverImage: "book.jpg",
     rating: 4.8,
-    toDirect: '/',
+    toDirect: '/book/:id',
 });
 
 const thirdGenreBooks = Array(6).fill({
@@ -22,10 +22,11 @@ const thirdGenreBooks = Array(6).fill({
     author: "Анастасия Пикина Анастасия Пикина",
     coverImage: "book.jpg",
     rating: 4.8,
-    toDirect: '/',
+    toDirect: '/book/:id',
 });
 
 const MainPage = () => {
+
     return (
         <div className={s.container}>
             <div className={s.bookCardByTheme}>

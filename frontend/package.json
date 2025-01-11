@@ -11,7 +11,6 @@
     "generate-api": "openapi-generator-cli generate -i ../backend/api/api.yaml -g typescript-fetch -o ./src/api-client"
   },
   "dependencies": {
-    "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.2"

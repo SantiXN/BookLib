@@ -109,7 +109,7 @@ paths:
           name: authorID
           required: true
           schema:
-            type: int
+            type: integer
       responses:
         '200':
           description: OK
@@ -182,7 +182,7 @@ paths:
           name: categoryID
           required: true
           schema:
-            type: int
+            type: integer
       responses:
         '200':
           description: OK

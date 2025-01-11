@@ -1,5 +1,6 @@
 import s from './MainPage.module.css'
 import BookCard from '../../component/common/BookCard/BookCard'
+import ApiClient from '../../../api/ApiClient'
 
 const firstGenreBooks = Array(6).fill({
     title: "Луна в ореховой скорлупе Луна в ореховой скорлупе",
@@ -26,6 +27,14 @@ const thirdGenreBooks = Array(6).fill({
 });
 
 const MainPage = () => {
+    ApiClient
+        .listBooks()
+        .then((response) => {
+            console.log('Books:', response.books);
+        })
+        .catch((error) => {
+            console.error('Failed to fetch books:', error);
+        });
 
     return (
         <div className={s.container}>

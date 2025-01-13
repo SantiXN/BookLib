@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AuthorApi.ts
 apis/BookApi.ts
 apis/CategoryApi.ts
@@ -16,6 +15,7 @@ models/ChangeReadingStatusRequest.ts
 models/CreateAuthorRequest.ts
 models/CreateAuthorResponseData.ts
 models/FeedbackInfo.ts
+models/GetAuthorInfoResponseData.ts
 models/GetBookInfoResponseData.ts
 models/GetUserDataResponseData.ts
 models/ListAuthorBooksResponseData.ts

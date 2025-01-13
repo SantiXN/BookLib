@@ -15,7 +15,7 @@ const BookCardPage = () => {
                 <img className={s.bookCardImage} src={`/src/images/book/book.jpg`} />
                 <div className={s.bookCardInfo}>
                     <p className={s.bookCardTitle}>Луна в ореховой скорлупе</p>
-                    <p className={s.bookCardAuthor}>Автор: Анастасия Пикина</p>
+                    <div className={s.bookCardAuthor}>Автор:<a href='/author/0'> Анастасия Пикина</a></div>
                     <div className={s.bookCardAction}>
                         <div className={s.bookCardRatingInfo}>
                             <div className={s.bookCardRatingContainer}>

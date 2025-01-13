@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import s from './MainPage.module.css';
 import BookCard from '../../component/common/BookCard/BookCard';
-import ApiClient from '../../../api/ApiClient';
+import { BookApiClient } from '../../../api/ApiClient';
 import { ListBooksByCategoryRequest } from '../../../api/apis/BookApi';
 import { ParsedBook } from '../../types/BookTypes';
 import { parseBooksResponse } from '../../utils/BookUtils';
@@ -14,7 +14,7 @@ const MainPage = () => {
 
     const fetchBooksByCategory = (categoryID: number, setBooks: React.Dispatch<React.SetStateAction<any>>) => {
         const request: ListBooksByCategoryRequest = { categoryID };
-        ApiClient.listBooksByCategory(request)
+        BookApiClient.listBooksByCategory(request)
             .then((response) => {
                 if (response && response.books) {
                     setBooks(parseBooksResponse(response));

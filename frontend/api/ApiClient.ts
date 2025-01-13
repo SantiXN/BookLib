@@ -1,4 +1,4 @@
-import { Configuration, BookApi } from '.'; // Путь к сгенерированному API
+import { Configuration, BookApi, AuthorApi, CategoryApi, UserApi } from '.'; // Путь к сгенерированному API
 
 // Конфигурация клиента
 // localStorage.setItem('token', 'mock-token');
@@ -10,5 +10,8 @@ const config = new Configuration({
   },
 });
 // Инициализация API клиента
-const ApiClient = new BookApi(config);
-export default ApiClient;
+const BookApiClient = new BookApi(config);
+const AuthorApiClient = new AuthorApi(config);
+const CategoryApiClient = new CategoryApi(config);
+const UserApiClient = new UserApi(config);
+export { BookApiClient, AuthorApiClient, CategoryApiClient, UserApiClient };

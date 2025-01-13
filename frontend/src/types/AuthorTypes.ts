@@ -1,6 +1,7 @@
-export type ParsedAuthor = {
+export type ParsedAuthorInfo = {
     id: number;
     firstName: string;
     lastName: string;
-    description: string;
+    description?: string;
 }
+

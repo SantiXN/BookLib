@@ -35,36 +35,22 @@ const MainPage = () => {
     const [mysteryBooks, setMysteryBooks] = useState<ParsedBook[]>([]);
     const [detectiveBooks, setDetectiveBooks] = useState<ParsedBook[]>([]);
 
+    const fetchBooksByCategory = (categoryID: number, setBooks: React.Dispatch<React.SetStateAction<any>>) => {
+        const request: ListBooksByCategoryRequest = { categoryID };
+        ApiClient.listBooksByCategory(request)
+            .then((response) => {
+                if (response && response.books) {
+                    setBooks(parseBooksResponse(response));
+                }
+            })
+            .catch((error) => console.error(`Failed to fetch books for category ${categoryID}:`, error));
+    };
+
     useEffect(() => {
-        const fantasyBooksRequest: ListBooksByCategoryRequest = { categoryID: 1 };
-        ApiClient.listBooksByCategory(fantasyBooksRequest)
-            .then((response) => {
-                console.log('Get fantasy books');
-                if (response && response.books) {
-                    setFantasyBooks(parseBooksResponse(response));
-                }
-            })
-            .catch((error) => console.error('Failed to fetch fantasy books:', error));
+        fetchBooksByCategory(1, setFantasyBooks);
+        fetchBooksByCategory(2, setMysteryBooks);
+        fetchBooksByCategory(3, setDetectiveBooks);
 
-        const mysteryBooksRequest: ListBooksByCategoryRequest = { categoryID: 2 };
-        ApiClient.listBooksByCategory(mysteryBooksRequest)
-            .then((response) => {
-                if (response && response.books) {
-                    setMysteryBooks(parseBooksResponse(response));
-                }
-                console.log('Get mystery books');
-            })
-            .catch((error) => console.error('Failed to fetch mystery books:', error));
-
-        const detectiveBooksRequest: ListBooksByCategoryRequest = { categoryID: 3 };
-        ApiClient.listBooksByCategory(detectiveBooksRequest)
-            .then((response) => {
-                if (response && response.books) {
-                    setDetectiveBooks(parseBooksResponse(response));
-                }
-                console.log('Get detective books');
-            })
-            .catch((error) => console.error('Failed to fetch detective books:', error));
     }, []);
 
     return (

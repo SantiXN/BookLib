@@ -79,6 +79,31 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
+  /api/author/{authorID}/info:
+    get:
+      tags:
+        - author
+      operationId: GetAuthorInfo
+      parameters:
+        - in: path
+          name: authorID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuthorInfoResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/notFound'
+
   /api/book/list:
     get:
       tags:
@@ -491,6 +516,11 @@ components:
       properties:
         book:
           $ref: '#/components/schemas/bookInfo'
+    GetAuthorInfoResponseData:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/authorInfo'
     ListBooksResponseData:
       type: object
       properties:
@@ -661,9 +691,13 @@ components:
           type: string
         lastName:
           type: string
+        description:
+          type: string
       required:
         - id
         - firstName
+        - lastName
+        - description
 
     categoryInfo:
       type: object

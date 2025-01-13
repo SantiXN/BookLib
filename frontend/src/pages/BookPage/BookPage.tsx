@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
-import s from './BookCardPage.module.css'
+import s from './BookPage.module.css'
 
-const BookCardPage = () => {
+const BookPage = () => {
     const [isAddedToRead, setIsAddedToRead] = useState(false);
-
     const changeBookToReadStateHandleClick = ({ isAdded }: { isAdded: boolean }) => {
         setIsAddedToRead(isAdded); 
     };
+
+    const genre = 's';
 
     return (
         <div className={s.bookCardWrapper}>
@@ -33,6 +34,7 @@ const BookCardPage = () => {
                             <button className={s.bookCardDeleteBookButton} onClick={() => changeBookToReadStateHandleClick({ isAdded: true })}>Удалить из списка чтения</button>   
                         </div>}
                     </div>
+                    <p className={s.bookCardDescription}><span className={s.descrpitionTitle}>Жанр:</span> {genre}</p>
                     <div className={s.descriptionContainer}>
                         <span className={s.descrpitionTitle}>Описание</span>
                         <p className={s.bookCardDescription}>
@@ -48,4 +50,4 @@ const BookCardPage = () => {
     )
 }
 
-export default BookCardPage;
+export default BookPage;

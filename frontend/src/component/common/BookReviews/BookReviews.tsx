@@ -12,10 +12,12 @@ interface BookReviewsProps {
 const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo }) => {
     const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
     const [userNames, setUserNames] = useState<Record<number, string>>({});
+    const [userAvatarPaths, setUserAvatarPaths] = useState<Record<number, string>>({});
 
     useEffect(() => {
         const fetchUserNames = async () => {
             const names: Record<number, string> = {};
+            const avatarPaths: Record<number, string> = {};
 
             // Выполняем запросы параллельно
             const userRequests = feedbackInfo.map((review) => {
@@ -23,9 +25,11 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo }) => {
                 return UserApiClient.getUserData(request)
                     .then((response) => {
                         names[review.userID] = `${response.data?.firstName} ${response.data?.lastName}`;
+                        avatarPaths[review.userID] = response.data?.avatarPath || '';
                     })
                     .catch(() => {
-                        names[review.userID] = "Unknown User";
+                        names[review.userID] = 'Unknown User';
+                        avatarPaths[review.userID] = '';
                     });
             });
 
@@ -53,7 +57,7 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo }) => {
                     feedbackInfo.map((review) => (
                         <div className={s.review} key={review.id}>
                             <div className={s.reviewHeader}>
-                                <img className={s.reviewAvatar} src='/src/images/avatar/image.png' alt="Avatar" />
+                                <img className={s.reviewAvatar} src={userAvatarPaths[review.userID]} alt="Avatar" />
                                 <p className={s.reviewAuthor}>
                                     {userNames[review.userID] || "Loading..."}
                                 </p>

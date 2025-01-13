@@ -5,7 +5,6 @@ info:
 security:
   - bearerAuth: [ ]
 paths:
-  # Добавить книгу в общую библиотеку
   /api/book/add:
     post:
       tags:
@@ -151,7 +150,6 @@ paths:
           $ref: '#/components/responses/notFound'
 
 # Добавить книгу в собственную библиотеку
-# TODO подумать над названием
   /api/book/{bookID}/library/add:
     post:
       tags:
@@ -173,24 +171,45 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/book/search:
+  /api/book/{bookID}/library/remove:
     post:
       tags:
         - book
-      operationId: SearchBooks
+      operationId: RemoveBookFromLibrary
+      parameters:
+        - in: path
+          name: bookID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/item/search:
+    post:
+      tags:
+        - book
+      operationId: SearchItems
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SearchBooksRequest'
+              $ref: '#/components/schemas/SearchItemsRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchBooksResponseData'
+                $ref: '#/components/schemas/SearchItemsResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -325,6 +344,34 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
+  /api/book/{bookID}/edit:
+    post:
+      tags:
+        - book
+      operationId: EditBook
+      parameters:
+        - in: path
+          name: bookID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditBookRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
 
   #TODO Получить статистику по книгам в библиотеке (Н: сколько книг прочитал)
   /api/book/library/stats:
@@ -379,6 +426,181 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
+  /api/author/{authorID}/delete:
+    post:
+      tags:
+        - author
+      operationId: DeleteAuthor
+      parameters:
+        - in: path
+          name: authorID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/author/{authorID}/edit:
+    post:
+      tags:
+        - author
+      operationId: EditAuthor
+      parameters:
+        - in: path
+          name: authorID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditAuthorRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/v1/login:
+    post:
+      tags:
+        - user
+      operationId: LoginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserRequest'
+      responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/LoginUserResponseData'
+          '400':
+            $ref: '#/components/responses/badRequest'
+          '401':
+            $ref: '#/components/responses/unauthorized'
+          '404':
+            $ref: '#/components/responses/notFound'
+
+  /api/v1/user/list:
+    post:
+      tags:
+        - user
+      operationId: ListUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUsersResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/v1/user/{userID}/role:
+    post:
+      tags:
+        - user
+      operationId: ChangeUserRole
+      parameters:
+        - in: path
+          name: userID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeUserRoleRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/user/{userID}/edit:
+    post:
+      tags:
+        - user
+      operationId: EditUserInfo
+      parameters:
+        - in: path
+          name: userID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUserInfoRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/user/{userID}/delete:
+    post:
+      tags:
+        - user
+      operationId: DeleteUser
+      parameters:
+        - in: path
+          name: userID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
   /api/user/{userID}/data:
     get:
       tags:
@@ -405,6 +627,130 @@ paths:
           $ref: '#/components/responses/permissionDenied'
         '404':
           $ref: '#/components/responses/notFound'
+
+  /api/article/create:
+    post:
+      tags:
+        - article
+      operationId: CreateArticle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateArticleResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+
+  /api/article/{articleID}/delete:
+    post:
+      tags:
+        - article
+      operationId: DeleteArticle
+      parameters:
+        - in: path
+          name: articleID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/article/{articleID}/edit:
+    post:
+      tags:
+        - article
+      operationId: EditArticle
+      parameters:
+        - in: path
+          name: articleID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditArticleRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/article/{articleID}:
+    get:
+      tags:
+        - article
+      operationId: GetArticle
+      parameters:
+        - in: path
+          name: articleID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArticleResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
+  /api/article/list:
+    get:
+      tags:
+        - article
+      operationId: ListArticles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListArticlesResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+
 
 components:
   securitySchemes:
@@ -535,20 +881,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
-    SearchBooksRequest:
+    SearchItemsRequest:
       type: object
       properties:
         searchString:
           type: string
       required:
         - searchString
-    SearchBooksResponseData:
+    SearchItemsResponseData:
       type: object
       properties:
         books:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/authorData'
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/articleData'
     ListBooksByCategoryResponseData:
       type: object
       properties:
@@ -562,7 +916,7 @@ components:
         books:
           type: array
           items:
-            $ref: '#/components/schemas/bookData'
+            $ref: '#/components/schemas/bookInLibrary'
     ChangeReadingStatusRequest:
       type: object
       properties:
@@ -595,6 +949,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/feedbackInfo'
+    EditBookRequest:
+      type: object
+      properties:
+        newTitle:
+          type: string
+        newDescription:
+          type: string
     ListCategoriesResponseData:
       type: object
       properties:
@@ -618,12 +979,92 @@ components:
       properties:
         id:
           type: integer
+    EditAuthorRequest:
+      type: object
+      properties:
+        newFirstName:
+          type: string
+        newLastName:
+          type: string
+        newDescription:
+          type: string
     GetUserDataResponseData:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/userData'
-
+    LoginUserRequest:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+        - login
+        - password
+    LoginUserResponseData:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+    ListUsersResponseData:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/userInfo'
+    ChangeUserRoleRequest:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - user
+            - editor
+    EditUserInfoRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+    CreateArticleRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+      required:
+        - title
+    CreateArticleResponseData:
+      type: object
+      properties:
+        id:
+          type: integer
+    EditArticleRequest:
+      type: object
+      properties:
+        newTitle:
+          type: string
+        newContent:
+          type: string
+    GetArticleResponseData:
+      type: object
+      properties:
+        article:
+          $ref: '#/components/schemas/articleInfo'
+    ListArticlesResponseData:
+      articles:
+        type: array
+        items:
+          $ref: '#/components/schemas/articleData'
 
     bookData:
       type: object
@@ -645,8 +1086,36 @@ components:
         - title
         - coverPath
         - authors
-        - feedback
         - starCount
+
+    bookInLibrary:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        coverPath:
+          type: string
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/authorData'
+        starCount:
+          type: integer
+        readingStatus:
+          type: string
+          enum:
+            - inProgress
+            - finished
+            - planned
+      required:
+        - id
+        - title
+        - coverPath
+        - authors
+        - starCount
+        - readingStatus
 
     bookInfo:
       type: object
@@ -691,6 +1160,8 @@ components:
           type: string
         lastName:
           type: string
+        avatarPath:
+          type: string
       required:
         - id
         - firstName
@@ -705,6 +1176,8 @@ components:
         lastName:
           type: string
         description:
+          type: string
+        avatarPath:
           type: string
       required:
         - id
@@ -751,10 +1224,64 @@ components:
           type: string
         lastName:
           type: string
-        username:
+        avatarPath:
+          type: string
+      required:
+        - id
+
+    userInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        role:
+          type: string
+          enum:
+            - user
+            - admin
+            - editor
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
           type: string
         avatarPath:
           type: string
       required:
         - id
         - username
+
+# HELP!!!
+# TODO: Подумать, что возвращать id или прямо структуру автора?
+# TODO: Возможно для статей тоже нужна обложка?
+    articleInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        authorID:
+          type: integer
+      required:
+        - id
+        - title
+        - content
+        - authorID
+
+    articleData:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        authorID:
+          type: integer
+      required:
+        - id
+        - title
+        - authorID

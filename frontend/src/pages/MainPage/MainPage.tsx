@@ -3,31 +3,8 @@ import s from './MainPage.module.css';
 import BookCard from '../../component/common/BookCard/BookCard';
 import ApiClient from '../../../api/ApiClient';
 import { ListBooksByCategoryRequest } from '../../../api/apis/BookApi';
-import { ListBooksByCategoryResponseData } from '../../../api/models/ListBooksByCategoryResponseData'
-
-type ParsedBook = {
-    title: string;
-    author: string;
-    coverImage: string;
-    rating: number;
-    toDirect: string;
-};
-
-function parseBooksResponse(response: ListBooksByCategoryResponseData): ParsedBook[] {
-    if (!response.books) {
-        return []; // Если books нет, возвращаем пустой массив
-    }
-
-    return response.books.map((book) => ({
-        title: book.title || "Untitled Book",
-        author: book.authors?.map((author) => `${author.firstName} ${author.lastName}`).join(", ") || "Unknown Author",
-        coverImage: book.coverPath || "default.jpg",
-        rating: book.starCount || 0,
-        toDirect: `/book/${book.id}`,
-    }));
-}
-
-
+import { ParsedBook } from '../../types/BookTypes';
+import { parseBooksResponse } from '../../utils/BookUtils';
 
 const MainPage = () => {
     // TODO: Что делать, если массивы с книгами получаются пустые?
@@ -50,7 +27,6 @@ const MainPage = () => {
         fetchBooksByCategory(1, setFantasyBooks);
         fetchBooksByCategory(2, setMysteryBooks);
         fetchBooksByCategory(3, setDetectiveBooks);
-
     }, []);
 
     return (

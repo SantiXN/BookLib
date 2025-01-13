@@ -46,9 +46,9 @@ const Header = () => {
     return (
         <header className={s.headerWrapper}>
             <div id="header" className={s.header}>
-                <div className={`${s.logo} ${s.headerWrapperItem}`}>
-                    <Link to="/" />
-                </div>
+                <a href='/'>
+                    <div className={`${s.logo} ${s.headerWrapperItem}`} />
+                </a>
                 <div className={`${s.catalog} ${s.headerWrapperItem}`}>
                     <div className={s.catalogButton}>Каталог</div>
                     <MegaDropdown title="Каталог" items={catalogItems} />

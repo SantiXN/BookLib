@@ -1,17 +1,18 @@
 import BookCard from '../../component/common/BookCard/BookCard';
 import s from './AuthorPage.module.css'
-import { ParsedBook } from '../../types/BookTypes';
-import { parseBooksResponse } from '../../utils/BookUtils';
+import { ParsedBookCard } from '../../types/BookTypes';
+import { parseBookCardsResponse } from '../../utils/BookUtils';
 import { useEffect, useState } from 'react';
 import {BookApiClient, AuthorApiClient } from '../../../api/ApiClient';
 import { ListAuthorBooksRequest, GetAuthorInfoRequest } from '../../../api';
 import { useParams } from 'react-router-dom';
 import { parseAuthorResponse } from '../../utils/AuthorUtils';
-import { ParsedAuthor } from '../../types/AuthorTypes';
+import { ParsedAuthorInfo } from '../../types/AuthorTypes';
 
 const AuthorPage = () => {
-    const [authorBooks, setAuthorBooks] = useState<ParsedBook[]>([]);
-    const [authorInfo, setAuthorInfo] = useState<ParsedAuthor>();
+    // TODO: Доделать и проверить!
+    const [authorBooks, setAuthorBooks] = useState<ParsedBookCard[]>([]);
+    const [authorInfo, setAuthorInfo] = useState<ParsedAuthorInfo>();
 
     const { id } = useParams<{ id: string }>();
     const curAuthorID = id ? Number(id) : 0;
@@ -35,7 +36,7 @@ const AuthorPage = () => {
         BookApiClient.listAuthorBooks(getAuthorBooksRequest)
             .then((response) => {
                 if (response && response.books) {
-                    setAuthorBooks(parseBooksResponse(response));
+                    setAuthorBooks(parseBookCardsResponse(response));
                     console.log('length ', authorBooks.length)
                 }
             }) 

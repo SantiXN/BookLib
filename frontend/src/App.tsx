@@ -21,7 +21,7 @@ const App = () => {
                   <Route path="/book/:id" element={<BookCardPage />} />
                   <Route path="/admin" element={<AdminMenu />} />
                   <Route path="/editor" element={<EditorMenu />} />
-                  <Route path="/author" element={<AuthorPage />} />
+                  <Route path="/author/:id" element={<AuthorPage />} />
                   <Route path="/article" element={<ArticlePage />} />
               </Routes>
           </div>

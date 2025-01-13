@@ -637,7 +637,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorInfo'
+            $ref: '#/components/schemas/authorData'
         starCount:
           type: number
       required:
@@ -662,7 +662,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorInfo'
+            $ref: '#/components/schemas/authorData'
         starCount:
           type: number
         feedback:
@@ -682,6 +682,19 @@ components:
         - starCount
         - categories
 
+    authorData:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - id
+        - firstName
+
     authorInfo:
       type: object
       properties:
@@ -696,8 +709,6 @@ components:
       required:
         - id
         - firstName
-        - lastName
-        - description
 
     categoryInfo:
       type: object

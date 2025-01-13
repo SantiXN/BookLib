@@ -1,9 +1,10 @@
 import { ListBooksByCategoryResponseData } from '../../api/models/ListBooksByCategoryResponseData'
-import { ParsedBook } from '../types/BookTypes'; 
+import { GetBookInfoResponseData } from '../../api/models/GetBookInfoResponseData';
+import { ParsedBookInfo, ParsedBookCard } from '../types/BookTypes'; 
 
-export function parseBooksResponse(response: ListBooksByCategoryResponseData): ParsedBook[] {
+export function parseBookCardsResponse(response: ListBooksByCategoryResponseData): ParsedBookCard[] {
     if (!response.books) {
-        return []; // Если books нет, возвращаем пустой массив
+        return [];
     }
 
     return response.books.map((book) => ({
@@ -13,4 +14,16 @@ export function parseBooksResponse(response: ListBooksByCategoryResponseData): P
         rating: book.starCount || 0,
         toDirect: `/book/${book.id}`,
     }));
+}
+
+export function parseBookInfoResponse(response: GetBookInfoResponseData): ParsedBookInfo | null {
+    if (!response) {
+        return null;
+    }
+    return {
+        title: response.book?.title || "Untitled Book",
+        coverImage: response.book?.coverPath || "default.jpg",
+        rating: response.book?.starCount || 0,
+        description: response.book?.description || "No description available",
+    }
 }

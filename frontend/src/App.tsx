@@ -17,7 +17,7 @@ const App = () => {
         <Header />
           <div className={s.container}>
               <Routes>
-                  <Route path="/:id" element={<MainPage />} />
+                  <Route path="/" element={<MainPage />} />
                   <Route path="/book/:id" element={<BookPage />} />
                   <Route path="/admin" element={<AdminMenu />} />
                   <Route path="/editor" element={<EditorMenu />} />

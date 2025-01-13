@@ -11,6 +11,7 @@ export * from './ChangeReadingStatusRequest';
 export * from './CreateAuthorRequest';
 export * from './CreateAuthorResponseData';
 export * from './FeedbackInfo';
+export * from './GetAuthorInfoResponseData';
 export * from './GetBookInfoResponseData';
 export * from './GetUserDataResponseData';
 export * from './ListAuthorBooksResponseData';

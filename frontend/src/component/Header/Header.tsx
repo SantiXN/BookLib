@@ -10,9 +10,8 @@ const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string })
     </li>
 );
 
-const MegaDropdown = ({ title, items }: { title: string, items: { label: string, link: string }[] }) => (
+const MegaDropdown = ({ items }: { items: { label: string, link: string }[] }) => (
     <div className={s.megaDropdown}>
-        <div className={s.dropdownTitle}>{title}</div>
         <ul className={s.dropdownList}>
             {items.map((item, index) => (
                 <HeaderItem key={index} to={item.link}>{item.label}</HeaderItem>
@@ -46,12 +45,12 @@ const Header = () => {
     return (
         <header className={s.headerWrapper}>
             <div id="header" className={s.header}>
-                <a href='/'>
+                <Link to='/'>
                     <div className={`${s.logo} ${s.headerWrapperItem}`} />
-                </a>
+                </Link>
                 <div className={`${s.catalog} ${s.headerWrapperItem}`}>
                     <div className={s.catalogButton}>Каталог</div>
-                    <MegaDropdown title="Каталог" items={catalogItems} />
+                    <MegaDropdown items={catalogItems} />
                 </div>
 
                 <div className={s.headerWrapperItem}>
@@ -64,9 +63,9 @@ const Header = () => {
                 </div>
 
                 <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>
-                    <div className={s.iconUser}></div>
+                    <div className={s.iconUser} />
                     <Link to="/admin" className={s.link}>Профиль</Link>
-                    <MegaDropdown title="Профиль" items={userMenuItems} />
+                    <MegaDropdown items={userMenuItems} />
                 </div>
 
                 <div className={s.headerWrapperItem}>

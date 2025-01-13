@@ -36,7 +36,13 @@ export interface AuthorInfo {
      * @type {string}
      * @memberof AuthorInfo
      */
-    lastName?: string;
+    lastName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthorInfo
+     */
+    description: string;
 }
 
 /**
@@ -45,6 +51,8 @@ export interface AuthorInfo {
 export function instanceOfAuthorInfo(value: object): value is AuthorInfo {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('firstName' in value) || value['firstName'] === undefined) return false;
+    if (!('lastName' in value) || value['lastName'] === undefined) return false;
+    if (!('description' in value) || value['description'] === undefined) return false;
     return true;
 }
 
@@ -60,7 +68,8 @@ export function AuthorInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'id': json['id'],
         'firstName': json['firstName'],
-        'lastName': json['lastName'] == null ? undefined : json['lastName'],
+        'lastName': json['lastName'],
+        'description': json['description'],
     };
 }
 
@@ -78,6 +87,7 @@ export function AuthorInfoToJSONTyped(value?: AuthorInfo | null, ignoreDiscrimin
         'id': value['id'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
+        'description': value['description'],
     };
 }
 

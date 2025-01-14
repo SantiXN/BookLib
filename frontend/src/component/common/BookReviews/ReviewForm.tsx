@@ -19,7 +19,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, bookID }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     
     const handleClick = (value: number) => {
-        setRating(value); // Устанавливаем рейтинг при клике на звезду
+        setRating(value);
     };
 
     const handleEscapeKey = (event: KeyboardEvent) => {

@@ -1,4 +1,4 @@
-import { GetBookInfoResponseData } from "../../api";
+import { GetBookInfoResponseData, SaveBookFeedbackOperationRequest, SaveBookFeedbackRequest } from "../../api";
 import { ParsedFeedbackInfo } from "../types/FeedbackTypes";
 
 
@@ -14,4 +14,13 @@ export function parseFeedbacksInBookResponse(response: GetBookInfoResponseData):
         postedAt: feedback.postedAt,
         comment: feedback.comment
     }))
+}
+
+export function getFeedbackOperationRequest(bookID: number, starCount: number, comment?: string) : SaveBookFeedbackOperationRequest {
+    const feedbackRequest: SaveBookFeedbackRequest = {starCount: starCount, comment: comment};
+
+    return {
+        bookID: bookID,
+        saveBookFeedbackRequest: feedbackRequest
+    }
 }

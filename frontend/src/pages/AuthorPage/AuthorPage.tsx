@@ -17,7 +17,7 @@ const AuthorPage = () => {
 
     // TODO: Доделать и проверить!
     const [authorBooks, setAuthorBooks] = useState<ParsedBookCard[]>([]);
-    const [authorInfo, setAuthorInfo] = useState<ParsedAuthorInfo>();
+    const [authorInfo, setAuthorInfo] = useState<ParsedAuthorInfo | null>(null);
 
     const { id } = useParams<{ id: string }>();
     const curAuthorID = id ? Number(id) : 0;
@@ -26,29 +26,35 @@ const AuthorPage = () => {
     const getAuthorBooksRequest: ListAuthorBooksRequest = { authorID: curAuthorID };
 
     useEffect(() => {
-        AuthorApiClient.getAuthorInfo(getAuthorInfoRequest)
-            .then((response) => {
-                const curAuthorInfo = parseAuthorResponse(response);
-                if (!curAuthorInfo) {
+        const fetchAuthorData = async () => {
+            try {
+                const [authorResponse, booksResponse] = await Promise.all([
+                    AuthorApiClient.getAuthorInfo(getAuthorInfoRequest).then(parseAuthorResponse),
+                    BookApiClient.listAuthorBooks(getAuthorBooksRequest).then((response) =>
+                        response?.books ? parseBookCardsResponse(response) : [],
+                    ),
+                ]);
+    
+                if (authorResponse) {
+                    setAuthorInfo(authorResponse);
+                } else {
                     console.error(`Failed to fetch author info ${curAuthorID}:`);
                 }
-                else {
-                    setAuthorInfo(curAuthorInfo);
+    
+                setAuthorBooks(booksResponse);
+    
+                if (!authorResponse && booksResponse.length === 0) {
+                    setError('Не удалось загрузить данные. Попробуйте снова позже');
                 }
-            });
-
-        BookApiClient.listAuthorBooks(getAuthorBooksRequest)
-            .then((response) => {
-                if (response && response.books) {
-                    setAuthorBooks(parseBookCardsResponse(response));
-                }
-            });
-        
-        if (authorInfo == undefined) {
-            setError('Не удалось загрузить данные. Попробуйте снова позже');
-        }
-        
-        setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setError('Не удалось загрузить данные. Попробуйте снова позже');
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchAuthorData();
     }, [curAuthorID]);
 
     if (loading) {

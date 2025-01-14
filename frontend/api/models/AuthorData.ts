@@ -16,55 +16,49 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface AuthorInfo
+ * @interface AuthorData
  */
-export interface AuthorInfo {
+export interface AuthorData {
     /**
      * 
      * @type {number}
-     * @memberof AuthorInfo
+     * @memberof AuthorData
      */
     id: number;
     /**
      * 
      * @type {string}
-     * @memberof AuthorInfo
+     * @memberof AuthorData
      */
     firstName: string;
     /**
      * 
      * @type {string}
-     * @memberof AuthorInfo
+     * @memberof AuthorData
      */
     lastName?: string;
     /**
      * 
      * @type {string}
-     * @memberof AuthorInfo
-     */
-    description?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthorInfo
+     * @memberof AuthorData
      */
     avatarPath?: string;
 }
 
 /**
- * Check if a given object implements the AuthorInfo interface.
+ * Check if a given object implements the AuthorData interface.
  */
-export function instanceOfAuthorInfo(value: object): value is AuthorInfo {
+export function instanceOfAuthorData(value: object): value is AuthorData {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('firstName' in value) || value['firstName'] === undefined) return false;
     return true;
 }
 
-export function AuthorInfoFromJSON(json: any): AuthorInfo {
-    return AuthorInfoFromJSONTyped(json, false);
+export function AuthorDataFromJSON(json: any): AuthorData {
+    return AuthorDataFromJSONTyped(json, false);
 }
 
-export function AuthorInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthorInfo {
+export function AuthorDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthorData {
     if (json == null) {
         return json;
     }
@@ -73,16 +67,15 @@ export function AuthorInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'id': json['id'],
         'firstName': json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
-        'description': json['description'] == null ? undefined : json['description'],
         'avatarPath': json['avatarPath'] == null ? undefined : json['avatarPath'],
     };
 }
 
-export function AuthorInfoToJSON(json: any): AuthorInfo {
-    return AuthorInfoToJSONTyped(json, false);
+export function AuthorDataToJSON(json: any): AuthorData {
+    return AuthorDataToJSONTyped(json, false);
 }
 
-export function AuthorInfoToJSONTyped(value?: AuthorInfo | null, ignoreDiscriminator: boolean = false): any {
+export function AuthorDataToJSONTyped(value?: AuthorData | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -92,7 +85,6 @@ export function AuthorInfoToJSONTyped(value?: AuthorInfo | null, ignoreDiscrimin
         'id': value['id'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
-        'description': value['description'],
         'avatarPath': value['avatarPath'],
     };
 }

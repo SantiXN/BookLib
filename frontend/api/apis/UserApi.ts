@@ -16,7 +16,12 @@
 import * as runtime from '../runtime';
 import type {
   BadRequestResponseData,
+  ChangeUserRoleRequest,
+  EditUserInfoRequest,
   GetUserDataResponseData,
+  ListUsersResponseData,
+  LoginUserRequest,
+  LoginUserResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
   UnauthorizedResponseData,
@@ -24,8 +29,18 @@ import type {
 import {
     BadRequestResponseDataFromJSON,
     BadRequestResponseDataToJSON,
+    ChangeUserRoleRequestFromJSON,
+    ChangeUserRoleRequestToJSON,
+    EditUserInfoRequestFromJSON,
+    EditUserInfoRequestToJSON,
     GetUserDataResponseDataFromJSON,
     GetUserDataResponseDataToJSON,
+    ListUsersResponseDataFromJSON,
+    ListUsersResponseDataToJSON,
+    LoginUserRequestFromJSON,
+    LoginUserRequestToJSON,
+    LoginUserResponseDataFromJSON,
+    LoginUserResponseDataToJSON,
     NotFoundResponseDataFromJSON,
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
@@ -34,14 +49,152 @@ import {
     UnauthorizedResponseDataToJSON,
 } from '../models/index';
 
+export interface ChangeUserRoleOperationRequest {
+    userID: number;
+    changeUserRoleRequest?: ChangeUserRoleRequest;
+}
+
+export interface DeleteUserRequest {
+    userID: number;
+}
+
+export interface EditUserInfoOperationRequest {
+    userID: number;
+    editUserInfoRequest?: EditUserInfoRequest;
+}
+
 export interface GetUserDataRequest {
     userID: number;
+}
+
+export interface LoginUserOperationRequest {
+    loginUserRequest?: LoginUserRequest;
 }
 
 /**
  * 
  */
 export class UserApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async changeUserRoleRaw(requestParameters: ChangeUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['userID'] == null) {
+            throw new runtime.RequiredError(
+                'userID',
+                'Required parameter "userID" was null or undefined when calling changeUserRole().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/user/{userID}/role`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ChangeUserRoleRequestToJSON(requestParameters['changeUserRoleRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async changeUserRole(requestParameters: ChangeUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.changeUserRoleRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async deleteUserRaw(requestParameters: DeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['userID'] == null) {
+            throw new runtime.RequiredError(
+                'userID',
+                'Required parameter "userID" was null or undefined when calling deleteUser().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/user/{userID}/delete`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async deleteUser(requestParameters: DeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteUserRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async editUserInfoRaw(requestParameters: EditUserInfoOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['userID'] == null) {
+            throw new runtime.RequiredError(
+                'userID',
+                'Required parameter "userID" was null or undefined when calling editUserInfo().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/user/{userID}/edit`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EditUserInfoRequestToJSON(requestParameters['editUserInfoRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async editUserInfo(requestParameters: EditUserInfoOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.editUserInfoRaw(requestParameters, initOverrides);
+    }
 
     /**
      */
@@ -79,6 +232,73 @@ export class UserApi extends runtime.BaseAPI {
      */
     async getUserData(requestParameters: GetUserDataRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetUserDataResponseData> {
         const response = await this.getUserDataRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async listUsersRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListUsersResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/user/list`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListUsersResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async listUsers(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListUsersResponseData> {
+        const response = await this.listUsersRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async loginUserRaw(requestParameters: LoginUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LoginUserResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/login`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: LoginUserRequestToJSON(requestParameters['loginUserRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => LoginUserResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async loginUser(requestParameters: LoginUserOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LoginUserResponseData> {
+        const response = await this.loginUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

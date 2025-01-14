@@ -20,13 +20,13 @@ import {
     CategoryInfoToJSON,
     CategoryInfoToJSONTyped,
 } from './CategoryInfo';
-import type { AuthorInfo } from './AuthorInfo';
+import type { AuthorData } from './AuthorData';
 import {
-    AuthorInfoFromJSON,
-    AuthorInfoFromJSONTyped,
-    AuthorInfoToJSON,
-    AuthorInfoToJSONTyped,
-} from './AuthorInfo';
+    AuthorDataFromJSON,
+    AuthorDataFromJSONTyped,
+    AuthorDataToJSON,
+    AuthorDataToJSONTyped,
+} from './AuthorData';
 import type { FeedbackInfo } from './FeedbackInfo';
 import {
     FeedbackInfoFromJSON,
@@ -67,10 +67,10 @@ export interface BookInfo {
     coverPath: string;
     /**
      * 
-     * @type {Array<AuthorInfo>}
+     * @type {Array<AuthorData>}
      * @memberof BookInfo
      */
-    authors: Array<AuthorInfo>;
+    authors: Array<AuthorData>;
     /**
      * 
      * @type {number}
@@ -119,7 +119,7 @@ export function BookInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'title': json['title'],
         'description': json['description'],
         'coverPath': json['coverPath'],
-        'authors': ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
+        'authors': ((json['authors'] as Array<any>).map(AuthorDataFromJSON)),
         'starCount': json['starCount'],
         'feedback': json['feedback'] == null ? undefined : ((json['feedback'] as Array<any>).map(FeedbackInfoFromJSON)),
         'categories': ((json['categories'] as Array<any>).map(CategoryInfoFromJSON)),
@@ -141,7 +141,7 @@ export function BookInfoToJSONTyped(value?: BookInfo | null, ignoreDiscriminator
         'title': value['title'],
         'description': value['description'],
         'coverPath': value['coverPath'],
-        'authors': ((value['authors'] as Array<any>).map(AuthorInfoToJSON)),
+        'authors': ((value['authors'] as Array<any>).map(AuthorDataToJSON)),
         'starCount': value['starCount'],
         'feedback': value['feedback'] == null ? undefined : ((value['feedback'] as Array<any>).map(FeedbackInfoToJSON)),
         'categories': ((value['categories'] as Array<any>).map(CategoryInfoToJSON)),

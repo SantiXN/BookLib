@@ -19,6 +19,7 @@ import type {
   AddBookResponseData,
   BadRequestResponseData,
   ChangeReadingStatusRequest,
+  EditBookRequest,
   GetBookInfoResponseData,
   ListAuthorBooksResponseData,
   ListBookFeedbackResponseData,
@@ -29,8 +30,8 @@ import type {
   PermissionDeniedResponseData,
   SaveBookFeedbackRequest,
   SaveBookFeedbackResponseData,
-  SearchBooksRequest,
-  SearchBooksResponseData,
+  SearchItemsRequest,
+  SearchItemsResponseData,
   UnauthorizedResponseData,
 } from '../models/index';
 import {
@@ -42,6 +43,8 @@ import {
     BadRequestResponseDataToJSON,
     ChangeReadingStatusRequestFromJSON,
     ChangeReadingStatusRequestToJSON,
+    EditBookRequestFromJSON,
+    EditBookRequestToJSON,
     GetBookInfoResponseDataFromJSON,
     GetBookInfoResponseDataToJSON,
     ListAuthorBooksResponseDataFromJSON,
@@ -62,10 +65,10 @@ import {
     SaveBookFeedbackRequestToJSON,
     SaveBookFeedbackResponseDataFromJSON,
     SaveBookFeedbackResponseDataToJSON,
-    SearchBooksRequestFromJSON,
-    SearchBooksRequestToJSON,
-    SearchBooksResponseDataFromJSON,
-    SearchBooksResponseDataToJSON,
+    SearchItemsRequestFromJSON,
+    SearchItemsRequestToJSON,
+    SearchItemsResponseDataFromJSON,
+    SearchItemsResponseDataToJSON,
     UnauthorizedResponseDataFromJSON,
     UnauthorizedResponseDataToJSON,
 } from '../models/index';
@@ -87,6 +90,11 @@ export interface DeleteBookRequest {
     bookID: number;
 }
 
+export interface EditBookOperationRequest {
+    bookID: number;
+    editBookRequest?: EditBookRequest;
+}
+
 export interface GetBookInfoRequest {
     bookID: number;
 }
@@ -103,13 +111,17 @@ export interface ListBooksByCategoryRequest {
     categoryID: number;
 }
 
+export interface RemoveBookFromLibraryRequest {
+    bookID: number;
+}
+
 export interface SaveBookFeedbackOperationRequest {
     bookID: number;
     saveBookFeedbackRequest?: SaveBookFeedbackRequest;
 }
 
-export interface SearchBooksOperationRequest {
-    searchBooksRequest: SearchBooksRequest;
+export interface SearchItemsOperationRequest {
+    searchItemsRequest: SearchItemsRequest;
 }
 
 /**
@@ -274,6 +286,47 @@ export class BookApi extends runtime.BaseAPI {
      */
     async deleteBook(requestParameters: DeleteBookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.deleteBookRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async editBookRaw(requestParameters: EditBookOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['bookID'] == null) {
+            throw new runtime.RequiredError(
+                'bookID',
+                'Required parameter "bookID" was null or undefined when calling editBook().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/book/{bookID}/edit`.replace(`{${"bookID"}}`, encodeURIComponent(String(requestParameters['bookID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EditBookRequestToJSON(requestParameters['editBookRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async editBook(requestParameters: EditBookOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.editBookRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -529,6 +582,44 @@ export class BookApi extends runtime.BaseAPI {
 
     /**
      */
+    async removeBookFromLibraryRaw(requestParameters: RemoveBookFromLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['bookID'] == null) {
+            throw new runtime.RequiredError(
+                'bookID',
+                'Required parameter "bookID" was null or undefined when calling removeBookFromLibrary().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/book/{bookID}/library/remove`.replace(`{${"bookID"}}`, encodeURIComponent(String(requestParameters['bookID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async removeBookFromLibrary(requestParameters: RemoveBookFromLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.removeBookFromLibraryRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
     async saveBookFeedbackRaw(requestParameters: SaveBookFeedbackOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SaveBookFeedbackResponseData>> {
         if (requestParameters['bookID'] == null) {
             throw new runtime.RequiredError(
@@ -571,11 +662,11 @@ export class BookApi extends runtime.BaseAPI {
 
     /**
      */
-    async searchBooksRaw(requestParameters: SearchBooksOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchBooksResponseData>> {
-        if (requestParameters['searchBooksRequest'] == null) {
+    async searchItemsRaw(requestParameters: SearchItemsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchItemsResponseData>> {
+        if (requestParameters['searchItemsRequest'] == null) {
             throw new runtime.RequiredError(
-                'searchBooksRequest',
-                'Required parameter "searchBooksRequest" was null or undefined when calling searchBooks().'
+                'searchItemsRequest',
+                'Required parameter "searchItemsRequest" was null or undefined when calling searchItems().'
             );
         }
 
@@ -594,20 +685,20 @@ export class BookApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/book/search`,
+            path: `/api/item/search`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: SearchBooksRequestToJSON(requestParameters['searchBooksRequest']),
+            body: SearchItemsRequestToJSON(requestParameters['searchItemsRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SearchBooksResponseDataFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SearchItemsResponseDataFromJSON(jsonValue));
     }
 
     /**
      */
-    async searchBooks(requestParameters: SearchBooksOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchBooksResponseData> {
-        const response = await this.searchBooksRaw(requestParameters, initOverrides);
+    async searchItems(requestParameters: SearchItemsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchItemsResponseData> {
+        const response = await this.searchItemsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

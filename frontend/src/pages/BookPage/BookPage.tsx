@@ -10,6 +10,8 @@ import { parseBookInfoResponse } from '../../utils/BookUtils';
 import { ParsedAuthorInfo } from '../../types/AuthorTypes';
 import { parseFeedbacksInBookResponse } from '../../utils/FeedbackUtils';
 import { ParsedFeedbackInfo } from '../../types/FeedbackTypes';
+import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
+import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
 
 const BookPage = () => {
     const [loading, setLoading] = useState(true);
@@ -38,23 +40,18 @@ const BookPage = () => {
                 setLoading(false);
             })
             .catch((err) => {
-                setError('Не удалось загрузить данные. Попробуйте снова позже.');
+                setError('Не удалось загрузить данные. Попробуйте снова позже');
                 setLoading(false);
                 console.error('Ошибка при запросе данных: ', err);
             });
     }, [])
 
     if (loading) {
-        return <div>Загрузка...</div>
+        return <LoadingMessage />
     }
 
     if (error) {
-        return (
-            <div>
-                <p>{error}</p>
-                <p>Попробуйте перезагрузить страницу</p>
-            </div>
-        );
+        return <ErrorMessage message={error} />;
     }
 
     return (

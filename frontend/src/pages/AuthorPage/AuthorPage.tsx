@@ -8,8 +8,13 @@ import { ListAuthorBooksRequest, GetAuthorInfoRequest } from '../../../api';
 import { useParams } from 'react-router-dom';
 import { parseAuthorResponse } from '../../utils/AuthorUtils';
 import { ParsedAuthorInfo } from '../../types/AuthorTypes';
+import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
+import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 
 const AuthorPage = () => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     // TODO: Доделать и проверить!
     const [authorBooks, setAuthorBooks] = useState<ParsedBookCard[]>([]);
     const [authorInfo, setAuthorInfo] = useState<ParsedAuthorInfo>();
@@ -23,24 +28,36 @@ const AuthorPage = () => {
     useEffect(() => {
         AuthorApiClient.getAuthorInfo(getAuthorInfoRequest)
             .then((response) => {
-                console.log('id: ', id)
                 const curAuthorInfo = parseAuthorResponse(response);
-                if (!authorInfo) {
+                if (!curAuthorInfo) {
                     console.error(`Failed to fetch author info ${curAuthorID}:`);
                 }
                 else {
-                    setAuthorInfo(curAuthorInfo!);
+                    setAuthorInfo(curAuthorInfo);
                 }
-            }) 
+            });
 
         BookApiClient.listAuthorBooks(getAuthorBooksRequest)
             .then((response) => {
                 if (response && response.books) {
                     setAuthorBooks(parseBookCardsResponse(response));
-                    console.log('length ', authorBooks.length)
                 }
-            }) 
+            });
+        
+        if (authorInfo == undefined) {
+            setError('Не удалось загрузить данные. Попробуйте снова позже');
+        }
+        
+        setLoading(false);
     }, [curAuthorID]);
+
+    if (loading) {
+        return <LoadingMessage />;
+    }
+
+    if (error) {
+        return <ErrorMessage message={error} />;
+    }
 
     return (
         <div className={s.authorContainer}>

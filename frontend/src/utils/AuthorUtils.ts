@@ -10,8 +10,8 @@ export function parseAuthorResponse(response: GetAuthorInfoResponseData): Parsed
     return {
         id: response.author.id,
         firstName: response.author.firstName,
-        lastName: response.author.lastName,
-        description: response.author.description
+        description: response.author.description,
+        lastName: response.author.lastName ? response.author.lastName : ''
     }
 }
 
@@ -23,6 +23,6 @@ export function parseAuthorInfoInBookResponse(response: GetBookInfoResponseData)
     return response.book.authors.map((author) => ({
         id: author.id,
         firstName: author.firstName,
-        lastName: author.lastName
+        lastName: author.lastName ? author.lastName : ''
     }))
 }

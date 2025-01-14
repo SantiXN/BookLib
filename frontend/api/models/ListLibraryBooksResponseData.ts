@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { BookData } from './BookData';
+import type { BookInLibrary } from './BookInLibrary';
 import {
-    BookDataFromJSON,
-    BookDataFromJSONTyped,
-    BookDataToJSON,
-    BookDataToJSONTyped,
-} from './BookData';
+    BookInLibraryFromJSON,
+    BookInLibraryFromJSONTyped,
+    BookInLibraryToJSON,
+    BookInLibraryToJSONTyped,
+} from './BookInLibrary';
 
 /**
  * 
@@ -29,10 +29,10 @@ import {
 export interface ListLibraryBooksResponseData {
     /**
      * 
-     * @type {Array<BookData>}
+     * @type {Array<BookInLibrary>}
      * @memberof ListLibraryBooksResponseData
      */
-    books?: Array<BookData>;
+    books?: Array<BookInLibrary>;
 }
 
 /**
@@ -52,7 +52,7 @@ export function ListLibraryBooksResponseDataFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-        'books': json['books'] == null ? undefined : ((json['books'] as Array<any>).map(BookDataFromJSON)),
+        'books': json['books'] == null ? undefined : ((json['books'] as Array<any>).map(BookInLibraryFromJSON)),
     };
 }
 
@@ -67,7 +67,7 @@ export function ListLibraryBooksResponseDataToJSONTyped(value?: ListLibraryBooks
 
     return {
         
-        'books': value['books'] == null ? undefined : ((value['books'] as Array<any>).map(BookDataToJSON)),
+        'books': value['books'] == null ? undefined : ((value['books'] as Array<any>).map(BookInLibraryToJSON)),
     };
 }
 

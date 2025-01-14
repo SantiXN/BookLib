@@ -5,29 +5,54 @@ import { BookApiClient } from '../../../api/ApiClient';
 import { ListBooksByCategoryRequest } from '../../../api/apis/BookApi';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
+import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
+import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 
 const MainPage = () => {
-    // TODO: Что делать, если массивы с книгами получаются пустые?
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const [fantasyBooks, setFantasyBooks] = useState<ParsedBookCard[]>([]);
     const [mysteryBooks, setMysteryBooks] = useState<ParsedBookCard[]>([]);
     const [detectiveBooks, setDetectiveBooks] = useState<ParsedBookCard[]>([]);
 
-    const fetchBooksByCategory = (categoryID: number, setBooks: React.Dispatch<React.SetStateAction<any>>) => {
-        const request: ListBooksByCategoryRequest = { categoryID };
-        BookApiClient.listBooksByCategory(request)
-            .then((response) => {
-                if (response && response.books) {
-                    setBooks(parseBookCardsResponse(response));
-                }
-            })
-            .catch((error) => console.error(`Failed to fetch books for category ${categoryID}:`, error));
-    };
-
     useEffect(() => {
-        fetchBooksByCategory(1, setFantasyBooks);
-        fetchBooksByCategory(2, setMysteryBooks);
-        fetchBooksByCategory(3, setDetectiveBooks);
+        const fetchAllBooks = async () => {
+            setLoading(true);
+            setError(null);
+    
+            try {
+                const requests = [
+                    BookApiClient.listBooksByCategory({ categoryID: 1 }).then(parseBookCardsResponse),
+                    BookApiClient.listBooksByCategory({ categoryID: 2 }).then(parseBookCardsResponse),
+                    BookApiClient.listBooksByCategory({ categoryID: 3 }).then(parseBookCardsResponse),
+                ];
+    
+                const [fantasy, mystery, detective] = await Promise.all(requests);
+    
+                setFantasyBooks(fantasy || []);
+                setMysteryBooks(mystery || []);
+                setDetectiveBooks(detective || []);
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                setError(
+                    'Ошибка получения данных. Попробуйте позже, либо попробуйте перезагрузить страницу. Если ошибка не исчезла, обратитесь в поддержку',
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchAllBooks();
     }, []);
+
+    if (loading) {
+        return <LoadingMessage />;
+    }
+
+    if (error) {
+        return <ErrorMessage message={error} />;
+    }
 
     return (
         <div className={s.container}>

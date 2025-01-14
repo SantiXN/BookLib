@@ -18,6 +18,7 @@ import type {
   BadRequestResponseData,
   CreateAuthorRequest,
   CreateAuthorResponseData,
+  EditAuthorRequest,
   GetAuthorInfoResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
@@ -30,6 +31,8 @@ import {
     CreateAuthorRequestToJSON,
     CreateAuthorResponseDataFromJSON,
     CreateAuthorResponseDataToJSON,
+    EditAuthorRequestFromJSON,
+    EditAuthorRequestToJSON,
     GetAuthorInfoResponseDataFromJSON,
     GetAuthorInfoResponseDataToJSON,
     NotFoundResponseDataFromJSON,
@@ -42,6 +45,15 @@ import {
 
 export interface CreateAuthorOperationRequest {
     createAuthorRequest?: CreateAuthorRequest;
+}
+
+export interface DeleteAuthorRequest {
+    authorID: number;
+}
+
+export interface EditAuthorOperationRequest {
+    authorID: number;
+    editAuthorRequest?: EditAuthorRequest;
 }
 
 export interface GetAuthorInfoRequest {
@@ -86,6 +98,85 @@ export class AuthorApi extends runtime.BaseAPI {
     async createAuthor(requestParameters: CreateAuthorOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateAuthorResponseData> {
         const response = await this.createAuthorRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async deleteAuthorRaw(requestParameters: DeleteAuthorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['authorID'] == null) {
+            throw new runtime.RequiredError(
+                'authorID',
+                'Required parameter "authorID" was null or undefined when calling deleteAuthor().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/author/{authorID}/delete`.replace(`{${"authorID"}}`, encodeURIComponent(String(requestParameters['authorID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async deleteAuthor(requestParameters: DeleteAuthorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteAuthorRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async editAuthorRaw(requestParameters: EditAuthorOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['authorID'] == null) {
+            throw new runtime.RequiredError(
+                'authorID',
+                'Required parameter "authorID" was null or undefined when calling editAuthor().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/author/{authorID}/edit`.replace(`{${"authorID"}}`, encodeURIComponent(String(requestParameters['authorID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EditAuthorRequestToJSON(requestParameters['editAuthorRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async editAuthor(requestParameters: EditAuthorOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.editAuthorRaw(requestParameters, initOverrides);
     }
 
     /**

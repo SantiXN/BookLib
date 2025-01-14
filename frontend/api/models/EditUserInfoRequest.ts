@@ -16,75 +16,66 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface UserData
+ * @interface EditUserInfoRequest
  */
-export interface UserData {
-    /**
-     * 
-     * @type {number}
-     * @memberof UserData
-     */
-    id: number;
+export interface EditUserInfoRequest {
     /**
      * 
      * @type {string}
-     * @memberof UserData
+     * @memberof EditUserInfoRequest
      */
     firstName?: string;
     /**
      * 
      * @type {string}
-     * @memberof UserData
+     * @memberof EditUserInfoRequest
      */
     lastName?: string;
     /**
      * 
      * @type {string}
-     * @memberof UserData
+     * @memberof EditUserInfoRequest
      */
-    avatarPath?: string;
+    email?: string;
 }
 
 /**
- * Check if a given object implements the UserData interface.
+ * Check if a given object implements the EditUserInfoRequest interface.
  */
-export function instanceOfUserData(value: object): value is UserData {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfEditUserInfoRequest(value: object): value is EditUserInfoRequest {
     return true;
 }
 
-export function UserDataFromJSON(json: any): UserData {
-    return UserDataFromJSONTyped(json, false);
+export function EditUserInfoRequestFromJSON(json: any): EditUserInfoRequest {
+    return EditUserInfoRequestFromJSONTyped(json, false);
 }
 
-export function UserDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserData {
+export function EditUserInfoRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): EditUserInfoRequest {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'firstName': json['firstName'] == null ? undefined : json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
-        'avatarPath': json['avatarPath'] == null ? undefined : json['avatarPath'],
+        'email': json['email'] == null ? undefined : json['email'],
     };
 }
 
-export function UserDataToJSON(json: any): UserData {
-    return UserDataToJSONTyped(json, false);
+export function EditUserInfoRequestToJSON(json: any): EditUserInfoRequest {
+    return EditUserInfoRequestToJSONTyped(json, false);
 }
 
-export function UserDataToJSONTyped(value?: UserData | null, ignoreDiscriminator: boolean = false): any {
+export function EditUserInfoRequestToJSONTyped(value?: EditUserInfoRequest | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
-        'avatarPath': value['avatarPath'],
+        'email': value['email'],
     };
 }
 

@@ -24,58 +24,77 @@ import {
 /**
  * 
  * @export
- * @interface BookData
+ * @interface BookInLibrary
  */
-export interface BookData {
+export interface BookInLibrary {
     /**
      * 
      * @type {number}
-     * @memberof BookData
+     * @memberof BookInLibrary
      */
     id: number;
     /**
      * 
      * @type {string}
-     * @memberof BookData
+     * @memberof BookInLibrary
      */
     title: string;
     /**
      * 
      * @type {string}
-     * @memberof BookData
+     * @memberof BookInLibrary
      */
     coverPath: string;
     /**
      * 
      * @type {Array<AuthorData>}
-     * @memberof BookData
+     * @memberof BookInLibrary
      */
     authors: Array<AuthorData>;
     /**
      * 
      * @type {number}
-     * @memberof BookData
+     * @memberof BookInLibrary
      */
     starCount: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BookInLibrary
+     */
+    readingStatus: BookInLibraryReadingStatusEnum;
 }
 
+
 /**
- * Check if a given object implements the BookData interface.
+ * @export
  */
-export function instanceOfBookData(value: object): value is BookData {
+export const BookInLibraryReadingStatusEnum = {
+    InProgress: 'inProgress',
+    Finished: 'finished',
+    Planned: 'planned'
+} as const;
+export type BookInLibraryReadingStatusEnum = typeof BookInLibraryReadingStatusEnum[keyof typeof BookInLibraryReadingStatusEnum];
+
+
+/**
+ * Check if a given object implements the BookInLibrary interface.
+ */
+export function instanceOfBookInLibrary(value: object): value is BookInLibrary {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('coverPath' in value) || value['coverPath'] === undefined) return false;
     if (!('authors' in value) || value['authors'] === undefined) return false;
     if (!('starCount' in value) || value['starCount'] === undefined) return false;
+    if (!('readingStatus' in value) || value['readingStatus'] === undefined) return false;
     return true;
 }
 
-export function BookDataFromJSON(json: any): BookData {
-    return BookDataFromJSONTyped(json, false);
+export function BookInLibraryFromJSON(json: any): BookInLibrary {
+    return BookInLibraryFromJSONTyped(json, false);
 }
 
-export function BookDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): BookData {
+export function BookInLibraryFromJSONTyped(json: any, ignoreDiscriminator: boolean): BookInLibrary {
     if (json == null) {
         return json;
     }
@@ -86,14 +105,15 @@ export function BookDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'coverPath': json['coverPath'],
         'authors': ((json['authors'] as Array<any>).map(AuthorDataFromJSON)),
         'starCount': json['starCount'],
+        'readingStatus': json['readingStatus'],
     };
 }
 
-export function BookDataToJSON(json: any): BookData {
-    return BookDataToJSONTyped(json, false);
+export function BookInLibraryToJSON(json: any): BookInLibrary {
+    return BookInLibraryToJSONTyped(json, false);
 }
 
-export function BookDataToJSONTyped(value?: BookData | null, ignoreDiscriminator: boolean = false): any {
+export function BookInLibraryToJSONTyped(value?: BookInLibrary | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -105,6 +125,7 @@ export function BookDataToJSONTyped(value?: BookData | null, ignoreDiscriminator
         'coverPath': value['coverPath'],
         'authors': ((value['authors'] as Array<any>).map(AuthorDataToJSON)),
         'starCount': value['starCount'],
+        'readingStatus': value['readingStatus'],
     };
 }
 

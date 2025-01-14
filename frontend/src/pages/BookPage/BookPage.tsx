@@ -22,6 +22,10 @@ const BookPage = () => {
     // TODO: добавление проверять через список книг, находящихся в библиотеке пользователя
     const [isAddedToRead, setIsAddedToRead] = useState(false);
     const changeBookToReadStateHandleClick = ({ isAdded }: { isAdded: boolean }) => {
+        BookApiClient.addBookToLibrary({ bookID: curBookId })
+            .catch((err) => {
+                console.error('Не удалось добавить книгу в библиотеку: ', err);
+            });
         setIsAddedToRead(isAdded); 
     };
 
@@ -31,10 +35,9 @@ const BookPage = () => {
 
     const { id } = useParams<{ id: string }>();
     const curBookId = id ? Number(id) : 0;
-    const request: GetBookInfoRequest = { bookID: curBookId};
 
     useEffect(() => {
-        BookApiClient.getBookInfo(request)
+        BookApiClient.getBookInfo({ bookID: curBookId})
             .then((response) => {
                 setBookInfo(parseBookInfoResponse(response));
                 setAuthorInfo(parseAuthorInfoInBookResponse(response));

@@ -7,9 +7,10 @@ import { GetUserDataRequest } from '../../../../api';
 
 interface BookReviewsProps {
     feedbackInfo: ParsedFeedbackInfo[];
+    bookID: number;
 }
 
-const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo }) => {
+const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
     const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
     const [userNames, setUserNames] = useState<Record<number, string>>({});
     const [userAvatarPaths, setUserAvatarPaths] = useState<Record<number, string>>({});
@@ -28,13 +29,13 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo }) => {
                         avatarPaths[review.userID] = response.data?.avatarPath || '';
                     })
                     .catch(() => {
-                        names[review.userID] = 'Unknown User';
-                        avatarPaths[review.userID] = '';
+                        console.error('Failed to fetch user data for feedbacks')
                     });
             });
 
             await Promise.all(userRequests); 
             setUserNames(names); 
+            setUserAvatarPaths(avatarPaths);
         };
 
         fetchUserNames();
@@ -50,7 +51,7 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo }) => {
                 <button className={s.bookReviewsAddReviewButton} onClick={openReviewForm}>
                     Оставить отзыв
                 </button>
-                <ReviewForm isOpen={isReviewFormOpen} onClose={closeReviewForm} />
+                <ReviewForm isOpen={isReviewFormOpen} onClose={closeReviewForm} bookID={bookID} />
             </div>
             <div className={s.reviews}>
                 {feedbackInfo.length > 0 ? (

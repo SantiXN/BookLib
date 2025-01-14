@@ -6,6 +6,10 @@ import RemoveAuthorBlock from '../FunctionalWindows/RemoveAuthorBlock/RemoveAuth
 import RemoveBookBlock from '../FunctionalWindows/RemoveBookBlock/RemoveBookBlock';
 import EditAuthorBlock from '../FunctionalWindows/EditAuthorBlock/EditAuthorBlock';
 import EditBookBlock from '../FunctionalWindows/EditBookBlock/EditBookBlock';
+import AddArticleBlock from '../FunctionalWindows/AddArticleBlock/AddArticleBlock';
+import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleBlock';
+import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
+import EditUserRoleBlock from '../FunctionalWindows/EditUserRoleBlock/EditUserRoleBlock';
 
 const AdminMenu = () => {
     const [activeWindowMenu, setActiveWindowMenu] = useState<string | null>(null);
@@ -13,22 +17,41 @@ const AdminMenu = () => {
     const handleButtonClick = (window: string) => setActiveWindowMenu(window); 
 
     const closeWindow = () => setActiveWindowMenu(null);
-
-    // <button className={s.button} onClick={() => handleButtonClick('editUser')}>Редактировать данные пользователя</button>
-    // <button className={s.button} onClick={() => handleButtonClick('removeUser')}>Удалить пользователя</button>
-    // <button className={s.button} onClick={() => handleButtonClick('addUser')}>Добавить пользователя</button>
     
     return (
         <div className={s.adminMenuContainer}>
             <p className={s.title}>Меню администратора</p>
             <div className={s.adminMenuButtons}>
-                <div className={s.buttonsContainer}>
-                    <button className={s.button} onClick={() => handleButtonClick('addAuthor')}>Добавить автора</button>
-                    <button className={s.button} onClick={() => handleButtonClick('editAuthor')}>Редактировать данные автора</button>
-                    <button className={s.button} onClick={() => handleButtonClick('removeAuthor')}>Удалить автора</button>
-                    <button className={s.button} onClick={() => handleButtonClick('addBook')}>Добавить книгу</button>
-                    <button className={s.button} onClick={() => handleButtonClick('editBook')}>Редактировать книгу</button>                    
-                    <button className={s.button} onClick={() => handleButtonClick('removeBook')}>Удалить книгу</button>
+                <div className={s.adminMenuButtonsContainer}>
+                    <p className={s.entity}>Автор</p>
+                    <div className={s.buttonsContainer}>
+                        <button className={s.button} onClick={() => handleButtonClick('addAuthor')}>Добавить автора</button>
+                        <button className={s.button} onClick={() => handleButtonClick('editAuthor')}>Редактировать данные автора</button>
+                        <button className={s.button} onClick={() => handleButtonClick('removeAuthor')}>Удалить автора</button>
+                    </div>
+                </div>
+                <div className={s.adminMenuButtonsContainer}>
+                    <p className={s.entity}>Книга</p>
+                    <div className={s.buttonsContainer}>
+                        <button className={s.button} onClick={() => handleButtonClick('addBook')}>Добавить книгу</button>
+                        <button className={s.button} onClick={() => handleButtonClick('editBook')}>Редактировать книгу</button>                    
+                        <button className={s.button} onClick={() => handleButtonClick('removeBook')}>Удалить книгу</button>
+                    </div>
+                </div>
+                <div className={s.adminMenuButtonsContainer}>
+                    <p className={s.entity}>Статья</p>
+                    <div className={s.buttonsContainer}>
+                        <button className={s.button} onClick={() => handleButtonClick('addArticle')}>Добавить статью</button>
+                        <button className={s.button} onClick={() => handleButtonClick('editArticle')}>Редактировать статью</button>                    
+                        <button className={s.button} onClick={() => handleButtonClick('removeArticle')}>Удалить статью</button>
+                    </div>
+                </div>
+                <div className={s.adminMenuButtonsContainer}>
+                    <p className={s.entity}>Пользователь</p>
+                    <div className={s.buttonsContainer}>
+                        <button className={s.button} onClick={() => handleButtonClick('editUserRole')}>Редактировать роль пользователя</button>                    
+                        <button className={s.button} onClick={() => handleButtonClick('removeUser')}>Удалить пользователя</button>
+                    </div>
                 </div>
             </div>
 
@@ -49,6 +72,19 @@ const AdminMenu = () => {
             )}
             {activeWindowMenu === 'editBook' && (
                 <EditBookBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+            )}
+            {activeWindowMenu === 'addArticle' && (
+                <AddArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+            )}
+            {activeWindowMenu === 'editArticle' && (
+                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+            )}
+            {activeWindowMenu === 'removeArticle' && (
+                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+            )}
+
+            {activeWindowMenu === 'editUserRole' && (
+                <EditUserRoleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
             )}
         </div>
     )

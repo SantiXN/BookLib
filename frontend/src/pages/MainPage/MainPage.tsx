@@ -16,10 +16,7 @@ const MainPage = () => {
     const [detectiveBooks, setDetectiveBooks] = useState<ParsedBookCard[]>([]);
 
     useEffect(() => {
-        const fetchAllBooks = async () => {
-            setLoading(true);
-            setError(null);
-    
+        const fetchAllBooks = async () => {    
             try {
                 const requests = [
                     BookApiClient.listBooksByCategory({ categoryID: 1 }).then(parseBookCardsResponse),

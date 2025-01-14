@@ -47,6 +47,15 @@ const BookPage = () => {
                 console.error('Ошибка при запросе данных: ', err);
             });
 
+        BookApiClient.listLibraryBooks()
+            // TODO: если пользователь не авторизован?
+            .then((response) => {
+                if (!response.books) {
+                    return;
+                }
+                const bookIDs = response.books.map((book) => book.id);
+                setIsAddedToRead(bookIDs.includes(curBookId));
+            })
         // Получение информации, находится ли книга в библиотеке
     }, [])
 
@@ -85,10 +94,14 @@ const BookPage = () => {
                             Добавить в список к чтению
                         </button>
                         : 
-                        <div>
-                            <button className={s.bookCardReadButton}>Читать</button> 
-                            <button className={s.bookCardDeleteBookButton} onClick={() => changeBookToReadStateHandleClick({ isAdded: false })}>Удалить из списка чтения</button>   
-                        </div>}
+                        <a href='/library'>
+                            <button className={s.bookCardReadButton}>
+                                <div>
+                                    Читать
+                                    <p style={{ fontSize: '16px', margin: '0', fontWeight: '300' }}>Перейти в библиотеку</p>
+                                </div>
+                            </button>
+                        </a>}
                     </div>
                     <p className={s.bookCardDescription}><span className={s.descrpitionTitle}>Жанр:</span></p>
                     <div className={s.descriptionContainer}>

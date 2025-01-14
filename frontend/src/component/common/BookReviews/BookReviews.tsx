@@ -20,7 +20,6 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
             const names: Record<number, string> = {};
             const avatarPaths: Record<number, string> = {};
 
-            // Выполняем запросы параллельно
             const userRequests = feedbackInfo.map((review) => {
                 const request: GetUserDataRequest = { userID: review.userID };
                 return UserApiClient.getUserData(request)

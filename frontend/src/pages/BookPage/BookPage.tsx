@@ -17,6 +17,8 @@ const BookPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // TODO: добавить проверку на авторизацию, чтобы выполнять действия
+
     // TODO: добавление проверять через список книг, находящихся в библиотеке пользователя
     const [isAddedToRead, setIsAddedToRead] = useState(false);
     const changeBookToReadStateHandleClick = ({ isAdded }: { isAdded: boolean }) => {
@@ -44,6 +46,8 @@ const BookPage = () => {
                 setLoading(false);
                 console.error('Ошибка при запросе данных: ', err);
             });
+
+        // Получение информации, находится ли книга в библиотеке
     }, [])
 
     if (loading) {
@@ -83,7 +87,7 @@ const BookPage = () => {
                         : 
                         <div>
                             <button className={s.bookCardReadButton}>Читать</button> 
-                            <button className={s.bookCardDeleteBookButton} onClick={() => changeBookToReadStateHandleClick({ isAdded: true })}>Удалить из списка чтения</button>   
+                            <button className={s.bookCardDeleteBookButton} onClick={() => changeBookToReadStateHandleClick({ isAdded: false })}>Удалить из списка чтения</button>   
                         </div>}
                     </div>
                     <p className={s.bookCardDescription}><span className={s.descrpitionTitle}>Жанр:</span></p>
@@ -96,7 +100,7 @@ const BookPage = () => {
                 </div>
             </div>
             <div className={s.bookCardReviews}>
-                <BookReviews feedbackInfo={feedbackInfo} />
+                <BookReviews feedbackInfo={feedbackInfo} bookID={curBookId} />
             </div>
         </div>
     )

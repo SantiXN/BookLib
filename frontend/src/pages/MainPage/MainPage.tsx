@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from './MainPage.module.css';
 import BookCard from '../../component/common/BookCard/BookCard';
 import { BookApiClient } from '../../../api/ApiClient';
-import { ListBooksByCategoryRequest } from '../../../api/apis/BookApi';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
 import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';

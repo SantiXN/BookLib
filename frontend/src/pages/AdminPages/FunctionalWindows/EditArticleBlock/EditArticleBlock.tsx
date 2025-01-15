@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { ArticleData, ArticleInfo, EditArticleRequest } from '../../../../../api';
+import { ArticleApiClient } from '../../../../../api/ApiClient';
+import MarkdownEditor from '@uiw/react-markdown-editor';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,36 +12,28 @@ interface BlockProps {
 const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [articles, setArticles] = useState<string[]>([]);
-    const [article, setArticle] = useState('');
+    const [articles, setArticles] = useState<ArticleData[]>([]);
+    const [selectedArticle, setSelectedArticle] = useState<ArticleInfo | null>(null);
 
     useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        ArticleApiClient.managementArticles()
+            .then((response) => {
+                if (response.articles) {
+                    console.log(response.articles);
+                    setArticles(response.articles);
                 }
-                const data: string[] = await response.json();
-                setArticles(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchArticles();
+            })
     }, []);
 
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [content, setContent] = useState('');
 
-    const isFieldsChanged = false; // изменять, если поля отличаются от выбранной статьи
+    const isFieldsChanged = selectedArticle 
+        ? title !== selectedArticle.title || content !== selectedArticle.content 
+        : false;
 
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
             onClose();        
         }
     };
@@ -61,20 +56,53 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);    
 
+    const handleChangeDescription = (value: string) => {
+        setContent(value);
+    } 
+
     const handleArticleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setArticle(e.target.value);
+        const articleId = Number(e.target.value);
+        console.log(articleId)
+        
+        ArticleApiClient.getArticle({articleID: articleId})
+            .then((response) => {
+                console.log(response)
+                if (response.article) {
+                    setSelectedArticle(response.article);
+                }
+                else {
+                    console.error('Ошибка получения статьи');
+                }
+            });
+
+        console.log(selectedArticle)
     };    
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
     };    
-    
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescription(e.target.value);
-    };    
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!selectedArticle || !isFieldsChanged) return;
+
+        const updatedFields: EditArticleRequest = {};
+        if (title !== selectedArticle.title) updatedFields.newTitle = title;
+        if (content !== selectedArticle.content) updatedFields.newContent = content;
+
+        ArticleApiClient
+            .editArticle({
+                articleID: selectedArticle.id,
+                editArticleRequest: updatedFields
+            })
+            .then(() => {
+                alert('Статья успешно отредактирована');
+                onClose();
+            })
+            .catch((error) => {
+                console.error('Ошибка редактирования статьи', error);
+            });
     };   
     
     return (
@@ -88,11 +116,11 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     <form className={s.form} onSubmit={handleSubmit}>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel} htmlFor='author'>Статья</label>
-                            <select id="author" className={s.input} value={article} onChange={handleArticleChange}>
+                            <select id="author" className={s.input} value={selectedArticle?.id || ''} onChange={handleArticleChange}>
                                 <option value='' disabled>Выберите...</option>
                                 {articles.map((art, index) => (
-                                    <option key={index} value={art}>
-                                        {art}
+                                    <option key={index} value={art.id}>
+                                        {art.title} (id={art.id})
                                     </option>
                                 ))}
                             </select>
@@ -111,19 +139,18 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                             </label>
                         </div>
                         <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea className={`${s.formTextArea} ${s.articleTextArea}`} 
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </label>
+                            <label className={s.formLabel}>Описание</label>
+                            <MarkdownEditor
+                                className={s.mdEditor}
+                                onChange={(value) => handleChangeDescription(value)}
+                                value={content}
+                                visible={true}/>
                         </div>
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
                                 className={`${s.button} ${s.formButton} ${!isFieldsChanged ? s.disabledButton : ""}`}
-                                disabled={isFieldsChanged}
+                                disabled={!isFieldsChanged}
                             >
                                 Редактировать
                             </button>

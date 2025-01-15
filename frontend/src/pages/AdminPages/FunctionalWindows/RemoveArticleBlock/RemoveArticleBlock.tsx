@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { ArticleApiClient } from '../../../../../api/ApiClient';
+import { ArticleData } from '../../../../../api';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,26 +11,21 @@ interface BlockProps {
 const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [articles, setArticles] = useState<string[]>([]);
-    const [article, setArticle] = useState('');
+    const [articles, setArticles] = useState<ArticleData[]>([]);
+    const [selectedArticleID, setSelectedArticleID] = useState<number | null>(null);
 
     useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        ArticleApiClient.listArticles()
+            .then((response) => {
+                if (response.articles) {
+                    setArticles(response.articles);
+                } else {
+                    console.error('Error fetching articles');
                 }
-                const data: string[] = await response.json();
-                setArticles(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchArticles();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }, []);
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -57,11 +54,25 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);    
 
     const handleArticleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setArticle(e.target.value);
+        const articleId = Number(e.target.value);
+        setSelectedArticleID(articleId);
     };    
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!selectedArticleID || !articles.some(article => article.id === selectedArticleID)) return;
+
+        const confirmDelete = window.confirm('Вы уверены, что хотите удалить эту статью? Это действие необратимо.');
+        if (!confirmDelete) return;
+
+        ArticleApiClient.deleteArticle({articleID: selectedArticleID})
+            .then(() => {
+                alert('Статья успешно удалена');
+                onClose();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };   
     
     return (
@@ -75,11 +86,11 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     <form className={s.form} onSubmit={handleSubmit}>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel} htmlFor='author'>Статья</label>
-                            <select id="author" className={s.input} value={article} onChange={handleArticleChange}>
+                            <select id="author" className={s.input} value={selectedArticleID || ''} onChange={handleArticleChange}>
                                 <option value='' disabled>Выберите...</option>
                                 {articles.map((art, index) => (
-                                    <option key={index} value={art}>
-                                        {art}
+                                    <option key={index} value={art.id}>
+                                        {art.title}
                                     </option>
                                 ))}
                             </select>

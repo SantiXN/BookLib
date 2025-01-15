@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { BookData } from '../../../../../api';
+import { BookApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -7,33 +9,27 @@ interface BlockProps {
 }
 
 const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const [books, setBooks] = useState<string[]>([])
-    const [book, setBook] = useState('')
     const containerRef = useRef<HTMLDivElement>(null);
-    const isBookNull = book == '';
+
+    const [books, setBooks] = useState<BookData[]>([]);
+    const [selectedBookID, setSelectedBookID] = useState<number | null>(null);
 
     useEffect(() => {
-        const fetchbooks = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        BookApiClient.listBooks()
+            .then((response) => {
+                if (response.books) {
+                    setBooks(response.books);
+                } else {
+                    console.error('Error fetching books');
                 }
-                const data: string[] = await response.json();
-                setBooks(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchbooks();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }, []);
     
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
             onClose();        
         }
     };
@@ -57,13 +53,27 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setBook(e.target.value);
+        const bookId = Number(e.target.value);
+        setSelectedBookID(bookId);
     }; 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    };    
 
+        if (!selectedBookID || !books.some(book => book.id === selectedBookID)) return;
+
+        const confirmDelete = window.confirm('Вы уверены, что хотите удалить эту книгу? Это действие необратимо.');
+        if (!confirmDelete) return;
+
+        BookApiClient.deleteBook({bookID: selectedBookID})
+            .then(() => {
+                alert('Автор успешно удален');
+                onClose();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };    
         
     return (
         <div className={s.container}>
@@ -76,11 +86,11 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     <form className={s.form} onSubmit={handleSubmit}>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel} htmlFor='book'>Книга</label>
-                            <select id="book" className={s.input} value={book} onChange={handleBookChange}>
+                            <select id="book" className={s.input} value={selectedBookID || ''} onChange={handleBookChange}>
                                 <option value='' disabled>Выберите...</option>
                                 {books.map((book, index) => (
-                                    <option key={index} value={book}>
-                                        {book}
+                                    <option key={index} value={book.id}>
+                                        {book.title}
                                     </option>
                                 ))}
                             </select>
@@ -88,8 +98,8 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${isBookNull ? s.disabledButton : ""}`}
-                                disabled={isBookNull}
+                                className={`${s.button} ${s.formButton} ${!selectedBookID ? s.disabledButton : ""}`}
+                                disabled={!selectedBookID}
                             >
                                 Удалить
                             </button>

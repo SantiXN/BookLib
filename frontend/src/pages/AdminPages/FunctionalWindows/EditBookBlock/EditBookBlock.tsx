@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { AuthorData, BookData, BookInfo, CategoryInfo, EditBookOperationRequest, EditBookRequest } from '../../../../../api';
+import { AuthorApiClient, BookApiClient, CategoryApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -7,60 +9,47 @@ interface BlockProps {
 }
 
 const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const [authors, setAuthors] = useState<string[]>([]);
-    const [books, setBooks] = useState<string[]>([]);
-    const [book, setBook] = useState('');
+    const [books, setBooks] = useState<BookData[]>([]);
+    const [selectedBook, setSelectedBook] = useState<BookInfo | null>(null);
     
     // Изменение полей должно происходить по выбранной книге
     const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
-    const [bookFile, setBookFile] = useState<File | null>(null);
     const [bookCoverFile, setBookCoverFile] = useState<File | null>(null);
 
-    const isBookDataChanged = false; // изменять, если изменились поля
+    useEffect(() => {
+        if (selectedBook) {
+            setTitle(selectedBook.title);
+            setDescription(selectedBook.description);
+            // Assuming bookFile and bookCoverFile are URLs or some identifiers in selectedBook
+            // TODO
+            //setBookFile(selectedBook.bookFile ? new File([], selectedBook.bookFile) : null);
+            //setBookCoverFile(selectedBook.bookCoverFile ? new File([], selectedBook.bookCoverFile) : null);
+        }
+    }, [selectedBook]);    
+
+    const isBookDataChanged = selectedBook 
+        ? title !== selectedBook.title ||
+          description !== selectedBook.description ||
+          bookCoverFile !== null
+        : false;
 
     useEffect(() => {
-        const fetchAuthors = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        BookApiClient.listBooks()
+            .then((response) => {
+                if (response.books) {
+                    setBooks(response.books);
                 }
-                const data: string[] = await response.json();
-                setAuthors(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        const fetchbooks = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+                else {
+                    console.error('Ошибка получения списка книг');
                 }
-                const data: string[] = await response.json();
-                setBooks(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchbooks();
-        fetchAuthors();
+            });
     }, []);
 
     const close = () => {
         setTitle('');
-        setAuthor('');
         setDescription('');
         setBookCoverFile(null);
-        setBookFile(null);
         onClose();
     };
 
@@ -92,7 +81,17 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setBook(e.target.value);
+        const selectedBookID = Number(e.target.value);
+
+        BookApiClient.getBookInfo({bookID: selectedBookID})
+            .then((response) => {
+                if (response.book) {
+                    setSelectedBook(response.book);
+                }
+                else {
+                    console.error('Ошибка получения информации о книге');
+                }
+            })
     }; 
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,10 +102,6 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         setDescription(e.target.value);
     };    
 
-    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setAuthor(e.target.value);
-    }; 
-
     const handleBookCoverFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedBookCover = event.target.files?.[0];
         if (selectedBookCover) {
@@ -114,19 +109,20 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    const handleBookFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedBookFile = event.target.files?.[0];
-        if (selectedBookFile) {
-            setBookFile(selectedBookFile);
-        }
-    };
-
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Title:', title);
-        console.log('Description:', description);
-        console.log('Book cover file:', bookCoverFile);
-        console.log('Book file:', bookFile);
+        if (!isBookDataChanged) return;
+
+        const request: EditBookRequest = {};
+        if (title !== selectedBook?.title) request.newTitle = title;
+        if (description !== selectedBook?.description) request.newDescription = description;
+        // Book cover
+
+        BookApiClient.editBook({bookID: selectedBook?.id || 0, editBookRequest: request})
+            .then(() => {
+                alert('Книга успешно отредактирована');
+                close();
+            })
     };
         
     return (
@@ -140,11 +136,11 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     <form className={s.form} onSubmit={handleSubmit}>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel} htmlFor='book'>Книга</label>
-                            <select id="book" className={s.input} value={book} onChange={handleBookChange}>
+                            <select id="book" className={s.input} value={selectedBook?.id || ''} onChange={handleBookChange}>
                                 <option value='' disabled>Выберите...</option>
                                 {books.map((book, index) => (
-                                    <option key={index} value={book}>
-                                        {book}
+                                    <option key={index} value={book.id}>
+                                        {book.title}
                                     </option>
                                 ))}
                             </select>
@@ -159,19 +155,9 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     placeholder="Название"
                                     value={title}
                                     onChange={handleTitleChange}
+                                    disabled={!selectedBook}
                                 />
                             </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Автор</label>
-                            <select id="author" className={s.input} value={author} onChange={handleAuthorChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {authors.map((author, index) => (
-                                    <option key={index} value={author}>
-                                        {author}
-                                    </option>
-                                ))}
-                            </select>
                         </div>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel}>
@@ -180,6 +166,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     className={s.formTextArea}
                                     value={description}
                                     onChange={handleDescriptionChange}
+                                    disabled={!selectedBook}
                                 />
                             </label>
                         </div>
@@ -192,6 +179,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     type="file"
                                     className={s.fileInput}
                                     onChange={handleBookCoverFileChange}
+                                    disabled={!selectedBook}
                                 />
                                 <label
                                     htmlFor="book-cover"
@@ -201,29 +189,11 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 </label>
                             </div>
                         </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='book-file'>Книга</label>
-                            <div className={s.customFileContainer}>
-                                <input
-                                    accept=".pdf"
-                                    id="book-file"
-                                    type="file"
-                                    className={s.fileInput}
-                                    onChange={handleBookFileChange}
-                                />
-                                <label
-                                    htmlFor="book-file"
-                                    className={`${s.customFileLabel}`}
-                                >
-                                    {bookFile ? bookFile.name : "Выберите файл"}
-                                </label>
-                            </div>
-                        </div>
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${isBookDataChanged ? s.disabledButton : ""}`}
-                                disabled={isBookDataChanged}
+                                className={`${s.button} ${s.formButton} ${!isBookDataChanged ? s.disabledButton : ""}`}
+                                disabled={!isBookDataChanged}
                             >
                                 Добавить
                             </button>

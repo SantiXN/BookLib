@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css';
-import { BookApiClient, UserApiClient } from '../../../../../api/ApiClient';
-import { ChangeUserRoleOperationRequest, ChangeUserRoleRequest, ChangeUserRoleRequestRoleEnum, UserInfo } from '../../../../../api';
+import { UserApiClient } from '../../../../../api/ApiClient';
+import { ChangeUserRoleRequestRoleEnum, UserInfo } from '../../../../../api';
 
 interface BlockProps {
     isOpen: string | null;
@@ -36,8 +36,8 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
         try {
             // TODO: Проверить правильность работы
-            const request0: ChangeUserRoleRequestRoleEnum = selectedRole as ChangeUserRoleRequestRoleEnum;
-            await UserApiClient.changeUserRole({ userID: selectedUser.id, changeUserRoleRequest: {role: request0} });
+            const request: ChangeUserRoleRequestRoleEnum = selectedRole as ChangeUserRoleRequestRoleEnum;
+            await UserApiClient.changeUserRole({ userID: selectedUser.id, changeUserRoleRequest: {role: request} });
             alert('Роль пользователя успешно обновлена!');
             setIsRoleChanged(false); 
         } catch (error) {
@@ -121,7 +121,6 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 <option value="" disabled>Выберите...</option>
                                 <option value="user">Обычный пользователь</option>
                                 <option value="editor">Редактор</option>
-                                <option value="admin">Администратор</option>
                             </select>
                         </div>
                         <div className={s.actionButtonContainer}>

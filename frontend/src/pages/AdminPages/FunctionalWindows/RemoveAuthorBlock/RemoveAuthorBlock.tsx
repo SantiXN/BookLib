@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { AuthorData } from '../../../../../api';
+import { AuthorApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -7,28 +9,23 @@ interface BlockProps {
 }
 
 const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const [authors, setAuthors] = useState<string[]>([])
-    const [author, setAuthor] = useState('')
     const containerRef = useRef<HTMLDivElement>(null);
-    const isAuthorNull = author == '';
+
+    const [authors, setAuthors] = useState<AuthorData[]>([]);
+    const [selectedAuthorID, setSelectedAuthorID] = useState<number | null>(null);
 
     useEffect(() => {
-        const fetchAuthors = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        AuthorApiClient.listAuthors()
+            .then((response) => {
+                if (response.authors) {
+                    setAuthors(response.authors);
+                } else {
+                    console.error('Error fetching authors');
                 }
-                const data: string[] = await response.json();
-                setAuthors(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchAuthors();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }, []);
     
     const handleClickOutside = (event: MouseEvent) => {
@@ -57,11 +54,26 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setAuthor(e.target.value);
+        const authorID = Number(e.target.value);
+        setSelectedAuthorID(authorID);
     }; 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!selectedAuthorID || !authors.some(author => author.id === selectedAuthorID)) return;
+
+        const confirmDelete = window.confirm('Вы уверены, что хотите удалить этого автора? Это действие необратимо.');
+        if (!confirmDelete) return;
+
+        AuthorApiClient.deleteAuthor({authorID: selectedAuthorID})
+            .then(() => {
+                alert('Автор успешно удален');
+                onClose();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };    
 
     return (
@@ -75,11 +87,11 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     <form className={s.form} onSubmit={handleSubmit}>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel} htmlFor='author'>Автор</label>
-                            <select id="author" className={s.input} value={author} onChange={handleAuthorChange}>
+                            <select id="author" className={s.input} value={selectedAuthorID || ''} onChange={handleAuthorChange}>
                                 <option value='' disabled>Выберите...</option>
                                 {authors.map((author, index) => (
-                                    <option key={index} value={author}>
-                                        {author}
+                                    <option key={index} value={author.id}>
+                                        {author.firstName} {author.lastName}
                                     </option>
                                 ))}
                             </select>
@@ -88,8 +100,8 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${isAuthorNull ? s.disabledButton : ""}`}
-                                disabled={isAuthorNull}
+                                className={`${s.button} ${s.formButton} ${!selectedAuthorID ? s.disabledButton : ""}`}
+                                disabled={!selectedAuthorID}
                             >
                                 Удалить
                             </button>

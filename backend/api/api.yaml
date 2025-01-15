@@ -770,6 +770,25 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
+  /api/article/management:
+    get:
+      tags:
+        - article
+      operationId: ManagementArticles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagementArticlesResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+
 
 components:
   securitySchemes:
@@ -1069,6 +1088,7 @@ components:
           type: string
       required:
         - title
+        - content
     CreateArticleResponseData:
       type: object
       properties:
@@ -1087,6 +1107,13 @@ components:
         article:
           $ref: '#/components/schemas/articleInfo'
     ListArticlesResponseData:
+      type: object
+      properties:
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/articleData'
+    ManagementArticlesResponseData:
       type: object
       properties:
         articles:

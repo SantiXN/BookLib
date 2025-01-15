@@ -37,6 +37,7 @@ export * from './ListLibraryBooksResponseData';
 export * from './ListUsersResponseData';
 export * from './LoginUserRequest';
 export * from './LoginUserResponseData';
+export * from './ManagementArticlesResponseData';
 export * from './NotFoundResponseData';
 export * from './PermissionDeniedResponseData';
 export * from './SaveBookFeedbackRequest';

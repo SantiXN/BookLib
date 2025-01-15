@@ -21,6 +21,7 @@ import type {
   EditArticleRequest,
   GetArticleResponseData,
   ListArticlesResponseData,
+  ManagementArticlesResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
   UnauthorizedResponseData,
@@ -38,6 +39,8 @@ import {
     GetArticleResponseDataToJSON,
     ListArticlesResponseDataFromJSON,
     ListArticlesResponseDataToJSON,
+    ManagementArticlesResponseDataFromJSON,
+    ManagementArticlesResponseDataToJSON,
     NotFoundResponseDataFromJSON,
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
@@ -264,6 +267,38 @@ export class ArticleApi extends runtime.BaseAPI {
      */
     async listArticles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListArticlesResponseData> {
         const response = await this.listArticlesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async managementArticlesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ManagementArticlesResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/article/management`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ManagementArticlesResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async managementArticles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ManagementArticlesResponseData> {
+        const response = await this.managementArticlesRaw(initOverrides);
         return await response.value();
     }
 

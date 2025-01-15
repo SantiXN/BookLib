@@ -20,6 +20,7 @@ import type {
   CreateAuthorResponseData,
   EditAuthorRequest,
   GetAuthorInfoResponseData,
+  ListAuthorsResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
   UnauthorizedResponseData,
@@ -35,6 +36,8 @@ import {
     EditAuthorRequestToJSON,
     GetAuthorInfoResponseDataFromJSON,
     GetAuthorInfoResponseDataToJSON,
+    ListAuthorsResponseDataFromJSON,
+    ListAuthorsResponseDataToJSON,
     NotFoundResponseDataFromJSON,
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
@@ -215,6 +218,38 @@ export class AuthorApi extends runtime.BaseAPI {
      */
     async getAuthorInfo(requestParameters: GetAuthorInfoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetAuthorInfoResponseData> {
         const response = await this.getAuthorInfoRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async listAuthorsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListAuthorsResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/author/list`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListAuthorsResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async listAuthors(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListAuthorsResponseData> {
+        const response = await this.listAuthorsRaw(initOverrides);
         return await response.value();
     }
 

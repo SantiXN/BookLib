@@ -20,6 +20,8 @@ import type {
   CreateArticleResponseData,
   EditArticleRequest,
   GetArticleResponseData,
+  ListArticlesResponseData,
+  ManagementArticlesResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
   UnauthorizedResponseData,
@@ -35,6 +37,10 @@ import {
     EditArticleRequestToJSON,
     GetArticleResponseDataFromJSON,
     GetArticleResponseDataToJSON,
+    ListArticlesResponseDataFromJSON,
+    ListArticlesResponseDataToJSON,
+    ManagementArticlesResponseDataFromJSON,
+    ManagementArticlesResponseDataToJSON,
     NotFoundResponseDataFromJSON,
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
@@ -234,7 +240,7 @@ export class ArticleApi extends runtime.BaseAPI {
 
     /**
      */
-    async listArticlesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async listArticlesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListArticlesResponseData>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -254,17 +260,45 @@ export class ArticleApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<any>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListArticlesResponseDataFromJSON(jsonValue));
     }
 
     /**
      */
-    async listArticles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+    async listArticles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListArticlesResponseData> {
         const response = await this.listArticlesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async managementArticlesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ManagementArticlesResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/article/management`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ManagementArticlesResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async managementArticles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ManagementArticlesResponseData> {
+        const response = await this.managementArticlesRaw(initOverrides);
         return await response.value();
     }
 

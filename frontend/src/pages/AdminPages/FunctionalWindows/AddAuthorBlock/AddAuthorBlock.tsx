@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { AuthorApiClient } from '../../../../../api/ApiClient';
+import { CreateAuthorRequest } from '../../../../../api';
 
 interface BlockProps {
     isOpen: string | null;
@@ -11,25 +13,16 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [description, setDescription] = useState('');
-    const isFormFieldsEmpty = !(firstName.trim() && lastName.trim() && description.trim());
-
-    const close = () => {
-        setFirstName('');
-        setLastName('');
-        setDescription('');
-
-        onClose();
-    }
     
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            close();        
+            onClose();        
         }
     };
 
     const handleEscapeKey = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-            close();
+            onClose();
         }
     };
 
@@ -58,8 +51,31 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     };    
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            // Здесь можно добавить логику для авторизации
+        e.preventDefault();
+        if (!firstName) return;
+
+        setFirstName(firstName.trim());
+        setLastName(lastName.trim());
+        setDescription(description.trim());
+
+        const request: CreateAuthorRequest = {firstName};
+        if (lastName) request.lastName = lastName;
+        if (description) request.description = description;
+
+        AuthorApiClient.createAuthor({ createAuthorRequest: request })
+            .then(() => {
+                alert('Автор успешно добавлен!');
+                onClose();
+            })
+            .catch((error) => {
+                console.error('Error while adding author:', error);
+                alert('Не удалось добавить автора. Попробуйте позже.');
+            })
+            .finally(() => {
+                setFirstName('');
+                setLastName('');
+                setDescription('');
+            });
     };
 
     return (
@@ -107,8 +123,8 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                             </label>
                         </div>
                         <div className={s.actionButtonContainer}>
-                            <button type="submit" className={`${s.button} ${s.formButton} ${isFormFieldsEmpty ? s.disabledButton : ''}`}
-                                disabled={isFormFieldsEmpty}
+                            <button type="submit" className={`${s.button} ${s.formButton} ${!firstName ? s.disabledButton : ''}`}
+                                disabled={!firstName}
                                 >
                                     Добавить
                             </button>

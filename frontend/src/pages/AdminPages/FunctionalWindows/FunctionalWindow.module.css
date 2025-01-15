@@ -147,3 +147,12 @@
 .articleTextArea {
     min-height: 200px;
 }
+
+.multipleInput {
+    height: 150px;
+}
+
+.mdEditor {
+    height: 600px;
+    border-radius: 5px;
+}

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import MarkdownEditor from '@uiw/react-markdown-editor';
+import { ArticleApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -10,13 +12,12 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [content, setContent] = useState('');
 
-    const isFieldsEmpty = !(title.trim() && description.trim())
+    const isFieldsEmpty = !(title.trim() && content.trim())
 
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
             onClose();        
         }
     };
@@ -43,12 +44,27 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         setTitle(e.target.value);
     };    
     
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescription(e.target.value);
-    };    
+    const handleChangeDescription = (value: string) => {
+        setContent(value);
+    } 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (isFieldsEmpty) return;
+
+        ArticleApiClient.createArticle({ createArticleRequest: { title: title, content: content} })
+            .then((response) => {
+                if (response) {
+                    console.log(response);
+                    alert('Статья успешно добавлена');
+                    onClose();
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                alert('Ошибка добавления статьи');
+            });
     };   
     
     return (
@@ -74,13 +90,12 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                             </label>
                         </div>
                         <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea className={`${s.formTextArea} ${s.articleTextArea}`} 
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </label>
+                            <label className={s.formLabel}>Описание</label>
+                            <MarkdownEditor
+                                className={s.mdEditor}
+                                onChange={(value) => handleChangeDescription(value)}
+                                value={content}
+                                visible={true}/>
                         </div>
                         <div className={s.actionButtonContainer}>
                             <button

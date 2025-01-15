@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { AuthorData, EditAuthorRequest } from '../../../../../api';
+import { AuthorApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -7,40 +9,42 @@ interface BlockProps {
 }
 
 const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const [authors, setAuthors] = useState<string[]>([]) // изменить получение на соответствующую структуру
-    const [author, setAuthor] = useState('')    
+    // TODO: загрузка файлов 
+    const [authors, setAuthors] = useState<AuthorData[]>([])
+    const [author, setAuthor] = useState<AuthorData | null>(null);    
 
-    // Устанвливать следующие поля данными выбранного автора
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [description, setDescription] = useState('');
+    const [firstName, setFirstName] = useState(author ? author.firstName : '');
+    const [lastName, setLastName] = useState(author ? author.lastName : '');
+    const [description, setDescription] = useState(author ? author.description : '');
 
-    const isAuthorDataChanged = false; // сверять firstName, lastName, description с полями выбранного автора 
+    useEffect(() => {
+        if (author) {
+            setFirstName(author.firstName);
+            setLastName(author.lastName);
+            setDescription(author.description);
+        }
+    }, [author]);
+
+    const isAuthorDataChanged = author 
+        ? (firstName !== author.firstName || lastName !== author.lastName || description !== author.description) 
+        : false;
 
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchAuthors = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        AuthorApiClient.listAuthors()
+            .then((response) => {
+                if (response.authors) {
+                    setAuthors(response.authors);
                 }
-                const data: string[] = await response.json();
-                setAuthors(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchAuthors();
+                else {
+                    console.error('Ошибка получения списка авторов');
+                }
+            });
     }, []);    
     
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
             onClose();        
         }
     };
@@ -51,7 +55,8 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     };
 
     const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setAuthor(e.target.value);
+        const selectedAuthor = authors.find(a => a.id === Number(e.target.value)) || null;
+        setAuthor(selectedAuthor);
     };
 
     useEffect(() => {
@@ -80,6 +85,23 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(isAuthorDataChanged)
+        if (!isAuthorDataChanged) return;
+
+        const updatedData: EditAuthorRequest = {};
+
+        if (firstName !== author!.firstName) updatedData.newFirstName = firstName;
+        if (lastName !== author!.lastName) updatedData.newLastName = lastName;
+        if (description !== author!.description) updatedData.newDescription = description;
+
+        AuthorApiClient.editAuthor({ authorID: author!.id, editAuthorRequest: updatedData })
+            .then(() => {
+                alert('Данные автора успешно обновлены!');
+                onClose();
+            })
+            .catch((error) => {
+                console.error('Error updating author:', error);
+            });
     };  
         
     return (
@@ -93,11 +115,11 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     <form className={s.form} onSubmit={handleSubmit}>
                         <div className={s.formFieldContainer}>
                             <label className={s.formLabel} htmlFor='author'>Автор</label>
-                            <select id="author" className={s.input} value={author} onChange={handleAuthorChange}>
+                            <select id="author" className={s.input} value={author?.id || ''} onChange={handleAuthorChange}>
                                 <option value='' disabled>Выберите...</option>
                                 {authors.map((author, index) => (
-                                    <option key={index} value={author}>
-                                        {author}
+                                    <option key={index} value={author.id}>
+                                        {author.firstName} {author.lastName}
                                     </option>
                                 ))}
                             </select>
@@ -112,6 +134,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     placeholder='Имя'
                                     value={firstName}
                                     onChange={handleFirstNameChange}
+                                    disabled={!author}
                                 />
                             </label>
                         </div>
@@ -125,6 +148,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     placeholder='Фамилия'
                                     value={lastName}
                                     onChange={handleLastNameChange}
+                                    disabled={!author}
                                 />
                             </label>
                         </div>
@@ -134,14 +158,15 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 <textarea className={s.formTextArea} 
                                     value={description}
                                     onChange={handleDescriptionChange}
+                                    disabled={!author}
                                 />
                             </label>
                         </div>
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${isAuthorDataChanged ? s.disabledButton : ""}`}
-                                disabled={isAuthorDataChanged}
+                                className={`${s.button} ${s.formButton} ${!isAuthorDataChanged ? s.disabledButton : ""}`}
+                                disabled={!isAuthorDataChanged}
                             >
                                 Изменить
                             </button>

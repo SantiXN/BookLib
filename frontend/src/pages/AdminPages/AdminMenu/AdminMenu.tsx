@@ -10,6 +10,7 @@ import AddArticleBlock from '../FunctionalWindows/AddArticleBlock/AddArticleBloc
 import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleBlock';
 import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
 import EditUserRoleBlock from '../FunctionalWindows/EditUserRoleBlock/EditUserRoleBlock';
+import RemoveUserBlock from '../FunctionalWindows/RemoveUserBlock/RemoveUserBlock';
 
 const AdminMenu = () => {
     const [activeWindowMenu, setActiveWindowMenu] = useState<string | null>(null);
@@ -82,9 +83,11 @@ const AdminMenu = () => {
             {activeWindowMenu === 'removeArticle' && (
                 <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
             )}
-
             {activeWindowMenu === 'editUserRole' && (
                 <EditUserRoleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+            )}
+            {activeWindowMenu === 'removeUser' && (
+                <RemoveUserBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
             )}
         </div>
     )

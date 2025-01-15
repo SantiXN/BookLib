@@ -22,7 +22,7 @@ const MegaDropdown = ({ items }: { items: { label: string, link: string }[] }) =
 
 const Header = () => {
     const userMenuItems = [
-        { label: 'Профиль', link: '/author' },
+        { label: 'Профиль', link: '/profile' },
         { label: 'Настройки', link: '/admin' },
         { label: 'Выход', link: '/logout' },
     ];

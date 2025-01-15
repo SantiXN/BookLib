@@ -9,6 +9,7 @@ import EditorMenu from './pages/AdminPages/EditorMenu/EditorMenu.tsx';
 import ArticlePage from './pages/ArticlePage/ArticlePage.tsx';
 import BookPage from './pages/BookPage/BookPage.tsx';
 import MainPage from './pages/MainPage/MainPage.tsx';
+import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
 
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
                   <Route path="/editor" element={<EditorMenu />} />
                   <Route path="/author/:id" element={<AuthorPage />} />
                   <Route path="/article" element={<ArticlePage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
               </Routes>
           </div>
         <Footer />

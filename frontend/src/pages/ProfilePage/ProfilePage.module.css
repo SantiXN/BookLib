@@ -1,0 +1,72 @@
+.profileCart {
+    width: 1540px;
+    margin: 0 auto;
+    padding: 45px;
+    border: 1px solid #BABABA;
+    border-radius: 10px;
+}
+
+.title {
+    font: 40px Inter;
+    padding-top: 20px;
+    margin: 0;
+}
+
+.topBlock {
+    display: flex;
+    justify-content: space-between;
+    font: 20px Inter;
+}
+
+.inputWrapper {
+    position: relative;
+    padding-top: 53px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 1000px;
+}
+
+.inputWrapper:first-child {
+    padding-top: 70px;
+}
+
+.label {
+    font: 32px Inter;
+    color: #000000;
+}
+
+.input {
+    width: 800px;
+    height: 50px;
+    border: solid 1px #C9C9C9;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font: 24px Inter;
+    position: relative;
+}
+
+.eyeClose,
+.eye {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 61px;
+    right: 18px;
+    background-image: url('src/images/icon/eye.png');
+
+}
+
+.eyeClose {
+    background-image: url('src/images/icon/eye-off.png');
+}
+
+.form {
+    width: 100px;
+}
+
+.logotype {
+    width: 500px;
+}
+

@@ -149,6 +149,10 @@
 }
 
 .multipleInput {
+    height: 150px;
+}
+
+.mdEditor {
     height: 600px;
     border-radius: 5px;
 }

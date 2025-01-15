@@ -149,5 +149,6 @@
 }
 
 .multipleInput {
-    height: 150px;
+    height: 600px;
+    border-radius: 5px;
 }

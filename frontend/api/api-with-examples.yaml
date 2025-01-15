@@ -115,6 +115,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListBooksResponseData'
+              examples:
+                example:
+                  summary: book list
+                  value:
+                    books:
+                      - id: 1
+                        title: Book 1
+                        coverPath: /path/to/cover
+                        authors:
+                          - id: 1
+                            firstName: John
+                            lastName: Doe
+                        starCount: 4.5
+                      - id: 2
+                        title: Book 2
+                        coverPath: /path/to/cover
+                        authors:
+                          - id: 2
+                            firstName: John
+                            lastName: Doe2
+                        starCount: 3.5
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -399,6 +420,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListCategoriesResponseData'
+              examples:
+                example:
+                  summary: List categories
+                  value:
+                    categories:
+                      - id: 1
+                        category: Fiction
+                      - id: 2
+                        category: Fantasy
+                      - id: 3
+                        category: Science
         '401':
           $ref: '#/components/responses/unauthorized'
 
@@ -489,6 +521,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListAuthorsResponseData'
+              examples:
+                example:
+                  summary: Authors list
+                  value:
+                    authors:
+                      - id: 1
+                        firstName: John
+                        lastName: Doe
+                        description: Some description
+                      - id: 2
+                        firstName: John
+                        lastName: Doe2
+                        description: Some description
+                      - id: 3
+                        firstName: John
+                        lastName: Doe3
+                        description: Some description
+                      - id: 4
+                        firstName: John
+                        lastName: Doe4
+                        description: Some description
+                      - id: 5
+                        firstName: John
+                        lastName: Doe
+                        description: Some description
+                      - id: 6
+                        firstName: John
+                        lastName: Doe2
+                        description: Some description
+                      - id: 7
+                        firstName: John
+                        lastName: Doe3
+                        description: Some description
+                      - id: 8
+                        firstName: John
+                        lastName: Doe4
+                        description: Some description
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -532,6 +601,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListUsersResponseData'
+              examples:
+                  example:
+                    summary: Users list
+                    value:
+                      users:
+                        - id: 1
+                          role: user
+                          firstName: John
+                          lastName: Doe
+                          email: 2@gm.com
+                        - id: 2
+                          role: user
+                          firstName: John
+                          lastName: Doe2
+                          email: 3@g.c
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -763,6 +847,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListArticlesResponseData'
+              examples:
+                example:
+                  summary: article list
+                  value:
+                    articles:
+                      - id: 1
+                        title: Article 1
+                        authorID: 1
+                      - id: 2
+                        title: Article 2
+                        authorID: 2
         '400':
           $ref: '#/components/responses/badRequest'
         '401':

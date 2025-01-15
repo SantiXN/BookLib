@@ -31,7 +31,9 @@ models/GetArticleResponseData.ts
 models/GetAuthorInfoResponseData.ts
 models/GetBookInfoResponseData.ts
 models/GetUserDataResponseData.ts
+models/ListArticlesResponseData.ts
 models/ListAuthorBooksResponseData.ts
+models/ListAuthorsResponseData.ts
 models/ListBookFeedbackResponseData.ts
 models/ListBooksByCategoryResponseData.ts
 models/ListBooksResponseData.ts

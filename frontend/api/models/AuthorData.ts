@@ -42,6 +42,12 @@ export interface AuthorData {
      * @type {string}
      * @memberof AuthorData
      */
+    description?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthorData
+     */
     avatarPath?: string;
 }
 
@@ -67,6 +73,7 @@ export function AuthorDataFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'id': json['id'],
         'firstName': json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
+        'description': json['description'] == null ? undefined : json['description'],
         'avatarPath': json['avatarPath'] == null ? undefined : json['avatarPath'],
     };
 }
@@ -85,6 +92,7 @@ export function AuthorDataToJSONTyped(value?: AuthorData | null, ignoreDiscrimin
         'id': value['id'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
+        'description': value['description'],
         'avatarPath': value['avatarPath'],
     };
 }

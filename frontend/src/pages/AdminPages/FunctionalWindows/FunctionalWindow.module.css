@@ -147,3 +147,7 @@
 .articleTextArea {
     min-height: 200px;
 }
+
+.multipleInput {
+    height: 150px;
+}

@@ -13,9 +13,14 @@ const ProfilePage = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
     };
+    
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -23,7 +28,6 @@ const ProfilePage = () => {
 
     const handleAvatarChange = () => {
         // Логика для смены аватара
-        alert('Смена аватара');
     };
 
     const handleLogout = () => {
@@ -80,6 +84,7 @@ const ProfilePage = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
+                                    readOnly
                                 />
                             </div>
                             <div className={s.inputWrapper}>
@@ -93,13 +98,14 @@ const ProfilePage = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
+                                    readOnly
                                 />
                                 <div onClick={togglePasswordVisibility} className={showPassword ? s.eye : s.eyeClose}></div>
                             </div>
                         </form>
                     </div>
                     <div className={s.logotype}>
-                        <img className={s.avatar} alt={formData.firstName} src={formData.avatar}></img>
+                        <img className={s.avatar} alt={formData.firstName} src={formData.avatar} />
                         <button type="button" onClick={handleAvatarChange}>
                             Сменить аватар
                         </button>

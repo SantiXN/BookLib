@@ -43,19 +43,24 @@
 
 .libraryBooksContainer {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     border: 1px #BABABA solid;
     border-radius: 10px;
     border-top-left-radius: 0;
-    height: 1040px;
     max-height: 1040px;
 }
 
 .libraryBooksBodyContainer {
-    width: 100%;
-    display: grid; /* Включаем CSS Grid */
-    grid-template-columns: repeat(5, 1fr); /* По умолчанию 4 колонки */
-    gap: 20px; /* Расстояние между карточками */
-    padding: 10px 35px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    padding: 15px 35px 30px 35px;
+}
+
+.libraryBookCard {
+    width: min-content;
+}
+
+.pagination {
+    margin: 15px 0 0 35px;
 }

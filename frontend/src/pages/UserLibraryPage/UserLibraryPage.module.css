@@ -1,0 +1,61 @@
+.libraryContainer {
+    width: 100%;
+}
+
+.library {
+    display: flex;
+}
+
+.title {
+    font-size: 28px;
+}
+
+.libraryMenu {
+    min-width: 300px;
+    width: 300px;
+    max-width: 300px;
+}
+
+.libraryMenuItem {
+    text-align: center;
+    font-size: 24px;
+    border: 1px #BABABA solid;
+    border-bottom: none;
+    padding: 5px 0;
+    border-right: none;
+    cursor: pointer;
+}
+
+.libraryMenuItem:first-child {
+    border-top-left-radius: 10px;
+}
+
+.libraryMenuSelectedItem {
+    background-color: #2441C1;
+    color: #FFF;
+    cursor: default;
+}
+
+.libraryMenuItem:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom: 1px #BABABA solid;
+}
+
+.libraryBooksContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px #BABABA solid;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    height: 1040px;
+    max-height: 1040px;
+}
+
+.libraryBooksBodyContainer {
+    width: 100%;
+    display: grid; /* Включаем CSS Grid */
+    grid-template-columns: repeat(5, 1fr); /* По умолчанию 4 колонки */
+    gap: 20px; /* Расстояние между карточками */
+    padding: 10px 35px;
+}

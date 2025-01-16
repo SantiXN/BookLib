@@ -102,6 +102,7 @@ const ProfilePage = () => {
                                 />
                                 <div onClick={togglePasswordVisibility} className={showPassword ? s.eye : s.eyeClose}></div>
                             </div>
+                            <button className={`${s.submitButton} ${s.disabledButton}`} type='submit' disabled={true}>Сохранить изменения</button>
                         </form>
                     </div>
                     <div className={s.logotype}>

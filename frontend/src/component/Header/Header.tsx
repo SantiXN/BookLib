@@ -59,7 +59,7 @@ const Header = () => {
 
                 <div className={`${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconBook}></div>
-                    <Link to="/editor" className={s.link}>Мои книги</Link>
+                    <Link to="/library" className={s.link}>Мои книги</Link>
                 </div>
 
                 <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>

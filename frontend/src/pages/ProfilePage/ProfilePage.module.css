@@ -1,5 +1,5 @@
 .profileCart {
-    width: 1540px;
+    width: 1400px;
     margin: 0 auto;
     padding: 45px;
     border: 1px solid #BABABA;
@@ -7,7 +7,7 @@
 }
 
 .title {
-    font: 40px Inter;
+    font: 30px Inter;
     padding-top: 20px;
     margin: 0;
 }
@@ -18,13 +18,18 @@
     font: 20px Inter;
 }
 
+.form {
+    width: 950px;
+}
+
 .inputWrapper {
     position: relative;
     padding-top: 53px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 1000px;
+    align-items: center;
+    width: 950px;
 }
 
 .inputWrapper:first-child {
@@ -32,29 +37,31 @@
 }
 
 .label {
-    font: 32px Inter;
+    font: 22px Inter;
     color: #000000;
 }
 
 .input {
     width: 800px;
-    height: 50px;
+    height: 40px;
     border: solid 1px #C9C9C9;
     border-radius: 10px;
     background-color: #FFFFFF;
     color: #000000;
-    font: 24px Inter;
+    font: 20px Inter;
     position: relative;
+    padding-inline: 10px;
 }
 
 .eyeClose,
 .eye {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     top: 61px;
     right: 18px;
     background-image: url('src/images/icon/eye.png');
+    background-size: cover;
 
 }
 
@@ -70,3 +77,25 @@
     width: 500px;
 }
 
+.infoContainer {
+    display: flex;
+}
+
+.formContainer {
+    width: -webkit-fill-available
+}
+
+.logotype {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.avatar {
+    width: 400px;
+    height: 400px;
+    margin-top: 20px;
+    border-radius: 200px;
+}

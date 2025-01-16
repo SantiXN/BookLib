@@ -10,6 +10,7 @@ import ArticlePage from './pages/ArticlePage/ArticlePage.tsx';
 import BookPage from './pages/BookPage/BookPage.tsx';
 import MainPage from './pages/MainPage/MainPage.tsx';
 import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
+import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
 
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
                   <Route path="/author/:id" element={<AuthorPage />} />
                   <Route path="/article" element={<ArticlePage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path='/library' element={<UserLibraryPage />} />
               </Routes>
           </div>
         <Footer />

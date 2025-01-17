@@ -1101,8 +1101,6 @@ components:
           type: string
         lastName:
           type: string
-        email:
-          type: string
     CreateArticleRequest:
       type: object
       properties:

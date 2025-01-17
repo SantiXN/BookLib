@@ -31,12 +31,6 @@ export interface EditUserInfoRequest {
      * @memberof EditUserInfoRequest
      */
     lastName?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EditUserInfoRequest
-     */
-    email?: string;
 }
 
 /**
@@ -58,7 +52,6 @@ export function EditUserInfoRequestFromJSONTyped(json: any, ignoreDiscriminator:
         
         'firstName': json['firstName'] == null ? undefined : json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
-        'email': json['email'] == null ? undefined : json['email'],
     };
 }
 
@@ -75,7 +68,6 @@ export function EditUserInfoRequestToJSONTyped(value?: EditUserInfoRequest | nul
         
         'firstName': value['firstName'],
         'lastName': value['lastName'],
-        'email': value['email'],
     };
 }
 

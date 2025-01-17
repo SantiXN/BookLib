@@ -30,7 +30,7 @@ export interface CreateArticleRequest {
      * @type {string}
      * @memberof CreateArticleRequest
      */
-    content?: string;
+    content: string;
 }
 
 /**
@@ -38,6 +38,7 @@ export interface CreateArticleRequest {
  */
 export function instanceOfCreateArticleRequest(value: object): value is CreateArticleRequest {
     if (!('title' in value) || value['title'] === undefined) return false;
+    if (!('content' in value) || value['content'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function CreateArticleRequestFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'title': json['title'],
-        'content': json['content'] == null ? undefined : json['content'],
+        'content': json['content'],
     };
 }
 

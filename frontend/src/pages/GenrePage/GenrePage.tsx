@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import s from './GenrePage.module.css';
 import { useParams } from 'react-router-dom';
-import BookCard from '../../component/common/BookCard/BookCard';
 import { BookApiClient } from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';

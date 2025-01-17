@@ -11,7 +11,7 @@ import BookPage from './pages/BookPage/BookPage.tsx';
 import MainPage from './pages/MainPage/MainPage.tsx';
 import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
 import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
-
+import GenrePage from './pages/GenrePage/GenrePage.tsx';
 
 const App = () => {
   return (
@@ -27,6 +27,7 @@ const App = () => {
                   <Route path="/article" element={<ArticlePage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path='/library' element={<UserLibraryPage />} />
+                  <Route path='/genre/:genreID' element={<GenrePage />} />
               </Routes>
           </div>
         <Footer />

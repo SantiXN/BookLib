@@ -6,7 +6,7 @@ const Footer = () => {
         <footer className={s.footer}>
             <a href="/" className={s.logoLink}>
                 <p className={s.logoText}>© BookLib 2024</p>
-                <img src={logo} className={s.logoImage}></img>
+                <img src={logo} className={s.logoImage} alt="logo"></img>
             </a>
         </footer>
     )

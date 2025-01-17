@@ -12,6 +12,7 @@ import MainPage from './pages/MainPage/MainPage.tsx';
 import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
 import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
 import GenrePage from './pages/GenrePage/GenrePage.tsx';
+import ArticlesPage from './pages/ArticlesPage/ArticlesPage.tsx';
 
 const App = () => {
   return (
@@ -24,10 +25,11 @@ const App = () => {
                   <Route path="/admin" element={<AdminMenu />} />
                   <Route path="/editor" element={<EditorMenu />} />
                   <Route path="/author/:id" element={<AuthorPage />} />
-                  <Route path="/article" element={<ArticlePage />} />
+                  <Route path="/article/:id" element={<ArticlePage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path='/library' element={<UserLibraryPage />} />
                   <Route path='/genre/:genreID' element={<GenrePage />} />
+                  <Route path='/articles' element={<ArticlesPage />} />                  
               </Routes>
           </div>
         <Footer />

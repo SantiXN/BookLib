@@ -21,7 +21,7 @@ const MegaDropdown = ({ items }: { items: { label: string, link: string }[] }) =
 );
 
 const catalogItems = [
-    { id: 1, label: 'Статьи', link: '/genre/articles-1' },
+    { id: 1, label: 'Статьи', link: '/articles' },
     { id: 2, label: 'Романы', link: '/genre/novels' },
     { id: 3, label: 'Фэнтези', link: '/genre/fantasy' },
     { id: 4, label: 'Фантастика', link: '/genre/sci-fi' },

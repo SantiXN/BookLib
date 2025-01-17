@@ -12,6 +12,7 @@ type Author interface {
 	ID() int
 	FirstName() string
 	LastName() *string
+	AvatarPath() *string
 	Description() *string
 }
 
@@ -19,12 +20,14 @@ func NewAuthor(
 	id int,
 	firstName string,
 	lastName *string,
+	avatarPath *string,
 	description *string,
 ) Author {
 	return &author{
 		id:          id,
 		firstName:   firstName,
 		lastName:    lastName,
+		avatarPath:  avatarPath,
 		description: description,
 	}
 }
@@ -33,6 +36,7 @@ type author struct {
 	id          int
 	firstName   string
 	lastName    *string
+	avatarPath  *string
 	description *string
 }
 
@@ -46,6 +50,10 @@ func (a *author) FirstName() string {
 
 func (a *author) LastName() *string {
 	return a.lastName
+}
+
+func (a *author) AvatarPath() *string {
+	return a.avatarPath
 }
 
 func (a *author) Description() *string {

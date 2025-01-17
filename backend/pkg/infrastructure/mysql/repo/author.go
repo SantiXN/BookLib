@@ -47,12 +47,14 @@ func (repo *authorRepository) Store(author model.Author) error {
 	            id,
 	            first_name,
 	            last_name,
+	            avatar_path,
 				description
 	        )
-		VALUES (?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
 			first_name = VALUES(first_name),
 			last_name = VALUES(last_name),
+			avatar_path = VALUES(avatar_path),
 			description = VALUES(description)                 
 	`
 
@@ -73,6 +75,7 @@ func (repo *authorRepository) FindOne(id int) (model.Author, error) {
 			id,
 			first_name,
 			last_name,
+			avatar_path,
 			description
 		FROM
 			author
@@ -91,6 +94,7 @@ func (repo *authorRepository) FindOne(id int) (model.Author, error) {
 		a.ID,
 		a.FirstName,
 		a.LastName,
+		a.AvatarPath,
 		a.Description,
 	), nil
 }
@@ -104,6 +108,7 @@ func (repo *authorRepository) FindAll(ids []int) ([]model.Author, error) {
 			id,
 			first_name,
 			last_name,
+			avatar_path,
 			description
 		FROM
 			author
@@ -122,7 +127,7 @@ func (repo *authorRepository) FindAll(ids []int) ([]model.Author, error) {
 
 	var authors []model.Author
 	for _, author := range sqlxAuthors {
-		authors = append(authors, model.NewAuthor(author.ID, author.FirstName, author.LastName, author.Description))
+		authors = append(authors, model.NewAuthor(author.ID, author.FirstName, author.LastName, author.AvatarPath, author.Description))
 	}
 
 	return authors, nil
@@ -139,5 +144,6 @@ type sqlxAuthor struct {
 	ID          int     `db:"id"`
 	FirstName   string  `db:"first_name"`
 	LastName    *string `db:"last_name"`
+	AvatarPath  *string `db:"avatar_path"`
 	Description *string `db:"description"`
 }

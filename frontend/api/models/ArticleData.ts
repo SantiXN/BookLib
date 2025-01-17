@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { UserData } from './UserData';
+import {
+    UserDataFromJSON,
+    UserDataFromJSONTyped,
+    UserDataToJSON,
+    UserDataToJSONTyped,
+} from './UserData';
+
 /**
  * 
  * @export
@@ -33,10 +41,16 @@ export interface ArticleData {
     title: string;
     /**
      * 
+     * @type {UserData}
+     * @memberof ArticleData
+     */
+    author: UserData;
+    /**
+     * unix timestamp
      * @type {number}
      * @memberof ArticleData
      */
-    authorID: number;
+    publishDate?: number;
 }
 
 /**
@@ -45,7 +59,7 @@ export interface ArticleData {
 export function instanceOfArticleData(value: object): value is ArticleData {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
-    if (!('authorID' in value) || value['authorID'] === undefined) return false;
+    if (!('author' in value) || value['author'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +75,8 @@ export function ArticleDataFromJSONTyped(json: any, ignoreDiscriminator: boolean
         
         'id': json['id'],
         'title': json['title'],
-        'authorID': json['authorID'],
+        'author': UserDataFromJSON(json['author']),
+        'publishDate': json['publishDate'] == null ? undefined : json['publishDate'],
     };
 }
 
@@ -78,7 +93,8 @@ export function ArticleDataToJSONTyped(value?: ArticleData | null, ignoreDiscrim
         
         'id': value['id'],
         'title': value['title'],
-        'authorID': value['authorID'],
+        'author': UserDataToJSON(value['author']),
+        'publishDate': value['publishDate'],
     };
 }
 

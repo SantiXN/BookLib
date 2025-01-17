@@ -1358,9 +1358,13 @@ components:
           type: integer
         title:
           type: string
-        authorID:
+        author:
+          $ref: '#/components/schemas/userData'
+        publishDate:
           type: integer
+          format: integer64
+          description: unix timestamp
       required:
         - id
         - title
-        - authorID
+        - author

@@ -8,12 +8,20 @@ interface AuthMenuProps {
     onClose: () => void;
 }
 
+const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isRegisterMenuOpen, setIsRegisterMenuOpen] = useState(false);
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
-    const isFormFieldsEmpty = !(login.trim() && password.trim());
+    const [loginError, setLoginError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    const isDataError = !(password.trim() && login.trim()) || loginError != '' || passwordError != '';
 
     const close = () => {
         setLogin('');
@@ -50,11 +58,23 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
     const closeRegisterMenu = () => setIsRegisterMenuOpen(false);
 
     const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setLogin(e.target.value);
+        const value = e.target.value;
+        setLogin(value);
+        if (!isValidEmail(value) && value.length != 0) {
+            setLoginError('Некорректный email');
+        } else {
+            setLoginError('');
+        }
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
+        const value = e.target.value;
+        setPassword(value);
+        if (value.length < 8) {
+            setPasswordError('Пароль должен быть не менее 8 символов')
+        } else {
+            setPasswordError('')
+        }
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -83,11 +103,12 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
                                         id='login'
                                         className={s.formTextInput}
                                         type='text'
-                                        placeholder='Логин'
+                                        placeholder='E-mail'
                                         value={login}
                                         onChange={handleLoginChange}
                                     />
                                 </label>
+                                {loginError && <p className={s.errorText}>{loginError}</p>}
                             </div>
                             <div className={s.formFieldContainer}>
                                 <label className={s.formLabel}>
@@ -100,8 +121,8 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
                                     />
                                 </label>
                             </div>
-                            <button type="submit" className={`${s.button} ${s.formButton} ${isFormFieldsEmpty ? s.disabledButton : ''}`}
-                            disabled={isFormFieldsEmpty}
+                            <button type="submit" className={`${s.button} ${s.formButton} ${isDataError ? s.disabledButton : ''}`}
+                            disabled={isDataError}
                             >
                                 Войти
                             </button>

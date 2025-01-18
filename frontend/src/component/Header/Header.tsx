@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import s from './Header.module.css';
 import SearchBar from "../common/SearchBar/SearchBar";
-import { useAuth } from '../../context/AuthContext';
 
 const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string }) => (
     <li>
@@ -30,9 +29,6 @@ const genres = [
 ];
 
 const Header = () => {
-    const {isAuthenticated} = useAuth();
-
-    if (!isAuthenticated) return null;
 
     return (
         <header className={s.headerWrapper}>

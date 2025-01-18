@@ -10,6 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 
 	"booklib/api"
 	inframysql "booklib/pkg/infrastructure/mysql"
@@ -20,6 +21,14 @@ func main() {
 	fmt.Println("Starting...")
 	router := mux.NewRouter()
 	//router.Use(auth.JwtAuthentication)
+
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	})
+	router.Use(corsHandler.Handler)
 
 	fmt.Println("Initializing DB connection...")
 	db, err := inframysql.InitDBConnection()

@@ -496,7 +496,7 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
-  /api/v1/login:
+  /api/login:
     post:
       security: []
       tags:
@@ -519,7 +519,7 @@ paths:
           '404':
             $ref: '#/components/responses/notFound'
 
-  /api/v1/user/list:
+  /api/user/list:
     post:
       tags:
         - user
@@ -538,7 +538,7 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
-  /api/v1/user/{userID}:
+  /api/user/{userID}:
     post:
       tags:
         - user
@@ -565,7 +565,7 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/v1/user/{userID}/role:
+  /api/user/{userID}/role:
     post:
       tags:
         - user

@@ -691,6 +691,29 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
+  /api/article/{articleID}/publish:
+    post:
+      tags:
+        - article
+      operationId: PublishArticle
+      parameters:
+        - in: path
+          name: articleID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
   /api/article/{articleID}/delete:
     post:
       tags:
@@ -1345,11 +1368,17 @@ components:
           type: string
         authorID:
           type: integer
+        status:
+          type: string
+          enum:
+            - published
+            - unpublished
       required:
         - id
         - title
         - content
         - authorID
+        - status
 
     articleData:
       type: object
@@ -1360,6 +1389,11 @@ components:
           type: string
         author:
           $ref: '#/components/schemas/userData'
+        status:
+          type: string
+          enum:
+            - published
+            - unpublished
         publishDate:
           type: integer
           format: integer64
@@ -1368,3 +1402,4 @@ components:
         - id
         - title
         - author
+        - status

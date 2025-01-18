@@ -10,21 +10,21 @@ const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string })
     </li>
 );
 
-const MegaDropdown = ({ items }: { items: { label: string, link: string }[] }) => (
+const MegaDropdown = ({ items }: { items: { id: number, label: string, link: string }[] }) => (
     <div className={s.megaDropdown}>
         <ul className={s.dropdownList}>
             {items.map((item, index) => (
-                <HeaderItem key={index} to={item.link}>{item.label}</HeaderItem>
+                <HeaderItem key={index} to={`${item.link}${item.id != 1 ? '-' + item.id : ''}`}>{item.label}</HeaderItem>
             ))}
         </ul>
     </div>
 );
 
-const catalogItems = [
+const genres = [
     { id: 1, label: 'Статьи', link: '/articles' },
     { id: 2, label: 'Романы', link: '/genre/novels' },
     { id: 3, label: 'Фэнтези', link: '/genre/fantasy' },
-    { id: 4, label: 'Фантастика', link: '/genre/sci-fi' },
+    { id: 4, label: 'Фантастика', link: '/genre/scifi' },
     { id: 5, label: 'Классика', link: '/genre/classic' },
     { id: 6, label: 'Мистика', link: '/genre/mystery' },
     { id: 7, label: 'Детективы', link: '/genre/detective' },
@@ -44,7 +44,7 @@ const Header = () => {
                 </Link>
                 <div className={`${s.catalog} ${s.headerWrapperItem}`}>
                     <div className={s.catalogButton}>Каталог</div>
-                    <MegaDropdown items={catalogItems} />
+                    <MegaDropdown items={genres} />
                 </div>
 
                 <div className={s.headerWrapperItem}>

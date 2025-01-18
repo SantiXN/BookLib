@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
 import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
 import GenrePage from './pages/GenrePage/GenrePage.tsx';
 import ArticlesPage from './pages/ArticlesPage/ArticlesPage.tsx';
+import SearchPage from './pages/SearchPage/SearchPage.tsx';
 
 const App = () => {
   return (
@@ -29,7 +30,8 @@ const App = () => {
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path='/library' element={<UserLibraryPage />} />
                   <Route path='/genre/:genreID' element={<GenrePage />} />
-                  <Route path='/articles' element={<ArticlesPage />} />                  
+                  <Route path='/articles' element={<ArticlesPage />} />     
+                  <Route path='/search' element={<SearchPage />} />                                    
               </Routes>
           </div>
         <Footer />

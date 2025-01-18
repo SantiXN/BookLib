@@ -7,7 +7,6 @@ const config = new Configuration({
     Authorization: `Bearer ${token}`,
   },
 });
-console.log(config);
 
 // Инициализация API клиента
 const BookApiClient = new BookApi(config);

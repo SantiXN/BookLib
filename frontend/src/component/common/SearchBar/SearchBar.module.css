@@ -12,6 +12,7 @@
     border-bottom-left-radius: 10px;
     outline: none;
     padding-inline: 10px;
+    padding-right: 30px; /* Оставляем больше места внутри поля */
 }
 
 .searchInputText {

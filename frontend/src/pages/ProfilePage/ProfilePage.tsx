@@ -1,3 +1,4 @@
+import { useAuth } from '../../context/AuthContext';
 import s from './ProfilePage.module.css'
 import React, {useState} from 'react';
 
@@ -29,10 +30,13 @@ const ProfilePage = () => {
     const handleAvatarChange = () => {
         // Логика для смены аватара
     };
+    const { logOut: logout } = useAuth();
 
     const handleLogout = () => {
-        // Логика для выхода из аккаунта
-        alert('Вы вышли из аккаунта');
+        
+        if (window.confirm('Вы уверены, что хотите выйти из аккаунта?')) {
+            logout();
+        }
     };
 
     return (

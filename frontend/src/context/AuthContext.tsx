@@ -18,18 +18,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, []);
 
-    const logIn = (token: string) => {
+    const login = (token: string) => {
         localStorage.setItem('token', token);
         setIsAuthenticated(true);
     };
 
-    const logOut = () => {
+    const logout = () => {
         localStorage.removeItem('token');
         setIsAuthenticated(false);
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, logIn: logIn, logOut: logOut }}>
+        <AuthContext.Provider value={{ isAuthenticated, logIn: login, logOut: logout }}>
             {children}
         </AuthContext.Provider>
     );

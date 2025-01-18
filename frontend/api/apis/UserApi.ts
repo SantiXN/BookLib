@@ -107,7 +107,7 @@ export class UserApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/user/{userID}/role`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            path: `/api/user/{userID}/role`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -257,7 +257,7 @@ export class UserApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/user/{userID}`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            path: `/api/user/{userID}`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -289,7 +289,7 @@ export class UserApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/v1/user/list`,
+            path: `/api/user/list`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -314,16 +314,8 @@ export class UserApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
         const response = await this.request({
-            path: `/api/v1/login`,
+            path: `/api/login`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,

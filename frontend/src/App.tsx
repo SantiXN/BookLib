@@ -14,6 +14,7 @@ import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
 import GenrePage from './pages/GenrePage/GenrePage.tsx';
 import ArticlesPage from './pages/ArticlesPage/ArticlesPage.tsx';
 import SearchPage from './pages/SearchPage/SearchPage.tsx';
+import ErrorPage from "./pages/ErrorPage/ErrorPage.tsx";
 
 const App = () => {
   return (
@@ -31,7 +32,8 @@ const App = () => {
                   <Route path='/library' element={<UserLibraryPage />} />
                   <Route path='/genre/:genreID' element={<GenrePage />} />
                   <Route path='/articles' element={<ArticlesPage />} />     
-                  <Route path='/search' element={<SearchPage />} />                                    
+                  <Route path='/search' element={<SearchPage />} />
+                  <Route path='/error404' element={<ErrorPage />} />
               </Routes>
           </div>
         <Footer />

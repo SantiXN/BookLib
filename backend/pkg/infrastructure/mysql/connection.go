@@ -9,7 +9,7 @@ import (
 
 const (
 	dbDriverName = "mysql"
-	dsn          = "TODO:TODO@tcp(db_db:3306)/mydatabase?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=true"
+	dsn          = "user:password@tcp(db_db:3306)/app?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=true"
 )
 
 func InitDBConnection() (*sqlx.DB, error) {

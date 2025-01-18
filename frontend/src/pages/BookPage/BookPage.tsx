@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
 import s from './BookPage.module.css'
 import { BookApiClient } from '../../../api/ApiClient';
-import { GetBookInfoRequest } from '../../../api';
 import { useParams } from 'react-router-dom';
 import { ParsedBookInfo } from '../../types/BookTypes';
 import { parseAuthorInfoInBookResponse } from '../../utils/AuthorUtils';

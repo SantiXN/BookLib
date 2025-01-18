@@ -16,6 +16,11 @@ func NewPublicAPI() API {
 type publicAPI struct {
 }
 
+func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (p *publicAPI) CreateArticle(ctx context.Context, request api.CreateArticleRequestObject) (api.CreateArticleResponseObject, error) {
 	//TODO implement me
 	panic("implement me")

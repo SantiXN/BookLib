@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';  // Для поддержки таблиц и других GitHub Flavored Markdown (GFM) элементов
 import s from './ArticlePage.module.css';

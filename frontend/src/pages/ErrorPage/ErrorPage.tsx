@@ -11,8 +11,8 @@ const ErrorPage = () => {
             <div className={s.errorCode}>404</div>
             <div className={s.errorMessage}>Извините, такой страницы нет</div>
             <div className={s.errorDescription}>Попробуйте вернуться назад и повторить еще раз или начните с главной</div>
-            <button onClick={handleBack} className={`${s.button} ${s.buttonBack}`}>Назад</button>
-            <Link to='/' className={`${s.button} ${s.buttonMain}`}>На главную</Link>
+            <button onClick={handleBack} className={`${s.button}`}>Назад</button>
+            <Link to='/' className={`${s.button}`}>На главную</Link>
         </div>
     );
 };

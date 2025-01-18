@@ -10,33 +10,27 @@ const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string })
     </li>
 );
 
-const MegaDropdown = ({ items }: { items: { label: string, link: string }[] }) => (
+const MegaDropdown = ({ items }: { items: { id: number, label: string, link: string }[] }) => (
     <div className={s.megaDropdown}>
         <ul className={s.dropdownList}>
             {items.map((item, index) => (
-                <HeaderItem key={index} to={item.link}>{item.label}</HeaderItem>
+                <HeaderItem key={index} to={`${item.link}${item.id != 1 ? '-' + item.id : ''}`}>{item.label}</HeaderItem>
             ))}
         </ul>
     </div>
 );
 
+const genres = [
+    { id: 1, label: 'Статьи', link: '/articles' },
+    { id: 2, label: 'Романы', link: '/genre/novels' },
+    { id: 3, label: 'Фэнтези', link: '/genre/fantasy' },
+    { id: 4, label: 'Фантастика', link: '/genre/scifi' },
+    { id: 5, label: 'Классика', link: '/genre/classic' },
+    { id: 6, label: 'Мистика', link: '/genre/mystery' },
+    { id: 7, label: 'Детективы', link: '/genre/detective' },
+];
+
 const Header = () => {
-    const userMenuItems = [
-        { label: 'Профиль', link: '/profile' },
-        { label: 'Настройки', link: '/admin' },
-        { label: 'Выход', link: '/logout' },
-    ];
-
-    const catalogItems = [
-        { label: 'Статьи', link: '/article' },
-        { label: 'Романы', link: '/novels' },
-        { label: 'Фэнтези', link: '/fantasy' },
-        { label: 'Фантастика', link: '/sci-fi' },
-        { label: 'Классика', link: '/classic' },
-        { label: 'Мистика', link: '/mystery' },
-        { label: 'Детективы', link: '/detective' },
-    ];
-
     const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
 
     const openAuthMenu = () => setIsAuthMenuOpen(true);
@@ -50,7 +44,7 @@ const Header = () => {
                 </Link>
                 <div className={`${s.catalog} ${s.headerWrapperItem}`}>
                     <div className={s.catalogButton}>Каталог</div>
-                    <MegaDropdown items={catalogItems} />
+                    <MegaDropdown items={genres} />
                 </div>
 
                 <div className={s.headerWrapperItem}>
@@ -58,14 +52,17 @@ const Header = () => {
                 </div>
 
                 <div className={`${s.menuItem} ${s.headerWrapperItem}`}>
-                    <div className={s.iconBook}></div>
-                    <Link to="/library" className={s.link}>Мои книги</Link>
+                    <Link to="/library" className={s.link}>
+                        <div className={s.iconBook} />
+                        Мои книги
+                    </Link>
                 </div>
 
                 <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconUser} />
-                    <Link to="/admin" className={s.link}>Профиль</Link>
-                    <MegaDropdown items={userMenuItems} />
+                    <Link to="/profile" className={s.link}>
+                        Профиль
+                    </Link>
                 </div>
 
                 <div className={s.headerWrapperItem}>

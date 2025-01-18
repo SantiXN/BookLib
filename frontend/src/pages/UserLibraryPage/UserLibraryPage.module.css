@@ -18,7 +18,7 @@
 
 .libraryMenuItem {
     text-align: center;
-    font-size: 24px;
+    font-size: 22px;
     border: 1px #BABABA solid;
     border-bottom: none;
     padding: 5px 0;
@@ -48,6 +48,8 @@
     border-radius: 10px;
     border-top-left-radius: 0;
     max-height: 1040px;
+    min-height: 150px;
+    min-width: 400px;
 }
 
 .libraryBooksBodyContainer {
@@ -61,6 +63,57 @@
     width: min-content;
 }
 
+.libraryBookContainer {
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.libraryBookContainer:hover {
+    transform: scale(1.05);
+}
+
+.deleteIcon {
+    top: 15px;
+    right: 15px;
+    position: absolute;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.libraryBookCard:hover .deleteIcon {
+    display: block;
+}
+
 .pagination {
     margin: 15px 0 0 35px;
+}
+
+.paginationInfo {
+    padding: 0 10px;
+}
+
+.paginationButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    padding: 0;
+}
+
+.message {
+    width: 100%;
+    padding: 0 30px;
+    font-size: 20px;
+}
+
+.changeStatusButton {
+    background: none;
+    color: #555;
+    font-size: 14px;
+    padding: 0;
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    border-radius: 0;
 }

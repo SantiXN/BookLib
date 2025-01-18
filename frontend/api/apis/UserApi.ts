@@ -19,6 +19,7 @@ import type {
   ChangeUserRoleRequest,
   EditUserInfoRequest,
   GetUserDataResponseData,
+  GetUserInfoResponseData,
   ListUsersResponseData,
   LoginUserRequest,
   LoginUserResponseData,
@@ -35,6 +36,8 @@ import {
     EditUserInfoRequestToJSON,
     GetUserDataResponseDataFromJSON,
     GetUserDataResponseDataToJSON,
+    GetUserInfoResponseDataFromJSON,
+    GetUserInfoResponseDataToJSON,
     ListUsersResponseDataFromJSON,
     ListUsersResponseDataToJSON,
     LoginUserRequestFromJSON,
@@ -59,11 +62,14 @@ export interface DeleteUserRequest {
 }
 
 export interface EditUserInfoOperationRequest {
-    userID: number;
     editUserInfoRequest?: EditUserInfoRequest;
 }
 
 export interface GetUserDataRequest {
+    userID: number;
+}
+
+export interface GetUserInfoRequest {
     userID: number;
 }
 
@@ -158,13 +164,6 @@ export class UserApi extends runtime.BaseAPI {
     /**
      */
     async editUserInfoRaw(requestParameters: EditUserInfoOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['userID'] == null) {
-            throw new runtime.RequiredError(
-                'userID',
-                'Required parameter "userID" was null or undefined when calling editUserInfo().'
-            );
-        }
-
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -180,7 +179,7 @@ export class UserApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/user/{userID}/edit`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            path: `/api/user/edit`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -192,7 +191,7 @@ export class UserApi extends runtime.BaseAPI {
 
     /**
      */
-    async editUserInfo(requestParameters: EditUserInfoOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async editUserInfo(requestParameters: EditUserInfoOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.editUserInfoRaw(requestParameters, initOverrides);
     }
 
@@ -232,6 +231,45 @@ export class UserApi extends runtime.BaseAPI {
      */
     async getUserData(requestParameters: GetUserDataRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetUserDataResponseData> {
         const response = await this.getUserDataRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUserInfoRaw(requestParameters: GetUserInfoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetUserInfoResponseData>> {
+        if (requestParameters['userID'] == null) {
+            throw new runtime.RequiredError(
+                'userID',
+                'Required parameter "userID" was null or undefined when calling getUserInfo().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/v1/user/{userID}`.replace(`{${"userID"}}`, encodeURIComponent(String(requestParameters['userID']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetUserInfoResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getUserInfo(requestParameters: GetUserInfoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetUserInfoResponseData> {
+        const response = await this.getUserInfoRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

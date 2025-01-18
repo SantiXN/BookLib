@@ -26,6 +26,7 @@ export * from './GetArticleResponseData';
 export * from './GetAuthorInfoResponseData';
 export * from './GetBookInfoResponseData';
 export * from './GetUserDataResponseData';
+export * from './GetUserInfoResponseData';
 export * from './ListArticlesResponseData';
 export * from './ListAuthorBooksResponseData';
 export * from './ListAuthorsResponseData';

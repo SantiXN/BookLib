@@ -498,6 +498,7 @@ paths:
 
   /api/v1/login:
     post:
+      security: []
       tags:
         - user
       operationId: LoginUser
@@ -515,8 +516,6 @@ paths:
                   $ref: '#/components/schemas/LoginUserResponseData'
           '400':
             $ref: '#/components/responses/badRequest'
-          '401':
-            $ref: '#/components/responses/unauthorized'
           '404':
             $ref: '#/components/responses/notFound'
 

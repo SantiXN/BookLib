@@ -46,12 +46,29 @@ export interface ArticleData {
      */
     author: UserData;
     /**
+     * 
+     * @type {string}
+     * @memberof ArticleData
+     */
+    status: ArticleDataStatusEnum;
+    /**
      * unix timestamp
      * @type {number}
      * @memberof ArticleData
      */
     publishDate?: number;
 }
+
+
+/**
+ * @export
+ */
+export const ArticleDataStatusEnum = {
+    Published: 'published',
+    Unpublished: 'unpublished'
+} as const;
+export type ArticleDataStatusEnum = typeof ArticleDataStatusEnum[keyof typeof ArticleDataStatusEnum];
+
 
 /**
  * Check if a given object implements the ArticleData interface.
@@ -60,6 +77,7 @@ export function instanceOfArticleData(value: object): value is ArticleData {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('author' in value) || value['author'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
 
@@ -76,6 +94,7 @@ export function ArticleDataFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'id': json['id'],
         'title': json['title'],
         'author': UserDataFromJSON(json['author']),
+        'status': json['status'],
         'publishDate': json['publishDate'] == null ? undefined : json['publishDate'],
     };
 }
@@ -94,6 +113,7 @@ export function ArticleDataToJSONTyped(value?: ArticleData | null, ignoreDiscrim
         'id': value['id'],
         'title': value['title'],
         'author': UserDataToJSON(value['author']),
+        'status': value['status'],
         'publishDate': value['publishDate'],
     };
 }

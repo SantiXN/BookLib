@@ -43,7 +43,24 @@ export interface ArticleInfo {
      * @memberof ArticleInfo
      */
     authorID: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ArticleInfo
+     */
+    status: ArticleInfoStatusEnum;
 }
+
+
+/**
+ * @export
+ */
+export const ArticleInfoStatusEnum = {
+    Published: 'published',
+    Unpublished: 'unpublished'
+} as const;
+export type ArticleInfoStatusEnum = typeof ArticleInfoStatusEnum[keyof typeof ArticleInfoStatusEnum];
+
 
 /**
  * Check if a given object implements the ArticleInfo interface.
@@ -53,6 +70,7 @@ export function instanceOfArticleInfo(value: object): value is ArticleInfo {
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('content' in value) || value['content'] === undefined) return false;
     if (!('authorID' in value) || value['authorID'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
 
@@ -70,6 +88,7 @@ export function ArticleInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'title': json['title'],
         'content': json['content'],
         'authorID': json['authorID'],
+        'status': json['status'],
     };
 }
 
@@ -88,6 +107,7 @@ export function ArticleInfoToJSONTyped(value?: ArticleInfo | null, ignoreDiscrim
         'title': value['title'],
         'content': value['content'],
         'authorID': value['authorID'],
+        'status': value['status'],
     };
 }
 

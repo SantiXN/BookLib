@@ -6,7 +6,7 @@ interface ErrorMessageProps
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
     return (
-        <div>
+        <div style={{textAlign: 'center'}}>
             <p style={{ fontSize: '18px' }}>{message}</p>
         </div>
     )

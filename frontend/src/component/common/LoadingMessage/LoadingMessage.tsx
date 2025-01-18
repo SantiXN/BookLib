@@ -1,7 +1,7 @@
 
 const LoadingMessage = () => {
     return (
-        <div>
+        <div style={{textAlign: 'center'}}>
             <p style={{ fontSize: '18px' }}>Загрузка...</p>
         </div>
     )

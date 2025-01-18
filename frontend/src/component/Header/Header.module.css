@@ -60,6 +60,7 @@
     display: none; /* Скрываем по умолчанию */
     border-radius: 10px;
     border: 1px solid #000000;
+    background-color: #FFF;
 }
 
 .catalog:hover .megaDropdown, .userMenu:hover .megaDropdown {

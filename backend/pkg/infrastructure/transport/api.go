@@ -1,19 +1,26 @@
 package transport
 
 import (
-	"booklib/api"
 	"context"
+	"errors"
+
+	"booklib/api"
+	"booklib/pkg/app/service"
+	"booklib/pkg/infrastructure/auth"
 )
 
 type API interface {
 	api.StrictServerInterface
 }
 
-func NewPublicAPI() API {
-	return &publicAPI{}
+func NewPublicAPI(userService service.UserService) API {
+	return &publicAPI{
+		userService: userService,
+	}
 }
 
 type publicAPI struct {
+	userService service.UserService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -172,6 +179,34 @@ func (p *publicAPI) DeleteUser(ctx context.Context, request api.DeleteUserReques
 }
 
 func (p *publicAPI) LoginUser(ctx context.Context, request api.LoginUserRequestObject) (api.LoginUserResponseObject, error) {
+	id, err := p.userService.ValidateUser(request.Body.Login, request.Body.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := auth.GenerateJWT(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.LoginUser200JSONResponse{Token: token}, nil
+}
+
+func (p *publicAPI) RegisterUser(ctx context.Context, request api.RegisterUserRequestObject) (api.RegisterUserResponseObject, error) {
+	err := p.userService.CreateUser(service.CreateData{
+		FirstName: request.Body.FirstName,
+		LastName:  request.Body.LastName,
+		Email:     request.Body.Email,
+		Password:  request.Body.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api.RegisterUser200Response{}, nil
+}
+
+func (p *publicAPI) GetAuthorizedUser(ctx context.Context, request api.GetAuthorizedUserRequestObject) (api.GetAuthorizedUserResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -189,4 +224,13 @@ func (p *publicAPI) GetUserInfo(ctx context.Context, request api.GetUserInfoRequ
 func (p *publicAPI) ChangeUserRole(ctx context.Context, request api.ChangeUserRoleRequestObject) (api.ChangeUserRoleResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
+}
+
+func getUserID(ctx context.Context) (int, error) {
+	userID, ok := ctx.Value("user").(uint)
+	if !ok {
+		return 0, errors.New("failed to retrieve user ID from context")
+	}
+
+	return int(userID), nil
 }

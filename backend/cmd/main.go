@@ -1,10 +1,15 @@
 package main
 
 import (
+	"booklib/pkg/infrastructure"
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -13,14 +18,29 @@ import (
 	"github.com/rs/cors"
 
 	"booklib/api"
+	"booklib/pkg/infrastructure/auth"
 	inframysql "booklib/pkg/infrastructure/mysql"
 	"booklib/pkg/infrastructure/transport"
 )
 
 func main() {
 	fmt.Println("Starting...")
+
+	// Create root context with cancellation
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Graceful shutdown handling
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+		<-sig
+		fmt.Println("\nShutting down...")
+		cancel()
+	}()
+
 	router := mux.NewRouter()
-	//router.Use(auth.JwtAuthentication)
+	router.Use(auth.JwtAuthentication)
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
@@ -50,7 +70,9 @@ func main() {
 		panic(err)
 	}
 
-	publicAPI := transport.NewPublicAPI()
+	dependencyContainer := infrastructure.NewDependencyContainer(ctx, *db)
+
+	publicAPI := transport.NewPublicAPI(dependencyContainer.UserService)
 	publicAPIHandler := api.NewStrictHandler(
 		publicAPI,
 		[]api.StrictMiddlewareFunc{
@@ -67,9 +89,31 @@ func main() {
 	}
 	fmt.Println(port)
 
-	fmt.Println("Starting server...")
-	err = http.ListenAndServe(":"+port, router)
-	if err != nil {
-		fmt.Print(err)
+	//fmt.Println("Starting server...")
+	//err = http.ListenAndServe(":"+port, router)
+	//if err != nil {
+	//	fmt.Print(err)
+	//}
+
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
 	}
+	go func() {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			fmt.Printf("HTTP server error: %s\n", err)
+		}
+	}()
+
+	// Wait for context cancellation
+	<-ctx.Done()
+
+	// Gracefully shutdown server with timeout
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		fmt.Printf("Server shutdown error: %s\n", err)
+	}
+	fmt.Println("Server gracefully stopped")
 }

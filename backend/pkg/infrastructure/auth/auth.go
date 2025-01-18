@@ -2,29 +2,32 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"os"
 	"strings"
+	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 
-	u "booklib/pkg/infrastructure/utils"
+	"booklib/pkg/infrastructure/utils"
+)
+
+const (
+	key = "hU8aH5g4I1pT7FbZlW9g8WQq0eVJvTpqvKp0yVJRxm4"
 )
 
 type Token struct {
-	UserId uint
-	Role   uint
-	jwt.StandardClaims
+	UserId int `json:"user_id"`
+	jwt.RegisteredClaims
 }
 
 var JwtAuthentication = func(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		notAuth := []string{"/api/user/new", "/api/user/login"} //Список эндпоинтов, для которых не требуется авторизация
-		requestPath := r.URL.Path                               //текущий путь запроса
+		notAuth := []string{"/api/login", "/api/register"}
+		requestPath := r.URL.Path
 
-		//проверяем, не требует ли запрос аутентификации, обслуживаем запрос, если он не нужен
 		for _, value := range notAuth {
 			if value == requestPath {
 				next.ServeHTTP(w, r)
@@ -33,53 +36,69 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 
 		response := make(map[string]interface{})
-		tokenHeader := r.Header.Get("Authorization") //Получение токена
+		tokenHeader := r.Header.Get("Authorization")
 
-		if tokenHeader == "" { //Токен отсутствует, возвращаем  403 http-код Unauthorized
-			response = u.Message(false, "Missing auth token")
-			w.WriteHeader(http.StatusForbidden)
+		if tokenHeader == "" {
+			response = utils.Message(false, "Missing auth token")
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Header().Add("Content-Type", "application/json")
-			u.Respond(w, response)
+			utils.Respond(w, response)
 			return
 		}
 
-		splitted := strings.Split(tokenHeader, " ") //Токен обычно поставляется в формате `Bearer {token-body}`, мы проверяем, соответствует ли полученный токен этому требованию
+		splitted := strings.Split(tokenHeader, " ")
 		if len(splitted) != 2 {
-			response = u.Message(false, "Invalid/Malformed auth token")
-			w.WriteHeader(http.StatusForbidden)
+			response = utils.Message(false, "Invalid/Malformed auth token")
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Header().Add("Content-Type", "application/json")
-			u.Respond(w, response)
+			utils.Respond(w, response)
 			return
 		}
 
-		tokenPart := splitted[1] //Получаем вторую часть токена
+		tokenPart := splitted[1]
 		tk := &Token{}
 
 		token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("token_password")), nil
+			return []byte(key), nil
 		})
 
-		if err != nil { //Неправильный токен, как правило, возвращает 403 http-код
-			response = u.Message(false, "Malformed authentication token")
-			w.WriteHeader(http.StatusForbidden)
+		if err != nil {
+			response = utils.Message(false, "Malformed authentication token")
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Header().Add("Content-Type", "application/json")
-			u.Respond(w, response)
+			utils.Respond(w, response)
 			return
 		}
 
-		if !token.Valid { //токен недействителен, возможно, не подписан на этом сервере
-			response = u.Message(false, "Token is not valid.")
-			w.WriteHeader(http.StatusForbidden)
+		if !token.Valid {
+			response = utils.Message(false, "Token is not valid.")
+			w.WriteHeader(http.StatusUnauthorized)
 			w.Header().Add("Content-Type", "application/json")
-			u.Respond(w, response)
+			utils.Respond(w, response)
 			return
 		}
 
-		//Всё прошло хорошо, продолжаем выполнение запроса
-		//fmt.Sprintf("User %", tk.Username) //Полезно для мониторинга
 		ctx := context.WithValue(r.Context(), "user", tk.UserId)
-		ctx = context.WithValue(ctx, "role", tk.Role)
 		r = r.WithContext(ctx)
-		next.ServeHTTP(w, r) //передать управление следующему обработчику!
+		next.ServeHTTP(w, r)
 	})
+}
+
+func GenerateJWT(userId int) (string, error) {
+	claims := Token{
+		UserId: userId,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			Issuer:    "booklib",
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	tokenString, err := token.SignedString([]byte(key))
+	if err != nil {
+		return "", fmt.Errorf("failed to sign token: %v", err)
+	}
+
+	return tokenString, nil
 }

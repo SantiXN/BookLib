@@ -516,8 +516,37 @@ paths:
                   $ref: '#/components/schemas/LoginUserResponseData'
           '400':
             $ref: '#/components/responses/badRequest'
-          '404':
-            $ref: '#/components/responses/notFound'
+
+  /api/register:
+    post:
+      tags:
+        - user
+      operationId: RegisterUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequest'
+
+  /api/user/get:
+    get:
+      tags:
+        - user
+      operationId: GetAuthorizedUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuthorizedUserResponseData'
+        '401':
+          $ref: '#/components/responses/unauthorized'
 
   /api/user/list:
     post:
@@ -1096,6 +1125,26 @@ components:
           type: string
       required:
         - token
+    RegisterUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - email
+        - password
+        - firstName
+    GetAuthorizedUserResponseData:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/userInfo'
     ListUsersResponseData:
       type: object
       properties:

@@ -15,15 +15,14 @@ import GenrePage from './pages/GenrePage/GenrePage.tsx';
 import ArticlesPage from './pages/ArticlesPage/ArticlesPage.tsx';
 import SearchPage from './pages/SearchPage/SearchPage.tsx';
 import AuthPage from './pages/AuthPage/AuthPage.tsx';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
 
 const App = () => {
-  const { isAuthenticated } = useAuth();
   return (
     <AuthProvider>
     <Router>
-      {isAuthenticated && <Header />}
+      <Header />
       <div className={s.container}>
         <Routes>
           <Route path="/login" element={<AuthPage />} />

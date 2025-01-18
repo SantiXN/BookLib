@@ -31,11 +31,6 @@ const genres = [
 ];
 
 const Header = () => {
-    const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
-
-    const openAuthMenu = () => setIsAuthMenuOpen(true);
-    const closeAuthMenu = () => setIsAuthMenuOpen(false);
-
     return (
         <header className={s.headerWrapper}>
             <div id="header" className={s.header}>
@@ -63,13 +58,6 @@ const Header = () => {
                     <Link to="/profile" className={s.link}>
                         Профиль
                     </Link>
-                </div>
-
-                <div className={s.headerWrapperItem}>
-                    <button onClick={openAuthMenu} className={s.authButton}>
-                        Авторизоваться
-                    </button>
-                    <AuthMenu isOpen={isAuthMenuOpen} onClose={closeAuthMenu} />
                 </div>
             </div>
         </header>

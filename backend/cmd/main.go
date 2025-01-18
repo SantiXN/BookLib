@@ -1,14 +1,15 @@
 package main
 
 import (
-	"booklib/pkg/infrastructure/auth"
 	"errors"
 	"fmt"
-
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	"github.com/gorilla/mux"
 	"net/http"
 	"os"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/gorilla/mux"
 
 	"booklib/api"
 	inframysql "booklib/pkg/infrastructure/mysql"
@@ -18,7 +19,7 @@ import (
 func main() {
 	fmt.Println("Starting...")
 	router := mux.NewRouter()
-	router.Use(auth.JwtAuthentication)
+	//router.Use(auth.JwtAuthentication)
 
 	fmt.Println("Initializing DB connection...")
 	db, err := inframysql.InitDBConnection()
@@ -29,7 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	migrationSource := "file://../data/mysql/migrations"
+	migrationSource := "file:///app/data/migrations"
 
 	fmt.Println("Creating migrator...")
 	m, err := migrate.NewWithDatabaseInstance(migrationSource, "mysql", dbInstance)

@@ -1,4 +1,4 @@
-CREATE TABLE `article`
+CREATE TABLE `category`
 (
     `id`   INT AUTO_INCREMENT NOT NULL,
     `name` VARCHAR(256)       NOT NULL,

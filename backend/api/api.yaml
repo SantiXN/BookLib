@@ -498,6 +498,7 @@ paths:
 
   /api/v1/login:
     post:
+      security: []
       tags:
         - user
       operationId: LoginUser

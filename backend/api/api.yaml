@@ -496,8 +496,9 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
-  /api/v1/login:
+  /api/login:
     post:
+      security: []
       tags:
         - user
       operationId: LoginUser
@@ -515,12 +516,10 @@ paths:
                   $ref: '#/components/schemas/LoginUserResponseData'
           '400':
             $ref: '#/components/responses/badRequest'
-          '401':
-            $ref: '#/components/responses/unauthorized'
           '404':
             $ref: '#/components/responses/notFound'
 
-  /api/v1/user/list:
+  /api/user/list:
     post:
       tags:
         - user
@@ -539,7 +538,7 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
-  /api/v1/user/{userID}:
+  /api/user/{userID}:
     post:
       tags:
         - user
@@ -566,7 +565,7 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/v1/user/{userID}/role:
+  /api/user/{userID}/role:
     post:
       tags:
         - user

@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import s from './Header.module.css';
 import SearchBar from "../common/SearchBar/SearchBar";
-import { useState } from "react";
-import AuthMenu from "../AuthMenu/AuthMenu";
+import { useAuth } from '../../context/AuthContext';
 
 const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string }) => (
     <li>
@@ -31,10 +30,9 @@ const genres = [
 ];
 
 const Header = () => {
-    const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
+    const {isAuthenticated} = useAuth();
 
-    const openAuthMenu = () => setIsAuthMenuOpen(true);
-    const closeAuthMenu = () => setIsAuthMenuOpen(false);
+    if (!isAuthenticated) return null;
 
     return (
         <header className={s.headerWrapper}>
@@ -63,13 +61,6 @@ const Header = () => {
                     <Link to="/profile" className={s.link}>
                         Профиль
                     </Link>
-                </div>
-
-                <div className={s.headerWrapperItem}>
-                    <button onClick={openAuthMenu} className={s.authButton}>
-                        Авторизоваться
-                    </button>
-                    <AuthMenu isOpen={isAuthMenuOpen} onClose={closeAuthMenu} />
                 </div>
             </div>
         </header>

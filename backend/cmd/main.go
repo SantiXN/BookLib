@@ -1,15 +1,65 @@
 package main
 
 import (
+	"booklib/pkg/infrastructure/auth"
+	"errors"
 	"fmt"
+
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/gorilla/mux"
 	"net/http"
+	"os"
+
+	"booklib/api"
+	inframysql "booklib/pkg/infrastructure/mysql"
+	"booklib/pkg/infrastructure/transport"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello all from Go backend!")
-	})
-	port := "8080"
-	fmt.Printf("Server running on port %s\n", port)
-	http.ListenAndServe(":"+port, nil)
+	fmt.Println("Starting...")
+	router := mux.NewRouter()
+	router.Use(auth.JwtAuthentication)
+
+	fmt.Println("Initializing DB connection...")
+	db, err := inframysql.InitDBConnection()
+	if err != nil {
+		panic(err)
+	}
+	dbInstance, err := mysql.WithInstance(db.DB, &mysql.Config{})
+	if err != nil {
+		panic(err)
+	}
+	migrationSource := "file://../data/mysql/migrations"
+
+	fmt.Println("Creating migrator...")
+	m, err := migrate.NewWithDatabaseInstance(migrationSource, "mysql", dbInstance)
+	if err != nil {
+		panic(err)
+	}
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		panic(err)
+	}
+
+	publicAPI := transport.NewPublicAPI()
+	publicAPIHandler := api.NewStrictHandler(
+		publicAPI,
+		[]api.StrictMiddlewareFunc{
+			//openapi.NewLoggingMiddleware(dc.TokenParser, logger),
+			//public.NewPublicAPIErrorsMiddleware(),
+		},
+	)
+
+	router.PathPrefix("/api/").Handler(api.Handler(publicAPIHandler))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Println(port)
+
+	fmt.Println("Starting server...")
+	err = http.ListenAndServe(":"+port, router)
+	if err != nil {
+		fmt.Print(err)
+	}
 }

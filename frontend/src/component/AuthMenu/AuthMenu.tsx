@@ -1,19 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {  useRef, useState } from 'react';
 import s from './AuthMenu.module.css'
 import RegisterMenu from '../RegisterMenu/RegisterMenu';
 import PasswordInputField from '../common/PasswordInputField/PasswordInputField';
-
-interface AuthMenuProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
+import { UserApiClient } from '../../../api/ApiClient';
+import { useAuth } from '../../context/AuthContext';
 
 const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 };
 
-const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
+const AuthMenu = () => {
+    const { logIn } = useAuth();
     const containerRef = useRef<HTMLDivElement>(null);
     const [isRegisterMenuOpen, setIsRegisterMenuOpen] = useState(false);
     const [login, setLogin] = useState('');
@@ -22,37 +20,6 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
     const [passwordError, setPasswordError] = useState('');
 
     const isDataError = !(password.trim() && login.trim()) || loginError != '' || passwordError != '';
-
-    const close = () => {
-        setLogin('');
-        setPassword('');
-
-        onClose();
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            close();
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            close();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const openRegisterMenu = () => setIsRegisterMenuOpen(true);
     const closeRegisterMenu = () => setIsRegisterMenuOpen(false);
@@ -77,14 +44,17 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Здесь можно добавить логику для авторизации
-        console.log('Логин:', login);
-        console.log('Пароль:', password);
+        
+        try {
+            const response = await UserApiClient.loginUser({loginUserRequest: {login: login, password: password}});
+            const token = response.token; // Предполагается, что токен находится в response.data.token
+            logIn(token);
+        } catch (err) {
+            console.error('Ошибка авторизации. Проверьте логин и пароль.');
+        }
     };
-
-    if (!isOpen) return null;
 
     return (
         <div className={s.container}>
@@ -92,7 +62,6 @@ const AuthMenu: React.FC<AuthMenuProps> = ({ isOpen, onClose }) => {
                 <div id='auth-menu' className={s.authMenu} ref={containerRef}>
                     <div className={s.menuHeader}>
                         <p className={s.menuTitle}>Войти</p>
-                        <span onClick={onClose} className={s.closeIcon} />
                     </div>
                     <div className={s.menuContainer}>
                         <form className={s.form} onSubmit={handleSubmit}>

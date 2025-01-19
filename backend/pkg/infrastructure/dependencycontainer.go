@@ -21,23 +21,27 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	checker := service.NewPermissionChecker(userProvider)
 	infraUserQS := infraquery.NewUserQueryService(client)
 	infraAuthorQS := infraquery.NewAuthorQueryService(client)
+	infraCategoryQS := infraquery.NewCategoryQueryService(client)
 
 	userService := service.NewUserService(domainUserService, checker)
 	userQueryService := query.NewUserQueryService(infraUserQS, checker)
 	authorService := service.NewAuthorService(domainAuthorService, checker)
 	authorQueryService := query.NewAuthorQueryService(infraAuthorQS)
+	categoryQueryService := query.NewCategoryQueryService(infraCategoryQS)
 
 	return &DependencyContainer{
-		UserService:        userService,
-		UserQueryService:   userQueryService,
-		AuthorService:      authorService,
-		AuthorQueryService: authorQueryService,
+		UserService:          userService,
+		UserQueryService:     userQueryService,
+		AuthorService:        authorService,
+		AuthorQueryService:   authorQueryService,
+		CategoryQueryService: categoryQueryService,
 	}
 }
 
 type DependencyContainer struct {
-	UserService        service.UserService
-	UserQueryService   query.UserQueryService
-	AuthorService      service.AuthorService
-	AuthorQueryService query.AuthorQueryService
+	UserService          service.UserService
+	UserQueryService     query.UserQueryService
+	AuthorService        service.AuthorService
+	AuthorQueryService   query.AuthorQueryService
+	CategoryQueryService query.CategoryQueryService
 }

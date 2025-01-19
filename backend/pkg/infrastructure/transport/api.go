@@ -25,20 +25,23 @@ func NewPublicAPI(
 	userQueryService query.UserQueryService,
 	authorService service.AuthorService,
 	authorQueryService query.AuthorQueryService,
+	categoryQueryService query.CategoryQueryService,
 ) API {
 	return &publicAPI{
-		userService:        userService,
-		userQueryService:   userQueryService,
-		authorService:      authorService,
-		authorQueryService: authorQueryService,
+		userService:          userService,
+		userQueryService:     userQueryService,
+		authorService:        authorService,
+		authorQueryService:   authorQueryService,
+		categoryQueryService: categoryQueryService,
 	}
 }
 
 type publicAPI struct {
-	userService        service.UserService
-	userQueryService   query.UserQueryService
-	authorService      service.AuthorService
-	authorQueryService query.AuthorQueryService
+	userService          service.UserService
+	userQueryService     query.UserQueryService
+	authorService        service.AuthorService
+	authorQueryService   query.AuthorQueryService
+	categoryQueryService query.CategoryQueryService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -209,8 +212,23 @@ func (p *publicAPI) ListBooksByCategory(ctx context.Context, request api.ListBoo
 }
 
 func (p *publicAPI) ListCategories(ctx context.Context, request api.ListCategoriesRequestObject) (api.ListCategoriesResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	categories, err := p.categoryQueryService.ListCategories(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	apiCategories := make([]api.CategoryInfo, 0, len(categories))
+	for _, category := range categories {
+		apiCategory := api.CategoryInfo{
+			Id:       category.ID,
+			Category: category.Name,
+		}
+		apiCategories = append(apiCategories, apiCategory)
+	}
+
+	return api.ListCategories200JSONResponse{
+		Categories: apiCategories,
+	}, nil
 }
 
 func (p *publicAPI) SearchItems(ctx context.Context, request api.SearchItemsRequestObject) (api.SearchItemsResponseObject, error) {

@@ -1073,6 +1073,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/categoryInfo'
+      required:
+        - categories
     CreateAuthorRequest:
       type: object
       properties:

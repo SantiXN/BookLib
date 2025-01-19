@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from './AdminMenu.module.css'
 import AddAuthorBlock from '../FunctionalWindows/AddAuthorBlock/AddAuthorBlock';
 import AddBookBlock from '../FunctionalWindows/AddBookBlock/AddBookBlock';
@@ -11,13 +11,36 @@ import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleB
 import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
 import EditUserRoleBlock from '../FunctionalWindows/EditUserRoleBlock/EditUserRoleBlock';
 import RemoveUserBlock from '../FunctionalWindows/RemoveUserBlock/RemoveUserBlock';
+import { UserApiClient } from '../../../../api/ApiClient';
+import { UserInfoRoleEnum } from '../../../../api';
+import { useNavigate } from 'react-router-dom';
 
 const AdminMenu = () => {
+    const navigate = useNavigate();
+    const [isAdmin, setIsAdmin] = useState(false);
+    
+    useEffect(() => {
+        UserApiClient.getAuthorizedUser()
+            .then((response) => {
+                if (response.user.role !== UserInfoRoleEnum.Admin) {
+                    navigate('/');
+                } else {
+                    setIsAdmin(true);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+                navigate('/');
+            });
+    }, [navigate]);
+
     const [activeWindowMenu, setActiveWindowMenu] = useState<string | null>(null);
 
     const handleButtonClick = (window: string) => setActiveWindowMenu(window); 
 
     const closeWindow = () => setActiveWindowMenu(null);
+
+    if (!isAdmin) return null;
     
     return (
         <div className={s.adminMenuContainer}>

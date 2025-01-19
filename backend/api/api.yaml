@@ -150,6 +150,34 @@ paths:
           $ref: '#/components/responses/unauthorized'
         '404':
           $ref: '#/components/responses/notFound'
+  
+  /api/book/{bookID}/library/contains:
+    get:
+      tags:
+        - book
+      operationId: CheckBookInLibrary
+      parameters:
+        - in: path
+          name: bookID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contains:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/notFound'
 
   /api/book/{bookID}/library/remove:
     post:

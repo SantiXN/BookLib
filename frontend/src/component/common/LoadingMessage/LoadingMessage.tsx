@@ -2,7 +2,7 @@
 const LoadingMessage = () => {
     return (
         <div>
-            <p style={{ fontSize: '18px' }}>Загрузка...</p>
+            <p style={{ fontSize: '18px', textAlign: 'center' }}>Загрузка...</p>
         </div>
     )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css';
-import { AuthorData, CategoryInfo } from '../../../../../api';
+import { AuthorInfo, CategoryInfo } from '../../../../../api';
 import { AuthorApiClient, BookApiClient, CategoryApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
@@ -11,11 +11,11 @@ interface BlockProps {
 const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [authors, setAuthors] = useState<AuthorData[]>([]);
+    const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     const [categories, setCategories] = useState<CategoryInfo[]>([]);
 
     const [title, setTitle] = useState('');
-    const [selectedAuthors, setSelectedAuthors] = useState<AuthorData[]>([]);
+    const [selectedAuthors, setSelectedAuthors] = useState<AuthorInfo[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<CategoryInfo[]>([]);
     const [description, setDescription] = useState('');
     const [bookFile, setBookFile] = useState<File | null>(null);
@@ -99,7 +99,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedOptions = Array.from(e.target.selectedOptions).map(
             (option) => authors.find(author => author.id === parseInt(option.value))
-        ).filter((author): author is AuthorData => author !== undefined);
+        ).filter((author): author is AuthorInfo => author !== undefined);
         setSelectedAuthors(selectedOptions);
     };
 
@@ -130,6 +130,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 description,
                 authorIDs: selectedAuthors.map(author => author.id),
                 categoryIDs: selectedCategories.map(category => category.id),
+                filePath: bookFile ? bookFile.name : '',
             }
         };
 
@@ -145,7 +146,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 }
             })
             .catch((error) => {
-                console.error('Error while adding book:', error);
+                console.error('Error adding book:', error);
                 alert('Не удалось добавить книгу. Попробуйте позже.');
             });
     };

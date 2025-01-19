@@ -36,7 +36,7 @@ func HashPassword(password string) (string, error) {
 }
 
 func GetUserID(ctx context.Context) (int, error) {
-	userID, ok := ctx.Value("user_id").(int)
+	userID, ok := ctx.Value("user").(int)
 	if !ok {
 		return 0, ErrInvalidToken
 	}

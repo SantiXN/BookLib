@@ -40,8 +40,6 @@ func main() {
 	}()
 
 	router := mux.NewRouter()
-	router.Use(auth.JwtAuthentication)
-
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -49,6 +47,7 @@ func main() {
 		AllowCredentials: true,
 	})
 	router.Use(corsHandler.Handler)
+	router.Use(auth.JwtAuthentication)
 
 	fmt.Println("Initializing DB connection...")
 	db, err := inframysql.InitDBConnection()

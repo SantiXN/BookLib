@@ -63,6 +63,7 @@ func (repo *authorRepository) Store(author model.Author) error {
 		author.ID(),
 		author.FirstName(),
 		author.LastName(),
+		author.AvatarPath(),
 		author.Description(),
 	)
 	return err

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { AuthorData } from '../../../../../api';
+import { AuthorInfo } from '../../../../../api';
 import { AuthorApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
@@ -11,7 +11,7 @@ interface BlockProps {
 const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [authors, setAuthors] = useState<AuthorData[]>([]);
+    const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     const [selectedAuthorID, setSelectedAuthorID] = useState<number | null>(null);
 
     useEffect(() => {

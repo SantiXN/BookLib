@@ -15,7 +15,6 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
         firstname: '',
         lastname: '',
         email: '',
-        login: '',
         password: '',
         repeatPassword: '',
     });
@@ -50,27 +49,37 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
             ...prevState,
             [id]: value,
         }));
-        
-        // Reset error for the field being updated
-        setErrors(prevState => ({
-            ...prevState,
-            [id]: '',
-        }));
+
+        // Удаление ошибки при совпадении паролей
+        if (id === 'password' || id === 'repeatPassword') {
+            if (formData.password === formData.repeatPassword) {
+                setErrors(prevState => ({
+                    ...prevState,
+                    password: '',
+                    repeatPassword: '',
+                }));
+            }
+        } else {
+            setErrors(prevState => ({
+                ...prevState,
+                [id]: '',
+            }));
+        }
     };
 
     const validateForm = () => {
         let valid = true;
-        const newErrors = { ...errors };
+        const newErrors = {
+            firstname: '',
+            lastname: '',
+            email: '',
+            password: '',
+            repeatPassword: '',
+        };
 
         // Проверка имени
         if (!formData.firstname) {
             newErrors.firstname = 'Имя обязательно';
-            valid = false;
-        }
-
-        // Проверка фамилии
-        if (!formData.lastname) {
-            newErrors.lastname = 'Фамилия обязательна';
             valid = false;
         }
 
@@ -98,23 +107,29 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
         return valid;
     };
 
+    useEffect(() => {
+        validateForm();
+    }, [errors])
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
         if (validateForm()) {
-
             const request: RegisterUserRequest = {
                 firstName: formData.firstname,
-                lastName: formData.lastname,
                 email: formData.email,
                 password: formData.password,
+                ...(formData.lastname && { lastName: formData.lastname }),
             };
             console.log('Данные формы:', formData);
             await UserApiClient.registerUser({ registerUserRequest: request })
-                .then((response) => {
-                    console.log(response)
+                .then(() => {
+                    alert('Пользователь создан!');
+                    onClose(); // Закрыть меню после успешной регистрации
                 })
-            onClose(); // Закрыть меню после успешной регистрации
+                .catch((error) => {
+                    alert('Ошибка регистрации: ' + (error.message || 'Попробуйте снова позже.'));
+                });
         }
     };
 
@@ -122,9 +137,7 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
 
     const isButtonDisabled =
       !formData.firstname ||
-      !formData.lastname ||
       !formData.email ||
-      !formData.login ||
       !formData.password ||
       !formData.repeatPassword ||
       !!errors.email ||
@@ -159,12 +172,6 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
                             <input id='email' className={s.formTextInput} type='text' placeholder='E-mail' value={formData.email} onChange={handleChange} />
                         </label>
                         {errors.email && <p className={s.error}>{errors.email}</p>}
-                    </div>
-                    <div className={s.formFieldContainer}>
-                        <label className={s.formLabel}>
-                            Логин:
-                            <input id='login' className={s.formTextInput} type='text' placeholder='Логин' value={formData.login} onChange={handleChange} />
-                        </label>
                     </div>
                     <div className={s.formFieldContainer}>
                         <label className={s.formLabel}>

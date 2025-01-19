@@ -27,7 +27,8 @@ func NewPublicAPIErrorsMiddleware() api.StrictMiddlewareFunc {
 				} else if errors.Is(err, ErrInvalidRole) ||
 					errors.Is(err, model.ErrUserAlreadyExist) ||
 					errors.Is(err, service.ErrUnsupportedFormat) ||
-					errors.Is(err, service.ErrFailedToSaveFile) {
+					errors.Is(err, service.ErrFailedToSaveFile) ||
+					errors.Is(err, ErrInvalidReadingStatus) {
 					return api.BadRequestJSONResponse{
 						Code:    api.BadRequestResponseDataCodeBadRequest,
 						Message: err.Error(),
@@ -35,6 +36,11 @@ func NewPublicAPIErrorsMiddleware() api.StrictMiddlewareFunc {
 				} else if errors.Is(err, service.ErrPermissionDenied) {
 					return api.PermissionDeniedJSONResponse{
 						Code:    api.PermissionDeniedResponseDataCodePermissionDenied,
+						Message: err.Error(),
+					}, nil
+				} else {
+					return api.BadRequestJSONResponse{
+						Code:    api.BadRequestResponseDataCodeBadRequest,
 						Message: err.Error(),
 					}, nil
 				}

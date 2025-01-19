@@ -96,7 +96,6 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 ))}
                             </select>
                         </div>
-                        <p>Учтите, что при удалении автора автоматически удалятся и все книги данного автора.</p>
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

@@ -14,34 +14,34 @@ import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
 import GenrePage from './pages/GenrePage/GenrePage.tsx';
 import ArticlesPage from './pages/ArticlesPage/ArticlesPage.tsx';
 import SearchPage from './pages/SearchPage/SearchPage.tsx';
-import AuthPage from './pages/AuthPage/AuthPage.tsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
+import ErrorPage from './pages/ErrorPage/ErrorPage.tsx';
 
 const App = () => {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Header />
-        <div className={s.container}>
-          <Routes>
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/" element={<MainPage />} />
-            <Route path="/book/:id" element={<BookPage />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminMenu /></ProtectedRoute>} />
-            <Route path="/editor" element={<ProtectedRoute><EditorMenu /></ProtectedRoute>} />
-            <Route path="/author/:id" element={<AuthorPage />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/library" element={<ProtectedRoute><UserLibraryPage /></ProtectedRoute>} />
-            <Route path="/genre/:genreID" element={<GenrePage />} />
-            <Route path="/articles" element={<ArticlesPage />} />
-            <Route path="/search" element={<SearchPage />} />
-          </Routes>
-        </div>
-        <Footer />
-      </Router>
-    </AuthProvider>
+          <div className={s.container}>
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/book/:id" element={<BookPage />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminMenu /></ProtectedRoute>} />
+              <Route path="/editor" element={<ProtectedRoute><EditorMenu /></ProtectedRoute>} />
+              <Route path="/author/:id" element={<AuthorPage />} />
+              <Route path="/article/:id" element={<ArticlePage />} />
+              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/library" element={<ProtectedRoute><UserLibraryPage /></ProtectedRoute>} />
+              <Route path="/genre/:genreID" element={<GenrePage />} />
+              <Route path="/articles" element={<ArticlesPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="*" element={<ErrorPage />} />
+            </Routes>
+          </div>
+          <Footer />
+      </AuthProvider>
+    </Router>
   );
 };
 

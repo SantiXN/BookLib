@@ -31,9 +31,10 @@ type UserQueryService interface {
 	ListUserInfo(ctx context.Context) ([]UserInfo, error)
 }
 
-func NewUserQueryService(storageQueryService UserQueryService) UserQueryService {
+func NewUserQueryService(storageQueryService UserQueryService, checker service.PermissionChecker) UserQueryService {
 	return &userQueryService{
 		storageQueryService: storageQueryService,
+		permissionChecker:   checker,
 	}
 }
 

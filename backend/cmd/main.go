@@ -72,12 +72,16 @@ func main() {
 
 	dependencyContainer := infrastructure.NewDependencyContainer(ctx, *db)
 
-	publicAPI := transport.NewPublicAPI(dependencyContainer.UserService, dependencyContainer.UserQueryService)
+	publicAPI := transport.NewPublicAPI(
+		dependencyContainer.UserService,
+		dependencyContainer.UserQueryService,
+		dependencyContainer.AuthorService,
+		dependencyContainer.AuthorQueryService,
+	)
 	publicAPIHandler := api.NewStrictHandler(
 		publicAPI,
 		[]api.StrictMiddlewareFunc{
-			//openapi.NewLoggingMiddleware(dc.TokenParser, logger),
-			//public.NewPublicAPIErrorsMiddleware(),
+			transport.NewPublicAPIErrorsMiddleware(),
 		},
 	)
 

@@ -23,16 +23,22 @@ type API interface {
 func NewPublicAPI(
 	userService service.UserService,
 	userQueryService query.UserQueryService,
+	authorService service.AuthorService,
+	authorQueryService query.AuthorQueryService,
 ) API {
 	return &publicAPI{
-		userService:      userService,
-		userQueryService: userQueryService,
+		userService:        userService,
+		userQueryService:   userQueryService,
+		authorService:      authorService,
+		authorQueryService: authorQueryService,
 	}
 }
 
 type publicAPI struct {
-	userService      service.UserService
-	userQueryService query.UserQueryService
+	userService        service.UserService
+	userQueryService   query.UserQueryService
+	authorService      service.AuthorService
+	authorQueryService query.AuthorQueryService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -71,28 +77,65 @@ func (p *publicAPI) EditArticle(ctx context.Context, request api.EditArticleRequ
 }
 
 func (p *publicAPI) CreateAuthor(ctx context.Context, request api.CreateAuthorRequestObject) (api.CreateAuthorResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := p.authorService.CreateAuthor(ctx, service.AuthorData{
+		FirstName:   request.Body.FirstName,
+		LastName:    request.Body.LastName,
+		Description: request.Body.Description,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api.CreateAuthor200JSONResponse{
+		Id: id,
+	}, nil
 }
 
 func (p *publicAPI) ListAuthors(ctx context.Context, request api.ListAuthorsRequestObject) (api.ListAuthorsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	authorInfos, err := p.authorQueryService.ListAuthorInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	apiAuthors := make([]api.AuthorInfo, 0, len(authorInfos))
+	for _, authorInfo := range authorInfos {
+		apiAuthor := toAPIAuthorInfo(authorInfo)
+		apiAuthors = append(apiAuthors, apiAuthor)
+	}
+
+	return api.ListAuthors200JSONResponse{
+		Authors: apiAuthors,
+	}, nil
+
 }
 
 func (p *publicAPI) DeleteAuthor(ctx context.Context, request api.DeleteAuthorRequestObject) (api.DeleteAuthorResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.authorService.DeleteAuthor(ctx, request.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.DeleteAuthor200Response{}, nil
 }
 
 func (p *publicAPI) EditAuthor(ctx context.Context, request api.EditAuthorRequestObject) (api.EditAuthorResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.authorService.EditAuthorInfo(ctx, request.AuthorID, request.Body.NewFirstName, request.Body.NewLastName, request.Body.NewDescription)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.EditAuthor200Response{}, nil
 }
 
 func (p *publicAPI) GetAuthorInfo(ctx context.Context, request api.GetAuthorInfoRequestObject) (api.GetAuthorInfoResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	authorInfo, err := p.authorQueryService.GetAuthorInfo(ctx, request.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.GetAuthorInfo200JSONResponse{
+		Author: toAPIAuthorInfo(authorInfo),
+	}, nil
 }
 
 func (p *publicAPI) AddBook(ctx context.Context, request api.AddBookRequestObject) (api.AddBookResponseObject, error) {
@@ -350,4 +393,14 @@ func toAPIUserInfo(userInfo query.UserInfo) (api.UserInfo, error) {
 		Role:       &apiRole,
 		AvatarPath: userInfo.AvatarPath,
 	}, nil
+}
+
+func toAPIAuthorInfo(authorInfo query.AuthorInfo) api.AuthorInfo {
+	return api.AuthorInfo{
+		Id:          authorInfo.ID,
+		FirstName:   authorInfo.FirstName,
+		LastName:    authorInfo.LastName,
+		Description: authorInfo.Description,
+		AvatarPath:  authorInfo.AvatarPath,
+	}
 }

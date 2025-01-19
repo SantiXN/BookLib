@@ -8,12 +8,11 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/domain/model"
-	inframysql "booklib/pkg/infrastructure/mysql"
 )
 
 func NewAuthorRepository(
 	ctx context.Context,
-	client inframysql.ClientContext,
+	client sqlx.DB,
 ) model.AuthorRepository {
 	return &authorRepository{
 		ctx:    ctx,
@@ -23,7 +22,7 @@ func NewAuthorRepository(
 
 type authorRepository struct {
 	ctx    context.Context
-	client inframysql.ClientContext
+	client sqlx.DB
 }
 
 func (repo *authorRepository) NextID() (int, error) {

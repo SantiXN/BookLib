@@ -9,6 +9,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	ErrInvalidToken = errors.New("invalid token")
+)
+
 func Message(status bool, message string) map[string]interface{} {
 	return map[string]interface{}{"status": status, "message": message}
 }
@@ -34,7 +38,7 @@ func HashPassword(password string) (string, error) {
 func GetUserID(ctx context.Context) (int, error) {
 	userID, ok := ctx.Value("user_id").(int)
 	if !ok {
-		return 0, errors.New("failed to retrieve user ID from context")
+		return 0, ErrInvalidToken
 	}
 
 	return userID, nil

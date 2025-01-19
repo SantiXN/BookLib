@@ -975,6 +975,8 @@ components:
       properties:
         author:
           $ref: '#/components/schemas/authorInfo'
+      required:
+        - author
     ListBooksResponseData:
       type: object
       properties:
@@ -1006,7 +1008,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorData'
+            $ref: '#/components/schemas/authorInfo'
         articles:
           type: array
           items:
@@ -1087,6 +1089,8 @@ components:
       properties:
         id:
           type: integer
+      required:
+        - id
     EditAuthorRequest:
       type: object
       properties:
@@ -1102,7 +1106,9 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorData'
+            $ref: '#/components/schemas/authorInfo'
+      required:
+        - authors
     GetUserDataResponseData:
       type: object
       properties:
@@ -1236,7 +1242,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorData'
+            $ref: '#/components/schemas/authorInfo'
         starCount:
           type: number
       required:
@@ -1258,7 +1264,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorData'
+            $ref: '#/components/schemas/authorInfo'
         starCount:
           type: integer
         readingStatus:
@@ -1289,7 +1295,7 @@ components:
         authors:
           type: array
           items:
-            $ref: '#/components/schemas/authorData'
+            $ref: '#/components/schemas/authorInfo'
         starCount:
           type: number
         feedback:
@@ -1308,23 +1314,6 @@ components:
         - authors
         - starCount
         - categories
-
-    authorData:
-      type: object
-      properties:
-        id:
-          type: integer
-        firstName:
-          type: string
-        lastName:
-          type: string
-        description:
-          type: string
-        avatarPath:
-          type: string
-      required:
-        - id
-        - firstName
 
     authorInfo:
       type: object

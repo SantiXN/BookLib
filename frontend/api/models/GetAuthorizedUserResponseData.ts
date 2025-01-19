@@ -24,30 +24,30 @@ import {
 /**
  * 
  * @export
- * @interface GetUserInfoResponseData
+ * @interface GetAuthorizedUserResponseData
  */
-export interface GetUserInfoResponseData {
+export interface GetAuthorizedUserResponseData {
     /**
      * 
      * @type {UserInfo}
-     * @memberof GetUserInfoResponseData
+     * @memberof GetAuthorizedUserResponseData
      */
     user: UserInfo;
 }
 
 /**
- * Check if a given object implements the GetUserInfoResponseData interface.
+ * Check if a given object implements the GetAuthorizedUserResponseData interface.
  */
-export function instanceOfGetUserInfoResponseData(value: object): value is GetUserInfoResponseData {
+export function instanceOfGetAuthorizedUserResponseData(value: object): value is GetAuthorizedUserResponseData {
     if (!('user' in value) || value['user'] === undefined) return false;
     return true;
 }
 
-export function GetUserInfoResponseDataFromJSON(json: any): GetUserInfoResponseData {
-    return GetUserInfoResponseDataFromJSONTyped(json, false);
+export function GetAuthorizedUserResponseDataFromJSON(json: any): GetAuthorizedUserResponseData {
+    return GetAuthorizedUserResponseDataFromJSONTyped(json, false);
 }
 
-export function GetUserInfoResponseDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetUserInfoResponseData {
+export function GetAuthorizedUserResponseDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetAuthorizedUserResponseData {
     if (json == null) {
         return json;
     }
@@ -57,11 +57,11 @@ export function GetUserInfoResponseDataFromJSONTyped(json: any, ignoreDiscrimina
     };
 }
 
-export function GetUserInfoResponseDataToJSON(json: any): GetUserInfoResponseData {
-    return GetUserInfoResponseDataToJSONTyped(json, false);
+export function GetAuthorizedUserResponseDataToJSON(json: any): GetAuthorizedUserResponseData {
+    return GetAuthorizedUserResponseDataToJSONTyped(json, false);
 }
 
-export function GetUserInfoResponseDataToJSONTyped(value?: GetUserInfoResponseData | null, ignoreDiscriminator: boolean = false): any {
+export function GetAuthorizedUserResponseDataToJSONTyped(value?: GetAuthorizedUserResponseData | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

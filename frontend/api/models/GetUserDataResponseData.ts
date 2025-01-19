@@ -32,13 +32,14 @@ export interface GetUserDataResponseData {
      * @type {UserData}
      * @memberof GetUserDataResponseData
      */
-    data?: UserData;
+    data: UserData;
 }
 
 /**
  * Check if a given object implements the GetUserDataResponseData interface.
  */
 export function instanceOfGetUserDataResponseData(value: object): value is GetUserDataResponseData {
+    if (!('data' in value) || value['data'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function GetUserDataResponseDataFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'data': json['data'] == null ? undefined : UserDataFromJSON(json['data']),
+        'data': UserDataFromJSON(json['data']),
     };
 }
 

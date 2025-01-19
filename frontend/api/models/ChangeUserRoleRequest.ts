@@ -24,7 +24,7 @@ export interface ChangeUserRoleRequest {
      * @type {string}
      * @memberof ChangeUserRoleRequest
      */
-    role?: ChangeUserRoleRequestRoleEnum;
+    role: ChangeUserRoleRequestRoleEnum;
 }
 
 
@@ -42,6 +42,7 @@ export type ChangeUserRoleRequestRoleEnum = typeof ChangeUserRoleRequestRoleEnum
  * Check if a given object implements the ChangeUserRoleRequest interface.
  */
 export function instanceOfChangeUserRoleRequest(value: object): value is ChangeUserRoleRequest {
+    if (!('role' in value) || value['role'] === undefined) return false;
     return true;
 }
 
@@ -55,7 +56,7 @@ export function ChangeUserRoleRequestFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'role': json['role'] == null ? undefined : json['role'],
+        'role': json['role'],
     };
 }
 

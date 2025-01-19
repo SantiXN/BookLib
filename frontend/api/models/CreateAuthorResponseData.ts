@@ -24,13 +24,14 @@ export interface CreateAuthorResponseData {
      * @type {number}
      * @memberof CreateAuthorResponseData
      */
-    id?: number;
+    id: number;
 }
 
 /**
  * Check if a given object implements the CreateAuthorResponseData interface.
  */
 export function instanceOfCreateAuthorResponseData(value: object): value is CreateAuthorResponseData {
+    if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
@@ -44,7 +45,7 @@ export function CreateAuthorResponseDataFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
     };
 }
 

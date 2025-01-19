@@ -32,13 +32,14 @@ export interface GetAuthorInfoResponseData {
      * @type {AuthorInfo}
      * @memberof GetAuthorInfoResponseData
      */
-    author?: AuthorInfo;
+    author: AuthorInfo;
 }
 
 /**
  * Check if a given object implements the GetAuthorInfoResponseData interface.
  */
 export function instanceOfGetAuthorInfoResponseData(value: object): value is GetAuthorInfoResponseData {
+    if (!('author' in value) || value['author'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function GetAuthorInfoResponseDataFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-        'author': json['author'] == null ? undefined : AuthorInfoFromJSON(json['author']),
+        'author': AuthorInfoFromJSON(json['author']),
     };
 }
 

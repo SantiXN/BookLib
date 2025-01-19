@@ -36,7 +36,7 @@ export interface UserInfo {
      * @type {string}
      * @memberof UserInfo
      */
-    firstName?: string;
+    firstName: string;
     /**
      * 
      * @type {string}
@@ -74,6 +74,7 @@ export type UserInfoRoleEnum = typeof UserInfoRoleEnum[keyof typeof UserInfoRole
  */
 export function instanceOfUserInfo(value: object): value is UserInfo {
     if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('firstName' in value) || value['firstName'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     return true;
 }
@@ -90,7 +91,7 @@ export function UserInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         
         'id': json['id'],
         'role': json['role'] == null ? undefined : json['role'],
-        'firstName': json['firstName'] == null ? undefined : json['firstName'],
+        'firstName': json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
         'email': json['email'],
         'avatarPath': json['avatarPath'] == null ? undefined : json['avatarPath'],

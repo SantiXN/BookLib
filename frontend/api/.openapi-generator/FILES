@@ -2,6 +2,7 @@ apis/ArticleApi.ts
 apis/AuthorApi.ts
 apis/BookApi.ts
 apis/CategoryApi.ts
+apis/FileApi.ts
 apis/UserApi.ts
 apis/index.ts
 index.ts
@@ -9,7 +10,6 @@ models/AddBookRequest.ts
 models/AddBookResponseData.ts
 models/ArticleData.ts
 models/ArticleInfo.ts
-models/AuthorData.ts
 models/AuthorInfo.ts
 models/BadRequestResponseData.ts
 models/BookData.ts
@@ -29,7 +29,9 @@ models/EditUserInfoRequest.ts
 models/FeedbackInfo.ts
 models/GetArticleResponseData.ts
 models/GetAuthorInfoResponseData.ts
+models/GetAuthorizedUserResponseData.ts
 models/GetBookInfoResponseData.ts
+models/GetFileResponseData.ts
 models/GetUserDataResponseData.ts
 models/GetUserInfoResponseData.ts
 models/ListArticlesResponseData.ts
@@ -46,11 +48,13 @@ models/LoginUserResponseData.ts
 models/ManagementArticlesResponseData.ts
 models/NotFoundResponseData.ts
 models/PermissionDeniedResponseData.ts
+models/RegisterUserRequest.ts
 models/SaveBookFeedbackRequest.ts
 models/SaveBookFeedbackResponseData.ts
 models/SearchItemsRequest.ts
 models/SearchItemsResponseData.ts
 models/UnauthorizedResponseData.ts
+models/UploadFileResponseData.ts
 models/UserData.ts
 models/UserInfo.ts
 models/index.ts

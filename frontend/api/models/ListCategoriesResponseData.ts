@@ -32,13 +32,14 @@ export interface ListCategoriesResponseData {
      * @type {Array<CategoryInfo>}
      * @memberof ListCategoriesResponseData
      */
-    categories?: Array<CategoryInfo>;
+    categories: Array<CategoryInfo>;
 }
 
 /**
  * Check if a given object implements the ListCategoriesResponseData interface.
  */
 export function instanceOfListCategoriesResponseData(value: object): value is ListCategoriesResponseData {
+    if (!('categories' in value) || value['categories'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function ListCategoriesResponseDataFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'categories': json['categories'] == null ? undefined : ((json['categories'] as Array<any>).map(CategoryInfoFromJSON)),
+        'categories': ((json['categories'] as Array<any>).map(CategoryInfoFromJSON)),
     };
 }
 
@@ -67,7 +68,7 @@ export function ListCategoriesResponseDataToJSONTyped(value?: ListCategoriesResp
 
     return {
         
-        'categories': value['categories'] == null ? undefined : ((value['categories'] as Array<any>).map(CategoryInfoToJSON)),
+        'categories': ((value['categories'] as Array<any>).map(CategoryInfoToJSON)),
     };
 }
 

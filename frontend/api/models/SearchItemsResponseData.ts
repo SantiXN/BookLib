@@ -20,13 +20,13 @@ import {
     ArticleDataToJSON,
     ArticleDataToJSONTyped,
 } from './ArticleData';
-import type { AuthorData } from './AuthorData';
+import type { AuthorInfo } from './AuthorInfo';
 import {
-    AuthorDataFromJSON,
-    AuthorDataFromJSONTyped,
-    AuthorDataToJSON,
-    AuthorDataToJSONTyped,
-} from './AuthorData';
+    AuthorInfoFromJSON,
+    AuthorInfoFromJSONTyped,
+    AuthorInfoToJSON,
+    AuthorInfoToJSONTyped,
+} from './AuthorInfo';
 import type { BookData } from './BookData';
 import {
     BookDataFromJSON,
@@ -49,10 +49,10 @@ export interface SearchItemsResponseData {
     books?: Array<BookData>;
     /**
      * 
-     * @type {Array<AuthorData>}
+     * @type {Array<AuthorInfo>}
      * @memberof SearchItemsResponseData
      */
-    authors?: Array<AuthorData>;
+    authors?: Array<AuthorInfo>;
     /**
      * 
      * @type {Array<ArticleData>}
@@ -79,7 +79,7 @@ export function SearchItemsResponseDataFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'books': json['books'] == null ? undefined : ((json['books'] as Array<any>).map(BookDataFromJSON)),
-        'authors': json['authors'] == null ? undefined : ((json['authors'] as Array<any>).map(AuthorDataFromJSON)),
+        'authors': json['authors'] == null ? undefined : ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
         'articles': json['articles'] == null ? undefined : ((json['articles'] as Array<any>).map(ArticleDataFromJSON)),
     };
 }
@@ -96,7 +96,7 @@ export function SearchItemsResponseDataToJSONTyped(value?: SearchItemsResponseDa
     return {
         
         'books': value['books'] == null ? undefined : ((value['books'] as Array<any>).map(BookDataToJSON)),
-        'authors': value['authors'] == null ? undefined : ((value['authors'] as Array<any>).map(AuthorDataToJSON)),
+        'authors': value['authors'] == null ? undefined : ((value['authors'] as Array<any>).map(AuthorInfoToJSON)),
         'articles': value['articles'] == null ? undefined : ((value['articles'] as Array<any>).map(ArticleDataToJSON)),
     };
 }

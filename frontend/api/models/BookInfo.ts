@@ -20,13 +20,13 @@ import {
     CategoryInfoToJSON,
     CategoryInfoToJSONTyped,
 } from './CategoryInfo';
-import type { AuthorData } from './AuthorData';
+import type { AuthorInfo } from './AuthorInfo';
 import {
-    AuthorDataFromJSON,
-    AuthorDataFromJSONTyped,
-    AuthorDataToJSON,
-    AuthorDataToJSONTyped,
-} from './AuthorData';
+    AuthorInfoFromJSON,
+    AuthorInfoFromJSONTyped,
+    AuthorInfoToJSON,
+    AuthorInfoToJSONTyped,
+} from './AuthorInfo';
 import type { FeedbackInfo } from './FeedbackInfo';
 import {
     FeedbackInfoFromJSON,
@@ -67,10 +67,10 @@ export interface BookInfo {
     coverPath: string;
     /**
      * 
-     * @type {Array<AuthorData>}
+     * @type {Array<AuthorInfo>}
      * @memberof BookInfo
      */
-    authors: Array<AuthorData>;
+    authors: Array<AuthorInfo>;
     /**
      * 
      * @type {number}
@@ -89,6 +89,12 @@ export interface BookInfo {
      * @memberof BookInfo
      */
     categories: Array<CategoryInfo>;
+    /**
+     * 
+     * @type {string}
+     * @memberof BookInfo
+     */
+    filePath: string;
 }
 
 /**
@@ -102,6 +108,7 @@ export function instanceOfBookInfo(value: object): value is BookInfo {
     if (!('authors' in value) || value['authors'] === undefined) return false;
     if (!('starCount' in value) || value['starCount'] === undefined) return false;
     if (!('categories' in value) || value['categories'] === undefined) return false;
+    if (!('filePath' in value) || value['filePath'] === undefined) return false;
     return true;
 }
 
@@ -119,10 +126,11 @@ export function BookInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'title': json['title'],
         'description': json['description'],
         'coverPath': json['coverPath'],
-        'authors': ((json['authors'] as Array<any>).map(AuthorDataFromJSON)),
+        'authors': ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
         'starCount': json['starCount'],
         'feedback': json['feedback'] == null ? undefined : ((json['feedback'] as Array<any>).map(FeedbackInfoFromJSON)),
         'categories': ((json['categories'] as Array<any>).map(CategoryInfoFromJSON)),
+        'filePath': json['filePath'],
     };
 }
 
@@ -141,10 +149,11 @@ export function BookInfoToJSONTyped(value?: BookInfo | null, ignoreDiscriminator
         'title': value['title'],
         'description': value['description'],
         'coverPath': value['coverPath'],
-        'authors': ((value['authors'] as Array<any>).map(AuthorDataToJSON)),
+        'authors': ((value['authors'] as Array<any>).map(AuthorInfoToJSON)),
         'starCount': value['starCount'],
         'feedback': value['feedback'] == null ? undefined : ((value['feedback'] as Array<any>).map(FeedbackInfoToJSON)),
         'categories': ((value['categories'] as Array<any>).map(CategoryInfoToJSON)),
+        'filePath': value['filePath'],
     };
 }
 

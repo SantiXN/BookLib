@@ -18,6 +18,7 @@ import type {
   BadRequestResponseData,
   ChangeUserRoleRequest,
   EditUserInfoRequest,
+  GetAuthorizedUserResponseData,
   GetUserDataResponseData,
   GetUserInfoResponseData,
   ListUsersResponseData,
@@ -25,6 +26,7 @@ import type {
   LoginUserResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
+  RegisterUserRequest,
   UnauthorizedResponseData,
 } from '../models/index';
 import {
@@ -34,6 +36,8 @@ import {
     ChangeUserRoleRequestToJSON,
     EditUserInfoRequestFromJSON,
     EditUserInfoRequestToJSON,
+    GetAuthorizedUserResponseDataFromJSON,
+    GetAuthorizedUserResponseDataToJSON,
     GetUserDataResponseDataFromJSON,
     GetUserDataResponseDataToJSON,
     GetUserInfoResponseDataFromJSON,
@@ -48,6 +52,8 @@ import {
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
     PermissionDeniedResponseDataToJSON,
+    RegisterUserRequestFromJSON,
+    RegisterUserRequestToJSON,
     UnauthorizedResponseDataFromJSON,
     UnauthorizedResponseDataToJSON,
 } from '../models/index';
@@ -75,6 +81,10 @@ export interface GetUserInfoRequest {
 
 export interface LoginUserOperationRequest {
     loginUserRequest?: LoginUserRequest;
+}
+
+export interface RegisterUserOperationRequest {
+    registerUserRequest?: RegisterUserRequest;
 }
 
 /**
@@ -193,6 +203,38 @@ export class UserApi extends runtime.BaseAPI {
      */
     async editUserInfo(requestParameters: EditUserInfoOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.editUserInfoRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async getAuthorizedUserRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetAuthorizedUserResponseData>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/user/get`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetAuthorizedUserResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getAuthorizedUser(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetAuthorizedUserResponseData> {
+        const response = await this.getAuthorizedUserRaw(initOverrides);
+        return await response.value();
     }
 
     /**
@@ -330,6 +372,40 @@ export class UserApi extends runtime.BaseAPI {
     async loginUser(requestParameters: LoginUserOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LoginUserResponseData> {
         const response = await this.loginUserRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async registerUserRaw(requestParameters: RegisterUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/register`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: RegisterUserRequestToJSON(requestParameters['registerUserRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async registerUser(requestParameters: RegisterUserOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.registerUserRaw(requestParameters, initOverrides);
     }
 
 }

@@ -30,7 +30,7 @@ export interface UserData {
      * @type {string}
      * @memberof UserData
      */
-    firstName?: string;
+    firstName: string;
     /**
      * 
      * @type {string}
@@ -50,6 +50,7 @@ export interface UserData {
  */
 export function instanceOfUserData(value: object): value is UserData {
     if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('firstName' in value) || value['firstName'] === undefined) return false;
     return true;
 }
 
@@ -64,7 +65,7 @@ export function UserDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     return {
         
         'id': json['id'],
-        'firstName': json['firstName'] == null ? undefined : json['firstName'],
+        'firstName': json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
         'avatarPath': json['avatarPath'] == null ? undefined : json['avatarPath'],
     };

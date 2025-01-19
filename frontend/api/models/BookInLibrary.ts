@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AuthorData } from './AuthorData';
+import type { AuthorInfo } from './AuthorInfo';
 import {
-    AuthorDataFromJSON,
-    AuthorDataFromJSONTyped,
-    AuthorDataToJSON,
-    AuthorDataToJSONTyped,
-} from './AuthorData';
+    AuthorInfoFromJSON,
+    AuthorInfoFromJSONTyped,
+    AuthorInfoToJSON,
+    AuthorInfoToJSONTyped,
+} from './AuthorInfo';
 
 /**
  * 
@@ -47,10 +47,10 @@ export interface BookInLibrary {
     coverPath: string;
     /**
      * 
-     * @type {Array<AuthorData>}
+     * @type {Array<AuthorInfo>}
      * @memberof BookInLibrary
      */
-    authors: Array<AuthorData>;
+    authors: Array<AuthorInfo>;
     /**
      * 
      * @type {number}
@@ -103,7 +103,7 @@ export function BookInLibraryFromJSONTyped(json: any, ignoreDiscriminator: boole
         'id': json['id'],
         'title': json['title'],
         'coverPath': json['coverPath'],
-        'authors': ((json['authors'] as Array<any>).map(AuthorDataFromJSON)),
+        'authors': ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
         'starCount': json['starCount'],
         'readingStatus': json['readingStatus'],
     };
@@ -123,7 +123,7 @@ export function BookInLibraryToJSONTyped(value?: BookInLibrary | null, ignoreDis
         'id': value['id'],
         'title': value['title'],
         'coverPath': value['coverPath'],
-        'authors': ((value['authors'] as Array<any>).map(AuthorDataToJSON)),
+        'authors': ((value['authors'] as Array<any>).map(AuthorInfoToJSON)),
         'starCount': value['starCount'],
         'readingStatus': value['readingStatus'],
     };

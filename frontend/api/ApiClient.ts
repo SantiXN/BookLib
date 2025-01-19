@@ -2,7 +2,7 @@ import { Configuration, BookApi, AuthorApi, CategoryApi, UserApi, ArticleApi } f
 // Конфигурация клиента
 const token = localStorage.getItem('token') || '';
 const config = new Configuration({
-  basePath: 'http://127.0.0.1:4010',
+  basePath: 'http://localhost:8080',
   headers: {
     Authorization: `Bearer ${token}`,
   },

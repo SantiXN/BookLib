@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AuthorData } from './AuthorData';
+import type { AuthorInfo } from './AuthorInfo';
 import {
-    AuthorDataFromJSON,
-    AuthorDataFromJSONTyped,
-    AuthorDataToJSON,
-    AuthorDataToJSONTyped,
-} from './AuthorData';
+    AuthorInfoFromJSON,
+    AuthorInfoFromJSONTyped,
+    AuthorInfoToJSON,
+    AuthorInfoToJSONTyped,
+} from './AuthorInfo';
 
 /**
  * 
@@ -29,16 +29,17 @@ import {
 export interface ListAuthorsResponseData {
     /**
      * 
-     * @type {Array<AuthorData>}
+     * @type {Array<AuthorInfo>}
      * @memberof ListAuthorsResponseData
      */
-    authors?: Array<AuthorData>;
+    authors: Array<AuthorInfo>;
 }
 
 /**
  * Check if a given object implements the ListAuthorsResponseData interface.
  */
 export function instanceOfListAuthorsResponseData(value: object): value is ListAuthorsResponseData {
+    if (!('authors' in value) || value['authors'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function ListAuthorsResponseDataFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'authors': json['authors'] == null ? undefined : ((json['authors'] as Array<any>).map(AuthorDataFromJSON)),
+        'authors': ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
     };
 }
 
@@ -67,7 +68,7 @@ export function ListAuthorsResponseDataToJSONTyped(value?: ListAuthorsResponseDa
 
     return {
         
-        'authors': value['authors'] == null ? undefined : ((value['authors'] as Array<any>).map(AuthorDataToJSON)),
+        'authors': ((value['authors'] as Array<any>).map(AuthorInfoToJSON)),
     };
 }
 

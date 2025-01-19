@@ -24,6 +24,12 @@ export interface AddBookRequest {
      * @type {string}
      * @memberof AddBookRequest
      */
+    filePath: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AddBookRequest
+     */
     title: string;
     /**
      * 
@@ -43,12 +49,19 @@ export interface AddBookRequest {
      * @memberof AddBookRequest
      */
     categoryIDs: Array<number>;
+    /**
+     * 
+     * @type {string}
+     * @memberof AddBookRequest
+     */
+    coverPath?: string;
 }
 
 /**
  * Check if a given object implements the AddBookRequest interface.
  */
 export function instanceOfAddBookRequest(value: object): value is AddBookRequest {
+    if (!('filePath' in value) || value['filePath'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('authorIDs' in value) || value['authorIDs'] === undefined) return false;
     if (!('categoryIDs' in value) || value['categoryIDs'] === undefined) return false;
@@ -65,10 +78,12 @@ export function AddBookRequestFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
+        'filePath': json['filePath'],
         'title': json['title'],
         'description': json['description'] == null ? undefined : json['description'],
         'authorIDs': json['authorIDs'],
         'categoryIDs': json['categoryIDs'],
+        'coverPath': json['coverPath'] == null ? undefined : json['coverPath'],
     };
 }
 
@@ -83,10 +98,12 @@ export function AddBookRequestToJSONTyped(value?: AddBookRequest | null, ignoreD
 
     return {
         
+        'filePath': value['filePath'],
         'title': value['title'],
         'description': value['description'],
         'authorIDs': value['authorIDs'],
         'categoryIDs': value['categoryIDs'],
+        'coverPath': value['coverPath'],
     };
 }
 

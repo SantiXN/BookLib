@@ -32,13 +32,14 @@ export interface ListUsersResponseData {
      * @type {Array<UserInfo>}
      * @memberof ListUsersResponseData
      */
-    users?: Array<UserInfo>;
+    users: Array<UserInfo>;
 }
 
 /**
  * Check if a given object implements the ListUsersResponseData interface.
  */
 export function instanceOfListUsersResponseData(value: object): value is ListUsersResponseData {
+    if (!('users' in value) || value['users'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function ListUsersResponseDataFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'users': json['users'] == null ? undefined : ((json['users'] as Array<any>).map(UserInfoFromJSON)),
+        'users': ((json['users'] as Array<any>).map(UserInfoFromJSON)),
     };
 }
 
@@ -67,7 +68,7 @@ export function ListUsersResponseDataToJSONTyped(value?: ListUsersResponseData |
 
     return {
         
-        'users': value['users'] == null ? undefined : ((value['users'] as Array<any>).map(UserInfoToJSON)),
+        'users': ((value['users'] as Array<any>).map(UserInfoToJSON)),
     };
 }
 

@@ -890,6 +890,31 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
+  /api/file/{filePath}:
+    get:
+      tags:
+        - file
+      operationId: GetFile
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream: # MIME-тип для бинарных данных
+              schema:
+                $ref: '#/components/schemas/GetFileResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/notFound'
+
 
 components:
   securitySchemes:
@@ -1274,6 +1299,14 @@ components:
           type: string
       required:
         - filePath
+    GetFileResponseData:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+        - file
 
     bookData:
       type: object

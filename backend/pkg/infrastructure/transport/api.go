@@ -398,6 +398,11 @@ func (p *publicAPI) UploadFile(ctx context.Context, request api.UploadFileReques
 	}, nil
 }
 
+func (p *publicAPI) GetFile(ctx context.Context, request api.GetFileRequestObject) (api.GetFileResponseObject, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func toAPIRole(role model.UserRole) (api.UserInfoRole, error) {
 	switch role {
 	case model.DefaultUser:

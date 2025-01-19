@@ -1,15 +1,29 @@
+import { UserApiClient } from '../../../api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
 import s from './ProfilePage.module.css'
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 const ProfilePage = () => {
     const [formData, setFormData] = useState({
         firstName: 'firstName',
         lastName: 'lastName',
         email: 'email',
-        password: 'password',
         avatar: 'src',
     });
+
+    useEffect(() => {
+        UserApiClient.getAuthorizedUser()
+            .then((response) => {
+                if (response.user) {
+                    setFormData({
+                        firstName: response.user.firstName,
+                        lastName: response.user.lastName || '',
+                        email: response.user.email,
+                        avatar: response.user.avatarPath || ''
+                    })
+                }
+            })
+    }, [])
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -50,6 +64,10 @@ const ProfilePage = () => {
                 </div>
                 <div className={s.infoContainer}>
                     <div className={s.formContainer}>
+                        <div className={s.infoWrapper}>
+                            <p className={s.userInfoField}>E-mail:</p>
+                            <p className={s.userInfoField}>{formData.email}</p>
+                        </div>
                         <form className={s.form}>
                             <div className={s.inputWrapper}>
                                 <label className={s.label}>
@@ -76,35 +94,6 @@ const ProfilePage = () => {
                                     onChange={handleChange}
                                     required
                                 />
-                            </div>
-                            <div className={s.inputWrapper}>
-                                <label className={s.label}>
-                                    E-mail
-                                </label>
-                                <input
-                                    className={s.input}
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    readOnly
-                                />
-                            </div>
-                            <div className={s.inputWrapper}>
-                                <label className={s.label}>
-                                    Пароль
-                                </label>
-                                <input
-                                    className={s.input}
-                                    type={showPassword ? 'text' : 'password'}
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    readOnly
-                                />
-                                <div onClick={togglePasswordVisibility} className={showPassword ? s.eye : s.eyeClose}></div>
                             </div>
                             <button className={`${s.submitButton} ${s.disabledButton}`} type='submit' disabled={true}>Сохранить изменения</button>
                         </form>

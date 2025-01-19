@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { AuthorData, EditAuthorRequest } from '../../../../../api';
+import { AuthorInfo, EditAuthorRequest } from '../../../../../api';
 import { AuthorApiClient } from '../../../../../api/ApiClient';
 
 interface BlockProps {
@@ -10,8 +10,8 @@ interface BlockProps {
 
 const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     // TODO: загрузка файлов 
-    const [authors, setAuthors] = useState<AuthorData[]>([])
-    const [author, setAuthor] = useState<AuthorData | null>(null);    
+    const [authors, setAuthors] = useState<AuthorInfo[]>([])
+    const [author, setAuthor] = useState<AuthorInfo | null>(null);    
 
     const [firstName, setFirstName] = useState(author ? author.firstName : '');
     const [lastName, setLastName] = useState(author ? author.lastName : '');

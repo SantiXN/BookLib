@@ -859,6 +859,37 @@ paths:
         '403':
           $ref: '#/components/responses/permissionDenied'
 
+  /api/file/upload:
+    post:
+      tags:
+        - file
+      operationId: UploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadFileResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/permissionDenied'
+        '404':
+          $ref: '#/components/responses/notFound'
+
 
 components:
   securitySchemes:
@@ -944,6 +975,8 @@ components:
     AddBookRequest:
       type: object
       properties:
+        filePath:
+          type: string
         title:
           type: string
         description:
@@ -956,7 +989,10 @@ components:
           type: array
           items:
             type: integer
+        coverPath:
+          type: string
       required:
+        - filePath
         - title
         - authorIDs
         - categoryIDs
@@ -1231,6 +1267,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/articleData'
+    UploadFileResponseData:
+      type: object
+      properties:
+        filePath:
+          type: string
+      required:
+        - filePath
 
     bookData:
       type: object
@@ -1308,6 +1351,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/categoryInfo'
+        filePath:
+          type: string
       required:
         - id
         - title
@@ -1316,6 +1361,7 @@ components:
         - authors
         - starCount
         - categories
+        - filePath
 
     authorInfo:
       type: object

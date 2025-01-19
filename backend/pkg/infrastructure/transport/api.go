@@ -2,6 +2,7 @@ package transport
 
 import (
 	"booklib/api"
+	appmodel "booklib/pkg/app/model"
 	"booklib/pkg/app/query"
 	"booklib/pkg/app/service"
 	"booklib/pkg/domain/model"
@@ -13,6 +14,7 @@ import (
 
 var (
 	ErrInvalidRole              = errors.New("invalid role")
+	ErrInvalidReadingStatus     = errors.New("invalid reading status")
 	ErrInvalidUploadContentData = errors.New("invalid upload content data")
 )
 
@@ -27,6 +29,7 @@ func NewPublicAPI(
 	authorQueryService query.AuthorQueryService,
 	categoryQueryService query.CategoryQueryService,
 	fileService service.FileService,
+	userBookService service.UserBookService,
 ) API {
 	return &publicAPI{
 		userService:          userService,
@@ -35,6 +38,7 @@ func NewPublicAPI(
 		authorQueryService:   authorQueryService,
 		categoryQueryService: categoryQueryService,
 		fileService:          fileService,
+		userBookService:      userBookService,
 	}
 }
 
@@ -45,6 +49,7 @@ type publicAPI struct {
 	authorQueryService   query.AuthorQueryService
 	categoryQueryService query.CategoryQueryService
 	fileService          service.FileService
+	userBookService      service.UserBookService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -149,17 +154,12 @@ func (p *publicAPI) AddBook(ctx context.Context, request api.AddBookRequestObjec
 	panic("implement me")
 }
 
-func (p *publicAPI) ListLibraryBooks(ctx context.Context, request api.ListLibraryBooksRequestObject) (api.ListLibraryBooksResponseObject, error) {
+func (p *publicAPI) ListLibraryBooksByStatus(ctx context.Context, request api.ListLibraryBooksByStatusRequestObject) (api.ListLibraryBooksByStatusResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
 func (p *publicAPI) GetLibraryStats(ctx context.Context, request api.GetLibraryStatsRequestObject) (api.GetLibraryStatsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p *publicAPI) ListBooks(ctx context.Context, request api.ListBooksRequestObject) (api.ListBooksResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -195,18 +195,54 @@ func (p *publicAPI) GetBookInfo(ctx context.Context, request api.GetBookInfoRequ
 }
 
 func (p *publicAPI) AddBookToLibrary(ctx context.Context, request api.AddBookToLibraryRequestObject) (api.AddBookToLibraryResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = p.userBookService.AddBookToLibrary(id, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.AddBookToLibrary200Response{}, nil
 }
 
 func (p *publicAPI) RemoveBookFromLibrary(ctx context.Context, request api.RemoveBookFromLibraryRequestObject) (api.RemoveBookFromLibraryResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = p.userBookService.RemoveBookFromLibrary(id, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.RemoveBookFromLibrary200Response{}, nil
 }
 
 func (p *publicAPI) ChangeReadingStatus(ctx context.Context, request api.ChangeReadingStatusRequestObject) (api.ChangeReadingStatusResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	status, err := toReadingStatus(request.Body.ReadingStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	err = p.userBookService.ChangeReadingStatus(appmodel.UserBook{
+		UserID: id,
+		BookID: request.BookID,
+		Status: status,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api.ChangeReadingStatus200Response{}, nil
 }
 
 func (p *publicAPI) ListBooksByCategory(ctx context.Context, request api.ListBooksByCategoryRequestObject) (api.ListBooksByCategoryResponseObject, error) {
@@ -234,7 +270,17 @@ func (p *publicAPI) ListCategories(ctx context.Context, request api.ListCategori
 	}, nil
 }
 
-func (p *publicAPI) SearchItems(ctx context.Context, request api.SearchItemsRequestObject) (api.SearchItemsResponseObject, error) {
+func (p *publicAPI) SearchArticles(ctx context.Context, request api.SearchArticlesRequestObject) (api.SearchArticlesResponseObject, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *publicAPI) SearchAuthors(ctx context.Context, request api.SearchAuthorsRequestObject) (api.SearchAuthorsResponseObject, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *publicAPI) SearchBooks(ctx context.Context, request api.SearchBooksRequestObject) (api.SearchBooksResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -424,6 +470,19 @@ func toRole(role api.ChangeUserRoleRequestRole) (model.UserRole, error) {
 		return model.Editor, nil
 	default:
 		return model.DefaultUser, errors.New(ErrInvalidRole.Error())
+	}
+}
+
+func toReadingStatus(status api.ChangeReadingStatusRequestReadingStatus) (appmodel.ReadingStatus, error) {
+	switch status {
+	case api.ChangeReadingStatusRequestReadingStatusInProgress:
+		return appmodel.InProgress, nil
+	case api.ChangeReadingStatusRequestReadingStatusFinished:
+		return appmodel.Finished, nil
+	case api.ChangeReadingStatusRequestReadingStatusPlanned:
+		return appmodel.Planned, nil
+	default:
+		return appmodel.Planned, errors.New(ErrInvalidReadingStatus.Error())
 	}
 }
 

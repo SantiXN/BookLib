@@ -1,7 +1,9 @@
 package infrastructure
 
 import (
+	"booklib/pkg/infrastructure/mysql/storage"
 	"context"
+
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/app/query"
@@ -27,12 +29,15 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	infraAuthorQS := infraquery.NewAuthorQueryService(client)
 	infraCategoryQS := infraquery.NewCategoryQueryService(client)
 
+	userBookStorage := storage.NewUserBookStorage(ctx, client)
+
 	userService := service.NewUserService(domainUserService, checker)
 	userQueryService := query.NewUserQueryService(infraUserQS, checker)
 	authorService := service.NewAuthorService(domainAuthorService, checker)
 	authorQueryService := query.NewAuthorQueryService(infraAuthorQS)
 	categoryQueryService := query.NewCategoryQueryService(infraCategoryQS)
 	fileService := service.NewFileService(saveDir)
+	userBookService := service.NewUserBookService(userBookStorage)
 
 	return &DependencyContainer{
 		UserService:          userService,
@@ -41,6 +46,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 		AuthorQueryService:   authorQueryService,
 		CategoryQueryService: categoryQueryService,
 		FileService:          fileService,
+		UserBookService:      userBookService,
 	}
 }
 
@@ -51,4 +57,5 @@ type DependencyContainer struct {
 	AuthorQueryService   query.AuthorQueryService
 	CategoryQueryService query.CategoryQueryService
 	FileService          service.FileService
+	UserBookService      service.UserBookService
 }

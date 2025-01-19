@@ -103,25 +103,6 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/book/list:
-    get:
-      tags:
-        - book
-      operationId: ListBooks
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListBooksResponseData'
-        '400':
-          $ref: '#/components/responses/badRequest'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '403':
-          $ref: '#/components/responses/permissionDenied'
-
   /api/book/{authorID}/list:
     get:
       tags:
@@ -149,7 +130,6 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-# Добавить книгу в собственную библиотеку
   /api/book/{bookID}/library/add:
     post:
       tags:
@@ -192,24 +172,110 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/item/search:
+  /api/book/search:
     post:
       tags:
         - book
-      operationId: SearchItems
+      operationId: SearchBooks
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SearchItemsRequest'
+              $ref: '#/components/schemas/SearchBooksRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchItemsResponseData'
+                $ref: '#/components/schemas/SearchBooksResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+
+
+  /api/author/search:
+    post:
+      tags:
+        - author
+      operationId: SearchAuthors
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchAuthorsRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchAuthorsResponseData'
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+
+  /api/article/search:
+    post:
+      tags:
+        - article
+      operationId: SearchArticles
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchArticlesRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchArticlesResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -238,18 +304,37 @@ paths:
         '401':
           $ref: '#/components/responses/unauthorized'
 
-  /api/book/library/list:
-    get:
+  /api/library/status/list:
+    post:
       tags:
         - book
-      operationId: ListLibraryBooks
+      operationId: ListLibraryBooksByStatus
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListLibraryBooksByStatusRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListLibraryBooksResponseData'
+                $ref: '#/components/schemas/ListLibraryBooksByStatusResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -1052,28 +1137,68 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
-    SearchItemsRequest:
+        totalCount:
+          type: integer
+      required:
+        - books
+        - totalCount
+    SearchBooksRequest:
       type: object
       properties:
         searchString:
           type: string
       required:
         - searchString
-    SearchItemsResponseData:
+    SearchAuthorsRequest:
+      type: object
+      properties:
+        searchString:
+          type: string
+      required:
+        - searchString
+    SearchArticlesRequest:
+      type: object
+      properties:
+        searchString:
+          type: string
+      required:
+        - searchString
+    SearchBooksResponseData:
       type: object
       properties:
         books:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
+        totalCount:
+          type: integer
+      required:
+        - books
+        - totalCount
+    SearchAuthorsResponseData:
+      type: object
+      properties:
         authors:
           type: array
           items:
             $ref: '#/components/schemas/authorInfo'
+        totalCount:
+          type: integer
+      required:
+        - authors
+        - totalCount
+    SearchArticlesResponseData:
+      type: object
+      properties:
         articles:
           type: array
           items:
             $ref: '#/components/schemas/articleData'
+        totalCount:
+          type: integer
+      required:
+        - articles
+        - totalCount
     ListBooksByCategoryResponseData:
       type: object
       properties:
@@ -1081,13 +1206,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
-    ListLibraryBooksResponseData:
+    ListLibraryBooksByStatusRequest:
+      type: object
+      properties:
+        readingStatus:
+          type: string
+          enum:
+            - inProgress
+            - finished
+            - planned
+    ListLibraryBooksByStatusResponseData:
       type: object
       properties:
         books:
           type: array
           items:
             $ref: '#/components/schemas/bookInLibrary'
+        totalNumber:
+          type: integer
+      required:
+        - books
+        - totalNumber
     ChangeReadingStatusRequest:
       type: object
       properties:
@@ -1344,7 +1483,7 @@ components:
           items:
             $ref: '#/components/schemas/authorInfo'
         starCount:
-          type: integer
+          type: number
         readingStatus:
           type: string
           enum:

@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import s from './UserLibraryPage.module.css';
 import BookCard from '../../component/common/BookCard/BookCard';
-import { AuthorInfo, BookInLibrary, BookInLibraryReadingStatusEnum } from '../../../api';
+import {
+    AuthorInfo,
+    BookInLibrary,
+    ListLibraryBooksByStatusRequestReadingStatusEnum
+} from '../../../api';
 import { BookApiClient } from '../../../api/ApiClient';
 import { FaTrash } from 'react-icons/fa';
 import ChangeBookStatusBlock from './ChangeBookStatusBlock';
@@ -12,52 +16,73 @@ const UserLibraryPage = () => {
     const [finishedBooks, setFinishedBooks] = useState<BookInLibrary[]>([]);
 
     const [selectedMenuItem, setSelectedMenuItem] = useState<string>('inProgress');
-    const [currentPage, setCurrentPage] = useState<number>(1); // Текущая страница
-    const booksPerPage = 15; // Количество книг на странице
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const booksPerPage = 15;
 
-    const [selectedBookID, setSelectedBookID] = useState<number | null>(0);
+    const [inProgressBookCount, setInProgressBookCount] = useState(0);
+    const [plannedBookCount, setPlannedBookCount] = useState(0);
+    const [finishedBookCount, setFinishedBookCount] = useState(0);
+
+    const [selectedBookID, setSelectedBookID] = useState<number | null>(null);
     const [isBookStatusChangeBlockOpen, setIsBookStatusChangeBlockOpen] = useState<boolean>(false);
+
     const closeWindow = () => {
         setIsBookStatusChangeBlockOpen(false);
         setSelectedBookID(null);
-    }
+    };
 
     const handleMenuItemClick = (item: string) => {
         setSelectedMenuItem(item);
-        setCurrentPage(1); // Сброс страницы на первую при смене категории
+        setCurrentPage(1);
+        fetchBooks(item, 1);
     };
 
     const handleNextPage = () => {
-        if (currentPage * booksPerPage < getCurrentBooks().length) {
-            setCurrentPage(currentPage + 1); // Переход к следующей странице
+        if (currentPage * booksPerPage < getCountBooks()) {
+            setCurrentPage((prev) => {
+                const nextPage = prev + 1;
+                fetchBooks(selectedMenuItem, nextPage);
+                return nextPage;
+            });
         }
     };
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(currentPage - 1); // Переход к предыдущей странице
+            setCurrentPage((prev) => {
+                const prevPage = prev - 1;
+                fetchBooks(selectedMenuItem, prevPage);
+                return prevPage;
+            });
         }
     };
 
-    useEffect(() => {
-        BookApiClient.listLibraryBooks()
+    const fetchBooks = (status: string, page: number) => {
+        const readingStatus = getReadingStatusEnum(status);
+        BookApiClient.listLibraryBooksByStatus({
+            listLibraryBooksByStatusRequest: { readingStatus },
+            limit: booksPerPage,
+            page
+        })
             .then((response) => {
-                if (response.books) {
-                    const inProgress = response.books.filter(book => book.readingStatus === 'inProgress');
-                    const planned = response.books.filter(book => book.readingStatus === 'planned');
-                    const finished = response.books.filter(book => book.readingStatus === 'finished');
-
-                    setInProgressBooks(inProgress);
-                    setPlannedBooks(planned);
-                    setFinishedBooks(finished);
-                    
-                } else {
-                    console.error('Failed to fetch books');
+                if (readingStatus === ListLibraryBooksByStatusRequestReadingStatusEnum.InProgress) {
+                    setInProgressBookCount(response.totalNumber);
+                    setInProgressBooks(response.books || []);
+                } else if (readingStatus === ListLibraryBooksByStatusRequestReadingStatusEnum.Planned) {
+                    setPlannedBookCount(response.totalNumber);
+                    setPlannedBooks(response.books || []);
+                } else if (readingStatus === ListLibraryBooksByStatusRequestReadingStatusEnum.Finished) {
+                    setFinishedBookCount(response.totalNumber);
+                    setFinishedBooks(response.books || []);
                 }
             })
             .catch((error) => {
                 console.error('Failed to fetch books: ', error);
             });
+    };
+
+    useEffect(() => {
+        fetchBooks('inProgress', 1);
     }, []);
 
     const getCurrentBooks = () => {
@@ -73,11 +98,31 @@ const UserLibraryPage = () => {
         }
     };
 
-    // Вычисляем книги для текущей страницы
-    const currentBooks = getCurrentBooks().slice(
-        (currentPage - 1) * booksPerPage,
-        currentPage * booksPerPage
-    );
+    const getCountBooks = () => {
+        switch (selectedMenuItem) {
+            case 'inProgress':
+                return inProgressBookCount;
+            case 'planned':
+                return plannedBookCount;
+            case 'finished':
+                return finishedBookCount;
+            default:
+                return 0;
+        }
+    };
+
+    const getReadingStatusEnum = (status: string) => {
+        switch (status) {
+            case 'inProgress':
+                return ListLibraryBooksByStatusRequestReadingStatusEnum.InProgress;
+            case 'planned':
+                return ListLibraryBooksByStatusRequestReadingStatusEnum.Planned;
+            case 'finished':
+                return ListLibraryBooksByStatusRequestReadingStatusEnum.Finished;
+            default:
+                return ListLibraryBooksByStatusRequestReadingStatusEnum.InProgress;
+        }
+    };
 
     const handleDeleteBook = async (bookId: number) => {
         if (!window.confirm('Вы уверены, что хотите удалить эту книгу из библиотеки?')) {
@@ -90,46 +135,21 @@ const UserLibraryPage = () => {
             setPlannedBooks((prev) => prev.filter((book) => book.id !== bookId));
             setFinishedBooks((prev) => prev.filter((book) => book.id !== bookId));
             alert('Книга успешно удалена из библиотеки');
-
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Failed to remove book from library: ', error);
         }
     };
 
     const getAuthorsString = (authors: AuthorInfo[]) => {
-        return authors.map(author => `${author.firstName} ${author.lastName}`).join(', ');
-    };
-
-    const updateBookStatusLocally = (bookId: number, newStatus: string) => {
-        setInProgressBooks((prev) =>
-            prev.filter((book) => book.id !== bookId)
-        );
-        setPlannedBooks((prev) =>
-            prev.filter((book) => book.id !== bookId)
-        );
-        setFinishedBooks((prev) =>
-            prev.filter((book) => book.id !== bookId)
-        );
-    
-        const updatedBook = getCurrentBooks().find((book) => book.id === bookId);
-        if (updatedBook) {
-            const updatedBookWithNewStatus = { ...updatedBook, readingStatus: newStatus };
-    
-            if (newStatus === 'inProgress') {
-                setInProgressBooks((prev) => [...prev, { ...updatedBookWithNewStatus, readingStatus: 'inProgress' as BookInLibraryReadingStatusEnum }]);
-            } else if (newStatus === 'planned') {
-                setPlannedBooks((prev) => [...prev, { ...updatedBookWithNewStatus, readingStatus: 'planned' as BookInLibraryReadingStatusEnum }]);
-            } else if (newStatus === 'finished') {
-                setFinishedBooks((prev) => [...prev, { ...updatedBookWithNewStatus, readingStatus: 'finished' as BookInLibraryReadingStatusEnum }]);
-            }
-        }
+        return authors.map((author) => `${author.firstName} ${author.lastName}`).join(', ');
     };
 
     const handleChangeStatus = (bookId: number) => {
         setSelectedBookID(bookId);
         setIsBookStatusChangeBlockOpen(true);
-    }
+    };
+
+    const totalPages = Math.ceil(getCountBooks() / booksPerPage) || 1;
 
     return (
         <div className={s.libraryContainer}>
@@ -137,30 +157,15 @@ const UserLibraryPage = () => {
                 <p className={s.title}>Мои книги</p>
                 <div className={s.library}>
                     <div className={s.libraryMenu}>
-                        <div
-                            className={`${s.libraryMenuItem} ${selectedMenuItem === 'inProgress' ? s.libraryMenuSelectedItem : ''}`}
-                            onMouseDown={() => {
-                                selectedMenuItem !== 'inProgress' && handleMenuItemClick('inProgress');
-                            }}
-                        >
-                            Читаемые
-                        </div>
-                        <div
-                            className={`${s.libraryMenuItem} ${selectedMenuItem === 'planned' ? s.libraryMenuSelectedItem : ''}`}
-                            onMouseDown={() => {
-                                selectedMenuItem !== 'planned' && handleMenuItemClick('planned');
-                            }}
-                        >
-                            К прочтению
-                        </div>
-                        <div
-                            className={`${s.libraryMenuItem} ${selectedMenuItem === 'finished' ? s.libraryMenuSelectedItem : ''}`}
-                            onMouseDown={() => {
-                                selectedMenuItem !== 'finished' && handleMenuItemClick('finished');
-                            }}
-                        >
-                            Прочитанные
-                        </div>
+                        {['inProgress', 'planned', 'finished'].map((status) => (
+                            <div
+                                key={status}
+                                className={`${s.libraryMenuItem} ${selectedMenuItem === status ? s.libraryMenuSelectedItem : ''}`}
+                                onMouseDown={() => handleMenuItemClick(status)}
+                            >
+                                {status === 'inProgress' ? 'Читаемые' : status === 'planned' ? 'К прочтению' : 'Прочитанные'}
+                            </div>
+                        ))}
                     </div>
                     <div className={s.libraryBooksContainer}>
                         <div className={s.pagination}>
@@ -172,22 +177,22 @@ const UserLibraryPage = () => {
                                 &lt;
                             </button>
                             <span className={s.paginationInfo}>
-                                Страница {currentPage} из {getCurrentBooks().length > 0 ? Math.ceil(getCurrentBooks().length / booksPerPage) : 1}
+                                Страница {currentPage} из {totalPages}
                             </span>
                             <button
                                 className={s.paginationButton}
                                 onClick={handleNextPage}
-                                disabled={currentPage * booksPerPage >= getCurrentBooks().length}
+                                disabled={currentPage === totalPages}
                             >
                                 &gt;
                             </button>
                         </div>
-                        {getCurrentBooks().length > 0 ? 
+                        {getCurrentBooks().length > 0 ? (
                             <div className={s.libraryBooksBodyContainer}>
-                                {currentBooks.map((book, key) => (
+                                {getCurrentBooks().map((book, key) => (
                                     <div key={key} className={s.libraryBookContainer}>
-                                        <FaTrash 
-                                            className={s.deleteIcon} 
+                                        <FaTrash
+                                            className={s.deleteIcon}
                                             onClick={() => handleDeleteBook(book.id)}
                                         />
                                         <BookCard
@@ -198,7 +203,7 @@ const UserLibraryPage = () => {
                                             toDirect={`/book/${book.id}`}
                                             classname={s.libraryBookCard}
                                         />
-                                        <button 
+                                        <button
                                             className={s.changeStatusButton}
                                             onClick={() => handleChangeStatus(book.id)}
                                         >
@@ -207,8 +212,9 @@ const UserLibraryPage = () => {
                                     </div>
                                 ))}
                             </div>
-                            : <p className={s.message}>В данной категории книг нет</p>
-                        }
+                        ) : (
+                            <p className={s.message}>В данной категории книг нет</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -216,9 +222,10 @@ const UserLibraryPage = () => {
                 <ChangeBookStatusBlock
                     bookID={selectedBookID!}
                     bookReadingStatus={selectedMenuItem}
-                    isOpen={isBookStatusChangeBlockOpen} 
-                    onUpdate={updateBookStatusLocally}
-                    onClose={closeWindow}/>
+                    isOpen={isBookStatusChangeBlockOpen}
+                    onUpdate={() => fetchBooks(selectedMenuItem, currentPage)}
+                    onClose={closeWindow}
+                />
             )}
         </div>
     );

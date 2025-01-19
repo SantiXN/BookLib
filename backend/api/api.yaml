@@ -114,18 +114,6 @@ paths:
           required: true
           schema:
             type: integer
-        - name: page
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-        - name: limit
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
       responses:
         '200':
           description: OK

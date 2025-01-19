@@ -1,10 +1,10 @@
 import { useSearchParams } from 'react-router-dom';
 import s from './SearchPage.module.css';
 import { useEffect, useState, useCallback } from 'react';
-import { BookApiClient } from '../../../api/ApiClient';
+import { ArticleApiClient, AuthorApiClient, BookApiClient } from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
-import { ArticleData, AuthorData } from '../../../api';
+import { ArticleData, AuthorInfo } from '../../../api';
 import BookCard from '../../component/common/BookCard/BookCard';
 
 const SearchPage = () => {
@@ -13,9 +13,11 @@ const SearchPage = () => {
     const initialCategory = searchParams.get('category') || 'books';
     const initialPage = parseInt(searchParams.get('page') || '1', 10);
 
+    const itemsInPage = 15;
+
     const [books, setBooks] = useState<ParsedBookCard[]>([]);
     const [articles, setArticles] = useState<ArticleData[]>([]);
-    const [authors, setAuthors] = useState<AuthorData[]>([]);
+    const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     const [page, setPage] = useState(initialPage);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -25,22 +27,50 @@ const SearchPage = () => {
         if (!query) return;
         setLoading(true);
         try {
-            // TODO: добавить пагинацию
-            const response = await BookApiClient.searchItems({ searchItemsRequest: { searchString: query } });
-            if (response) {
-                setBooks((prevBooks) => [...prevBooks, ...parseBookCardsResponse(response)]);
-                setArticles((prevArticles) => [...prevArticles, ...(response.articles || [])]);
-                setAuthors((prevAuthors) => [...prevAuthors, ...(response.authors || [])]);
-                setHasMore(((response.books?.length ?? 0) > 0)
-                    || ((response.articles?.length ?? 0) > 0)
-                    || ((response.authors?.length ?? 0) > 0));
+            let response: any;
+            switch (selectedCategory) {
+                case 'books':
+                    response = await BookApiClient.searchBooks({
+                        searchBooksRequest: { searchString: query },
+                        page: page,
+                        limit: itemsInPage
+                    });
+                    if (response) {
+                        setBooks((prevBooks) => [...prevBooks, ...parseBookCardsResponse(response)]);
+                        setHasMore((response.books?.length ?? 0) > 0);
+                    }
+                    break;
+                case 'authors':
+                    response = await AuthorApiClient.searchAuthors({
+                        searchAuthorsRequest: { searchString: query },
+                        page: page,
+                        limit: itemsInPage
+                    });
+                    if (response) {
+                        setAuthors((prevAuthors) => [...prevAuthors, ...response.authors]);
+                        setHasMore((response.authors?.length ?? 0) > 0);
+                    }
+                    break;
+                case 'articles':
+                    response = await ArticleApiClient.searchArticles({
+                        searchArticlesRequest: { searchString: query },
+                        page: page,
+                        limit: itemsInPage
+                    });
+                    if (response) {
+                        setArticles((prevArticles) => [...prevArticles, ...response.articles]);
+                        setHasMore((response.articles?.length ?? 0) > 0);
+                    }
+                    break;
+                default:
+                    break;
             }
         } catch (err) {
             console.error('Failed to fetch search items: ', err);
         } finally {
             setLoading(false);
         }
-    }, [query, page]);
+    }, [query, page, selectedCategory]);
 
     useEffect(() => {
         loadSearchResults();

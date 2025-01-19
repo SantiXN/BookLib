@@ -63,19 +63,17 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         if (description) request.description = description;
 
         AuthorApiClient.createAuthor({ createAuthorRequest: request })
-            .then(() => {
-                alert('Автор успешно добавлен!');
+            .then((response) => {
+                alert(`Автор успешно добавлен! ID: ${response.id}`);
                 onClose();
-            })
-            .catch((error) => {
-                console.error('Error while adding author:', error);
-                alert('Не удалось добавить автора. Попробуйте позже.');
-            })
-            .finally(() => {
                 setFirstName('');
                 setLastName('');
                 setDescription('');
-            });
+            })
+            .catch((error) => {
+                console.error('Error adding author:', error);
+                alert('Не удалось добавить автора. Попробуйте позже.');
+            })
     };
 
     return (

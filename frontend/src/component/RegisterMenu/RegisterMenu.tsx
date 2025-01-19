@@ -25,6 +25,7 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
         repeatPassword: '',
         firstname: '',
         lastname: '',
+        login: '',
     });
 
     useEffect(() => {
@@ -155,35 +156,67 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
                     <div className={s.formFieldContainer}>
                         <label className={s.formLabel}>
                             Имя:
-                            <input id='firstname' className={s.formTextInput} type='text' placeholder='Имя' value={formData.firstname} onChange={handleChange} />
+                            <input
+                                id='firstname'
+                                className={`${s.formTextInput} ${errors.firstname ? s.error : ''}`}
+                                type='text'
+                                placeholder='Имя'
+                                value={formData.firstname}
+                                onChange={handleChange}
+                            />
                         </label>
                         {errors.firstname && <p className={s.error}>{errors.firstname}</p>}
                     </div>
                     <div className={s.formFieldContainer}>
                         <label className={s.formLabel}>
                             Фамилия:
-                            <input id='lastname' className={s.formTextInput} type='text' placeholder='Фамилия' value={formData.lastname} onChange={handleChange} />
+                            <input
+                                id='lastname'
+                                className={`${s.formTextInput} ${errors.lastname ? s.error : ''}`}
+                                type='text'
+                                placeholder='Фамилия'
+                                value={formData.lastname}
+                                onChange={handleChange}
+                            />
                         </label>
                         {errors.lastname && <p className={s.error}>{errors.lastname}</p>}
                     </div>
                     <div className={s.formFieldContainer}>
                         <label className={s.formLabel}>
                             E-mail:
-                            <input id='email' className={s.formTextInput} type='text' placeholder='E-mail' value={formData.email} onChange={handleChange} />
+                            <input
+                                id='email'
+                                className={`${s.formTextInput} ${errors.email ? s.error : ''}`}
+                                type='text'
+                                placeholder='E-mail'
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
                         </label>
                         {errors.email && <p className={s.error}>{errors.email}</p>}
                     </div>
                     <div className={s.formFieldContainer}>
                         <label className={s.formLabel}>
                             Пароль:
-                            <PasswordInputField id='password' placeholder='Пароль' value={formData.password} onChange={handleChange} />
+                            <PasswordInputField
+                                id='password'
+                                placeholder='Пароль'
+                                value={formData.password}
+                                onChange={handleChange}
+                            />
                         </label>
                         {errors.password && <p className={s.error}>{errors.password}</p>}
                     </div>
                     <div className={s.formFieldContainer}>
                         <label className={s.formLabel}>
                             Повторите пароль:
-                            <PasswordInputField id='repeatPassword' placeholder='Повторите пароль' value={formData.repeatPassword} onChange={handleChange} />
+                            <PasswordInputField
+                                id='repeatPassword'
+                                placeholder='Повторите пароль'
+                                value={formData.repeatPassword}
+                                onChange={handleChange}
+                                error={errors.repeatPassword}
+                            />
                         </label>
                         {errors.repeatPassword && <p className={s.error}>{errors.repeatPassword}</p>}
                     </div>

@@ -10,7 +10,7 @@ interface PasswordInputFieldProps {
 
 const minPasswordLength = 8;
 
-const PasswordInputField: React.FC<PasswordInputFieldProps> = ({ id, placeholder, value, onChange }) => {
+const PasswordInputField: React.FC<PasswordInputFieldProps> = ({ id, placeholder, value, onChange, error = false }) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const changePasswordVisibility = () => {
@@ -21,7 +21,7 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = ({ id, placeholder
         <div className={s.passwordInputDiv}>
             <input
                 id={id}
-                className={`${s.input} ${s.passwordInput}`}
+                className={`${s.input} ${error ? s.error : ''}`}
                 type={isPasswordVisible ? 'text' : 'password'}
                 placeholder={placeholder}
                 value={value}

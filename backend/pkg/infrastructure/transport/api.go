@@ -1,19 +1,19 @@
 package transport
 
 import (
+	"booklib/api"
 	"booklib/pkg/app/query"
+	"booklib/pkg/app/service"
 	"booklib/pkg/domain/model"
+	"booklib/pkg/infrastructure/auth"
 	"booklib/pkg/infrastructure/utils"
 	"context"
 	"errors"
-
-	"booklib/api"
-	"booklib/pkg/app/service"
-	"booklib/pkg/infrastructure/auth"
 )
 
 var (
-	ErrInvalidRole = errors.New("invalid role")
+	ErrInvalidRole              = errors.New("invalid role")
+	ErrInvalidUploadContentData = errors.New("invalid upload content data")
 )
 
 type API interface {
@@ -26,6 +26,7 @@ func NewPublicAPI(
 	authorService service.AuthorService,
 	authorQueryService query.AuthorQueryService,
 	categoryQueryService query.CategoryQueryService,
+	fileService service.FileService,
 ) API {
 	return &publicAPI{
 		userService:          userService,
@@ -33,6 +34,7 @@ func NewPublicAPI(
 		authorService:        authorService,
 		authorQueryService:   authorQueryService,
 		categoryQueryService: categoryQueryService,
+		fileService:          fileService,
 	}
 }
 
@@ -42,6 +44,7 @@ type publicAPI struct {
 	authorService        service.AuthorService
 	authorQueryService   query.AuthorQueryService
 	categoryQueryService query.CategoryQueryService
+	fileService          service.FileService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -371,6 +374,28 @@ func (p *publicAPI) ChangeUserRole(ctx context.Context, request api.ChangeUserRo
 	}
 
 	return api.ChangeUserRole200Response{}, nil
+}
+
+func (p *publicAPI) UploadFile(ctx context.Context, request api.UploadFileRequestObject) (api.UploadFileResponseObject, error) {
+	if request.Body == nil {
+		return nil, ErrInvalidUploadContentData
+	}
+
+	part, err := request.Body.NextRawPart()
+	if err != nil {
+		return nil, ErrInvalidUploadContentData
+	}
+	contentType := part.Header.Get("Content-Type")
+	defer part.Close()
+
+	path, err := p.fileService.UploadFile(contentType, part)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.UploadFile200JSONResponse{
+		FilePath: path,
+	}, nil
 }
 
 func toAPIRole(role model.UserRole) (api.UserInfoRole, error) {

@@ -13,6 +13,9 @@ RUN go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 # Копируем весь проект
 COPY . .
 
+# Создаем директорию для сохранения загруженных файлов
+RUN mkdir -p /app/uploads
+
 # Генерируем код OpenAPI
 RUN oapi-codegen -alias-types -config ./api/oapi-config.yaml ./api/api.yaml
 

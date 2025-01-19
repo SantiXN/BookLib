@@ -12,6 +12,10 @@ import (
 	"booklib/pkg/infrastructure/mysql/repo"
 )
 
+const (
+	saveDir = "/app/uploads"
+)
+
 func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyContainer {
 	userRepository := repo.NewUserRepository(ctx, client)
 	authorRepository := repo.NewAuthorRepository(ctx, client)
@@ -28,6 +32,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	authorService := service.NewAuthorService(domainAuthorService, checker)
 	authorQueryService := query.NewAuthorQueryService(infraAuthorQS)
 	categoryQueryService := query.NewCategoryQueryService(infraCategoryQS)
+	fileService := service.NewFileService(saveDir)
 
 	return &DependencyContainer{
 		UserService:          userService,
@@ -35,6 +40,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 		AuthorService:        authorService,
 		AuthorQueryService:   authorQueryService,
 		CategoryQueryService: categoryQueryService,
+		FileService:          fileService,
 	}
 }
 
@@ -44,4 +50,5 @@ type DependencyContainer struct {
 	AuthorService        service.AuthorService
 	AuthorQueryService   query.AuthorQueryService
 	CategoryQueryService query.CategoryQueryService
+	FileService          service.FileService
 }

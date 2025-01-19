@@ -17,13 +17,17 @@ func NewPublicAPIErrorsMiddleware() api.StrictMiddlewareFunc {
 			resp, err := f(ctx, w, r, args)
 			if err != nil {
 				if errors.Is(err, query.ErrUserNotFound) ||
-					errors.Is(err, model.ErrAuthorNotFound) {
+					errors.Is(err, model.ErrAuthorNotFound) ||
+					errors.Is(err, model.ErrBookNotFound) ||
+					errors.Is(err, query.ErrAuthorNotFound) {
 					return api.NotFoundJSONResponse{
 						Code:    api.NotFoundResponseDataCodeNotFound,
 						Message: err.Error(),
 					}, nil
 				} else if errors.Is(err, ErrInvalidRole) ||
-					errors.Is(err, model.ErrUserAlreadyExist) {
+					errors.Is(err, model.ErrUserAlreadyExist) ||
+					errors.Is(err, service.ErrUnsupportedFormat) ||
+					errors.Is(err, service.ErrFailedToSaveFile) {
 					return api.BadRequestJSONResponse{
 						Code:    api.BadRequestResponseDataCodeBadRequest,
 						Message: err.Error(),

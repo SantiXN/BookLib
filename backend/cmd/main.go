@@ -72,7 +72,7 @@ func main() {
 
 	dependencyContainer := infrastructure.NewDependencyContainer(ctx, *db)
 
-	publicAPI := transport.NewPublicAPI(dependencyContainer.UserService)
+	publicAPI := transport.NewPublicAPI(dependencyContainer.UserService, dependencyContainer.UserQueryService)
 	publicAPIHandler := api.NewStrictHandler(
 		publicAPI,
 		[]api.StrictMiddlewareFunc{

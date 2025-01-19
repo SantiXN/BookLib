@@ -1,9 +1,10 @@
 package service
 
 import (
+	"errors"
+
 	"booklib/pkg/domain/model"
 	"booklib/pkg/infrastructure/utils"
-	"errors"
 )
 
 type UserData struct {
@@ -17,6 +18,9 @@ type UserData struct {
 
 type UserService interface {
 	CreateUser(userData UserData) error
+	DeleteUser(id int) error
+	ChangeRole(id int, role model.UserRole) error
+	EditUserInfo(id int, firstName *string, lastName *string) error
 	ValidateUser(email, password string) (int, error)
 }
 
@@ -33,7 +37,7 @@ type userService struct {
 }
 
 func (u *userService) CreateUser(userData UserData) error {
-	exist, err := u.repo.IsExist(userData.Email)
+	exist, err := u.repo.IsEmailExist(userData.Email)
 	if err != nil {
 		return err
 	}
@@ -58,6 +62,42 @@ func (u *userService) CreateUser(userData UserData) error {
 		userData.AvatarPath,
 	)
 
+	return u.repo.Store(user)
+}
+
+func (u *userService) DeleteUser(id int) error {
+	exist, err := u.repo.IsUserExist(id)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return errors.New(model.ErrUserNotFound.Error())
+	}
+	return u.repo.Delete(id)
+}
+
+func (u *userService) ChangeRole(id int, role model.UserRole) error {
+	user, err := u.repo.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	user.SetRole(role)
+	return u.repo.Store(user)
+}
+
+func (u *userService) EditUserInfo(id int, firstName *string, lastName *string) error {
+	user, err := u.repo.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	if firstName != nil {
+		user.SetFirstName(*firstName)
+	}
+	if lastName != nil {
+		user.SetLastName(*lastName)
+	}
 	return u.repo.Store(user)
 }
 

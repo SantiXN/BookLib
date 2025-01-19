@@ -1108,6 +1108,8 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/userData'
+      required:
+        - data
     LoginUserRequest:
       type: object
       properties:
@@ -1145,6 +1147,8 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/userInfo'
+      required:
+        - user
     ListUsersResponseData:
       type: object
       properties:
@@ -1152,11 +1156,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/userInfo'
+      required:
+        - users
     GetUserInfoResponseData:
       type: object
       properties:
         user:
           $ref: '#/components/schemas/userInfo'
+      required:
+        - user
     ChangeUserRoleRequest:
       type: object
       properties:
@@ -1165,6 +1173,8 @@ components:
           enum:
             - user
             - editor
+      required:
+        - role
     EditUserInfoRequest:
       type: object
       properties:
@@ -1378,6 +1388,7 @@ components:
           type: string
       required:
         - id
+        - firstName
 
     userInfo:
       type: object
@@ -1400,6 +1411,7 @@ components:
           type: string
       required:
         - id
+        - firstName
         - email
 
 # HELP!!!

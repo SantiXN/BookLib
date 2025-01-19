@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/domain/model"
@@ -99,7 +100,7 @@ func (repo *userRepository) GetID(email, password string) (int, error) {
 	return cred.ID, nil
 }
 
-func (repo *userRepository) IsExist(email string) (bool, error) {
+func (repo *userRepository) IsEmailExist(email string) (bool, error) {
 	const query = `
 		SELECT COUNT(*) 
 		FROM user 
@@ -115,9 +116,56 @@ func (repo *userRepository) IsExist(email string) (bool, error) {
 	return count > 0, nil
 }
 
+func (repo *userRepository) IsUserExist(id int) (bool, error) {
+	const query = `
+		SELECT COUNT(*) 
+		FROM user 
+		WHERE id = ?
+	`
+
+	var count int
+	err := repo.client.GetContext(repo.ctx, &count, query, id)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
 func (repo *userRepository) FindOne(id int) (model.User, error) {
-	//TODO implement me
-	panic("implement me")
+	const query = `
+		SELECT
+			id,
+			first_name,
+			last_name,
+			email,
+			password,
+			role,
+			avatar_path
+		FROM
+			user
+		WHERE
+			id = ?
+	`
+
+	var user sqlxUser
+	err := repo.client.GetContext(repo.ctx, &user, query, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New(model.ErrUserNotFound.Error())
+		}
+		return nil, err
+	}
+
+	return model.NewUser(
+		user.ID,
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.Password,
+		model.UserRole(user.Role),
+		user.AvatarPath,
+	), nil
 }
 
 func (repo *userRepository) FindAll(ids []int) ([]model.User, error) {
@@ -125,7 +173,27 @@ func (repo *userRepository) FindAll(ids []int) ([]model.User, error) {
 	panic("implement me")
 }
 
+func (repo *userRepository) Delete(id int) error {
+	const query = `
+		DELETE FROM user
+		WHERE id = ?
+	`
+
+	_, err := repo.client.ExecContext(repo.ctx, query, id)
+	return err
+}
+
 type sqlxUserCred struct {
 	ID       int    `db:"id"`
 	Password string `db:"password"`
+}
+
+type sqlxUser struct {
+	ID         int     `db:"id"`
+	FirstName  string  `db:"first_name"`
+	LastName   *string `db:"last_name"`
+	Email      string  `db:"email"`
+	Password   string  `db:"password"`
+	Role       int     `db:"role"`
+	AvatarPath *string `db:"avatar_path"`
 }

@@ -3,10 +3,12 @@ package model
 type UserRepository interface {
 	NextID() (int, error)
 	Store(user User) error
-	IsExist(email string) (bool, error)
+	IsUserExist(id int) (bool, error)
+	IsEmailExist(email string) (bool, error)
 	GetID(email, password string) (int, error)
 	FindOne(id int) (User, error)
 	FindAll(ids []int) ([]User, error)
+	Delete(id int) error
 }
 
 type User interface {
@@ -17,6 +19,10 @@ type User interface {
 	Password() string
 	Role() UserRole
 	AvatarPath() *string
+
+	SetRole(role UserRole)
+	SetFirstName(firstName string)
+	SetLastName(lastName string)
 }
 
 type UserRole int
@@ -83,4 +89,16 @@ func (u *user) Role() UserRole {
 
 func (u *user) AvatarPath() *string {
 	return u.avatarPath
+}
+
+func (u *user) SetRole(role UserRole) {
+	u.role = role
+}
+
+func (u *user) SetFirstName(firstName string) {
+	u.firstName = firstName
+}
+
+func (u *user) SetLastName(lastName string) {
+	u.lastName = &lastName
 }

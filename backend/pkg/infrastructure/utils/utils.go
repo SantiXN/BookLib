@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -27,4 +29,13 @@ func HashPassword(password string) (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
+}
+
+func GetUserID(ctx context.Context) (int, error) {
+	userID, ok := ctx.Value("user_id").(int)
+	if !ok {
+		return 0, errors.New("failed to retrieve user ID from context")
+	}
+
+	return userID, nil
 }

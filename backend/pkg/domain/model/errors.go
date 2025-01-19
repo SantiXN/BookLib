@@ -8,4 +8,5 @@ var (
 	ErrCategoryNotFound       = errors.New("author not found")
 	ErrUserAlreadyExist       = errors.New("user already exist")
 	ErrInvalidLoginOrPassword = errors.New("invalid login or password")
+	ErrUserNotFound           = errors.New("user not found")
 )

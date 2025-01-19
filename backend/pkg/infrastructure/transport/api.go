@@ -1,6 +1,9 @@
 package transport
 
 import (
+	"booklib/pkg/app/query"
+	"booklib/pkg/domain/model"
+	"booklib/pkg/infrastructure/utils"
 	"context"
 	"errors"
 
@@ -9,18 +12,27 @@ import (
 	"booklib/pkg/infrastructure/auth"
 )
 
+var (
+	ErrInvalidRole = errors.New("invalid role")
+)
+
 type API interface {
 	api.StrictServerInterface
 }
 
-func NewPublicAPI(userService service.UserService) API {
+func NewPublicAPI(
+	userService service.UserService,
+	userQueryService query.UserQueryService,
+) API {
 	return &publicAPI{
-		userService: userService,
+		userService:      userService,
+		userQueryService: userQueryService,
 	}
 }
 
 type publicAPI struct {
-	userService service.UserService
+	userService      service.UserService
+	userQueryService query.UserQueryService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -164,18 +176,42 @@ func (p *publicAPI) SearchItems(ctx context.Context, request api.SearchItemsRequ
 }
 
 func (p *publicAPI) EditUserInfo(ctx context.Context, request api.EditUserInfoRequestObject) (api.EditUserInfoResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.userService.EditUserInfo(ctx, request.Body.FirstName, request.Body.LastName)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.EditUserInfo200Response{}, nil
 }
 
 func (p *publicAPI) GetUserData(ctx context.Context, request api.GetUserDataRequestObject) (api.GetUserDataResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userData, err := p.userQueryService.GetUserData(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.GetUserData200JSONResponse{
+		Data: api.UserData{
+			Id:         userData.ID,
+			FirstName:  userData.FirstName,
+			LastName:   userData.LastName,
+			AvatarPath: userData.AvatarPath,
+		},
+	}, nil
 }
 
 func (p *publicAPI) DeleteUser(ctx context.Context, request api.DeleteUserRequestObject) (api.DeleteUserResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.userService.DeleteUser(ctx, request.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.DeleteUser200Response{}, nil
 }
 
 func (p *publicAPI) LoginUser(ctx context.Context, request api.LoginUserRequestObject) (api.LoginUserResponseObject, error) {
@@ -207,30 +243,111 @@ func (p *publicAPI) RegisterUser(ctx context.Context, request api.RegisterUserRe
 }
 
 func (p *publicAPI) GetAuthorizedUser(ctx context.Context, request api.GetAuthorizedUserRequestObject) (api.GetAuthorizedUserResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userInfo, err := p.userQueryService.GetUserInfo(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	apiUserInfo, err := toAPIUserInfo(userInfo)
+	if err != nil {
+		return nil, err
+	}
+	return api.GetAuthorizedUser200JSONResponse{
+		User: apiUserInfo,
+	}, nil
 }
 
 func (p *publicAPI) ListUsers(ctx context.Context, request api.ListUsersRequestObject) (api.ListUsersResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	userInfos, err := p.userQueryService.ListUserInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	apiUsers := make([]api.UserInfo, 0, len(userInfos))
+	for _, userInfo := range userInfos {
+		apiUser, err2 := toAPIUserInfo(userInfo)
+		if err2 != nil {
+			return nil, err2
+		}
+		apiUsers = append(apiUsers, apiUser)
+	}
+
+	return api.ListUsers200JSONResponse{
+		Users: apiUsers,
+	}, nil
 }
 
 func (p *publicAPI) GetUserInfo(ctx context.Context, request api.GetUserInfoRequestObject) (api.GetUserInfoResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	//TODO Возможно, что только админ вызывает запрос
+	userInfo, err := p.userQueryService.GetUserInfo(ctx, request.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiUserInfo, err := toAPIUserInfo(userInfo)
+	if err != nil {
+		return nil, err
+	}
+	return api.GetUserInfo200JSONResponse{
+		User: apiUserInfo,
+	}, nil
 }
 
 func (p *publicAPI) ChangeUserRole(ctx context.Context, request api.ChangeUserRoleRequestObject) (api.ChangeUserRoleResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func getUserID(ctx context.Context) (int, error) {
-	userID, ok := ctx.Value("user").(uint)
-	if !ok {
-		return 0, errors.New("failed to retrieve user ID from context")
+	role, err := toRole(request.Body.Role)
+	if err != nil {
+		return nil, err
 	}
 
-	return int(userID), nil
+	err = p.userService.ChangeRole(ctx, request.UserID, role)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.ChangeUserRole200Response{}, nil
+}
+
+func toAPIRole(role model.UserRole) (api.UserInfoRole, error) {
+	switch role {
+	case model.DefaultUser:
+		return api.UserInfoRoleUser, nil
+	case model.Editor:
+		return api.UserInfoRoleEditor, nil
+	case model.Admin:
+		return api.UserInfoRoleAdmin, nil
+	default:
+		return api.UserInfoRoleUser, errors.New(ErrInvalidRole.Error())
+	}
+}
+
+func toRole(role api.ChangeUserRoleRequestRole) (model.UserRole, error) {
+	switch role {
+	case api.ChangeUserRoleRequestRoleUser:
+		return model.DefaultUser, nil
+	case api.ChangeUserRoleRequestRoleEditor:
+		return model.Editor, nil
+	default:
+		return model.DefaultUser, errors.New(ErrInvalidRole.Error())
+	}
+}
+
+func toAPIUserInfo(userInfo query.UserInfo) (api.UserInfo, error) {
+	apiRole, err := toAPIRole(userInfo.Role)
+	if err != nil {
+		return api.UserInfo{}, err
+	}
+
+	return api.UserInfo{
+		Id:         userInfo.ID,
+		FirstName:  userInfo.FirstName,
+		LastName:   userInfo.LastName,
+		Email:      userInfo.Email,
+		Role:       &apiRole,
+		AvatarPath: userInfo.AvatarPath,
+	}, nil
 }

@@ -163,7 +163,7 @@ const ProfilePage = () => {
                                 Сменить аватар
                             </label>
                             {avatarFile && (
-                                <FaTrash size={20} color='2441C1' style={{ cursor: 'pointer' }} onClick={removeAvatarHandle} />
+                                <FaTrash size={20} color='2441C1' style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={removeAvatarHandle} />
                             )}
                         </div>
                         <button

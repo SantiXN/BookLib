@@ -19,6 +19,8 @@ RUN mkdir -p /app/uploads
 # Генерируем код OpenAPI
 RUN oapi-codegen -alias-types -config ./api/oapi-config.yaml ./api/api.yaml
 
+RUN go mod vendor
+
 # Собираем приложение
 RUN go build -v -o ./bin/main ./cmd/main.go
 

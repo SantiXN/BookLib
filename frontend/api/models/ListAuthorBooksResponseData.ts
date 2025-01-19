@@ -32,13 +32,21 @@ export interface ListAuthorBooksResponseData {
      * @type {Array<BookData>}
      * @memberof ListAuthorBooksResponseData
      */
-    books?: Array<BookData>;
+    books: Array<BookData>;
+    /**
+     * 
+     * @type {number}
+     * @memberof ListAuthorBooksResponseData
+     */
+    totalCount: number;
 }
 
 /**
  * Check if a given object implements the ListAuthorBooksResponseData interface.
  */
 export function instanceOfListAuthorBooksResponseData(value: object): value is ListAuthorBooksResponseData {
+    if (!('books' in value) || value['books'] === undefined) return false;
+    if (!('totalCount' in value) || value['totalCount'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +60,8 @@ export function ListAuthorBooksResponseDataFromJSONTyped(json: any, ignoreDiscri
     }
     return {
         
-        'books': json['books'] == null ? undefined : ((json['books'] as Array<any>).map(BookDataFromJSON)),
+        'books': ((json['books'] as Array<any>).map(BookDataFromJSON)),
+        'totalCount': json['totalCount'],
     };
 }
 
@@ -67,7 +76,8 @@ export function ListAuthorBooksResponseDataToJSONTyped(value?: ListAuthorBooksRe
 
     return {
         
-        'books': value['books'] == null ? undefined : ((value['books'] as Array<any>).map(BookDataToJSON)),
+        'books': ((value['books'] as Array<any>).map(BookDataToJSON)),
+        'totalCount': value['totalCount'],
     };
 }
 

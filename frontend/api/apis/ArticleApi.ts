@@ -24,6 +24,8 @@ import type {
   ManagementArticlesResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
+  SearchArticlesRequest,
+  SearchArticlesResponseData,
   UnauthorizedResponseData,
 } from '../models/index';
 import {
@@ -45,6 +47,10 @@ import {
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
     PermissionDeniedResponseDataToJSON,
+    SearchArticlesRequestFromJSON,
+    SearchArticlesRequestToJSON,
+    SearchArticlesResponseDataFromJSON,
+    SearchArticlesResponseDataToJSON,
     UnauthorizedResponseDataFromJSON,
     UnauthorizedResponseDataToJSON,
 } from '../models/index';
@@ -68,6 +74,12 @@ export interface GetArticleRequest {
 
 export interface PublishArticleRequest {
     articleID: number;
+}
+
+export interface SearchArticlesOperationRequest {
+    searchArticlesRequest: SearchArticlesRequest;
+    page?: number;
+    limit?: number;
 }
 
 /**
@@ -342,6 +354,56 @@ export class ArticleApi extends runtime.BaseAPI {
      */
     async publishArticle(requestParameters: PublishArticleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.publishArticleRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async searchArticlesRaw(requestParameters: SearchArticlesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchArticlesResponseData>> {
+        if (requestParameters['searchArticlesRequest'] == null) {
+            throw new runtime.RequiredError(
+                'searchArticlesRequest',
+                'Required parameter "searchArticlesRequest" was null or undefined when calling searchArticles().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/article/search`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SearchArticlesRequestToJSON(requestParameters['searchArticlesRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SearchArticlesResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async searchArticles(requestParameters: SearchArticlesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchArticlesResponseData> {
+        const response = await this.searchArticlesRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

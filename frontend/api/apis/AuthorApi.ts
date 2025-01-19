@@ -23,6 +23,8 @@ import type {
   ListAuthorsResponseData,
   NotFoundResponseData,
   PermissionDeniedResponseData,
+  SearchAuthorsRequest,
+  SearchAuthorsResponseData,
   UnauthorizedResponseData,
 } from '../models/index';
 import {
@@ -42,6 +44,10 @@ import {
     NotFoundResponseDataToJSON,
     PermissionDeniedResponseDataFromJSON,
     PermissionDeniedResponseDataToJSON,
+    SearchAuthorsRequestFromJSON,
+    SearchAuthorsRequestToJSON,
+    SearchAuthorsResponseDataFromJSON,
+    SearchAuthorsResponseDataToJSON,
     UnauthorizedResponseDataFromJSON,
     UnauthorizedResponseDataToJSON,
 } from '../models/index';
@@ -61,6 +67,12 @@ export interface EditAuthorOperationRequest {
 
 export interface GetAuthorInfoRequest {
     authorID: number;
+}
+
+export interface SearchAuthorsOperationRequest {
+    searchAuthorsRequest: SearchAuthorsRequest;
+    page?: number;
+    limit?: number;
 }
 
 /**
@@ -250,6 +262,56 @@ export class AuthorApi extends runtime.BaseAPI {
      */
     async listAuthors(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListAuthorsResponseData> {
         const response = await this.listAuthorsRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async searchAuthorsRaw(requestParameters: SearchAuthorsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchAuthorsResponseData>> {
+        if (requestParameters['searchAuthorsRequest'] == null) {
+            throw new runtime.RequiredError(
+                'searchAuthorsRequest',
+                'Required parameter "searchAuthorsRequest" was null or undefined when calling searchAuthors().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/author/search`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SearchAuthorsRequestToJSON(requestParameters['searchAuthorsRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SearchAuthorsResponseDataFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async searchAuthors(requestParameters: SearchAuthorsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchAuthorsResponseData> {
+        const response = await this.searchAuthorsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

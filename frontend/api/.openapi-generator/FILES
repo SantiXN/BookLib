@@ -41,7 +41,8 @@ models/ListBookFeedbackResponseData.ts
 models/ListBooksByCategoryResponseData.ts
 models/ListBooksResponseData.ts
 models/ListCategoriesResponseData.ts
-models/ListLibraryBooksResponseData.ts
+models/ListLibraryBooksByStatusRequest.ts
+models/ListLibraryBooksByStatusResponseData.ts
 models/ListUsersResponseData.ts
 models/LoginUserRequest.ts
 models/LoginUserResponseData.ts
@@ -51,8 +52,12 @@ models/PermissionDeniedResponseData.ts
 models/RegisterUserRequest.ts
 models/SaveBookFeedbackRequest.ts
 models/SaveBookFeedbackResponseData.ts
-models/SearchItemsRequest.ts
-models/SearchItemsResponseData.ts
+models/SearchArticlesRequest.ts
+models/SearchArticlesResponseData.ts
+models/SearchAuthorsRequest.ts
+models/SearchAuthorsResponseData.ts
+models/SearchBooksRequest.ts
+models/SearchBooksResponseData.ts
 models/UnauthorizedResponseData.ts
 models/UploadFileResponseData.ts
 models/UserData.ts

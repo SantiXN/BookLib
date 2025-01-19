@@ -180,13 +180,13 @@ paths:
       parameters:
         - name: page
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
         - name: limit
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
@@ -217,13 +217,13 @@ paths:
       parameters:
         - name: page
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
         - name: limit
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
@@ -253,13 +253,13 @@ paths:
       parameters:
         - name: page
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
         - name: limit
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
@@ -312,13 +312,13 @@ paths:
       parameters:
         - name: page
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
         - name: limit
           in: query
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1

@@ -49,16 +49,14 @@ const BookPage = () => {
                 console.error('Ошибка при запросе данных: ', err);
             });
 
-        BookApiClient.listLibraryBooks()
-            // TODO: если пользователь не авторизован?
-            .then((response) => {
-                if (!response.books) {
-                    return;
-                }
-                const bookIDs = response.books.map((book) => book.id);
-                setIsAddedToRead(bookIDs.includes(curBookId));
-            })
-        // Получение информации, находится ли книга в библиотеке
+        if (bookInfo) {
+            BookApiClient.checkBookInLibrary({ bookID: curBookId })
+                .then((response) => {
+                    if (response.contains) {
+                        setIsAddedToRead(response.contains.valueOf());
+                    }
+                })
+        }
     }, [])
 
     if (loading) {

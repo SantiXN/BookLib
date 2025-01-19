@@ -21,6 +21,8 @@ const AuthMenu = () => {
 
     const isDataError = !(password.trim() && login.trim()) || loginError != '' || passwordError != '';
 
+    const [responseError, setResponseError] = useState('');
+
     const openRegisterMenu = () => setIsRegisterMenuOpen(true);
     const closeRegisterMenu = () => setIsRegisterMenuOpen(false);
 
@@ -44,16 +46,21 @@ const AuthMenu = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
-        try {
-            const response = await UserApiClient.loginUser({loginUserRequest: {login: login, password: password}});
-            const token = response.token; // Предполагается, что токен находится в response.data.token
-            logIn(token);
-        } catch (err) {
-            console.error('Ошибка авторизации. Проверьте логин и пароль.');
-        }
+
+        UserApiClient.loginUser({loginUserRequest: {login: login, password: password}})
+            .then((response) => {
+                if (response) {
+                    const token = response.token; // Предполагается, что токен находится в response.data.token
+                    logIn(token);
+                    setResponseError(''); // Clear any previous error
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                setResponseError(`Ошибка авторизации: ${err}`); 
+            })
     };
 
     return (
@@ -63,6 +70,7 @@ const AuthMenu = () => {
                     <div className={s.menuHeader}>
                         <p className={s.menuTitle}>Войти</p>
                     </div>
+                    {responseError && (<p>{responseError}</p>)}
                     <div className={s.menuContainer}>
                         <form className={s.form} onSubmit={handleSubmit}>
                             <div className={s.formFieldContainer}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import s from './UserLibraryPage.module.css';
 import BookCard from '../../component/common/BookCard/BookCard';
-import { AuthorData, BookInLibrary, BookInLibraryReadingStatusEnum } from '../../../api';
+import { AuthorInfo, BookInLibrary, BookInLibraryReadingStatusEnum } from '../../../api';
 import { BookApiClient } from '../../../api/ApiClient';
 import { FaTrash } from 'react-icons/fa';
 import ChangeBookStatusBlock from './ChangeBookStatusBlock';
@@ -97,7 +97,7 @@ const UserLibraryPage = () => {
         }
     };
 
-    const getAuthorsString = (authors: AuthorData[]) => {
+    const getAuthorsString = (authors: AuthorInfo[]) => {
         return authors.map(author => `${author.firstName} ${author.lastName}`).join(', ');
     };
 
@@ -125,7 +125,6 @@ const UserLibraryPage = () => {
             }
         }
     };
-    
 
     const handleChangeStatus = (bookId: number) => {
         setSelectedBookID(bookId);

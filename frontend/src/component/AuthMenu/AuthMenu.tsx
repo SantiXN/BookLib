@@ -75,7 +75,7 @@ const AuthMenu = () => {
                         <form className={s.form} onSubmit={handleSubmit}>
                             <div className={s.formFieldContainer}>
                                 <label className={s.formLabel}>
-                                    Логин
+                                    E-mail
                                     <input
                                         id='login'
                                         className={s.formTextInput}

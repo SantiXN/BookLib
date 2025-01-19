@@ -56,6 +56,17 @@
     box-sizing: border-box;
 }
 
+.formTextInput.error {
+    font-size: 20px;
+    border-color: red;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
 .registerButtonContainer {
     display: flex;
     justify-content: center;

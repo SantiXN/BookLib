@@ -103,25 +103,6 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/book/list:
-    get:
-      tags:
-        - book
-      operationId: ListBooks
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListBooksResponseData'
-        '400':
-          $ref: '#/components/responses/badRequest'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '403':
-          $ref: '#/components/responses/permissionDenied'
-
   /api/book/{authorID}/list:
     get:
       tags:
@@ -149,7 +130,6 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-# Добавить книгу в собственную библиотеку
   /api/book/{bookID}/library/add:
     post:
       tags:
@@ -238,18 +218,37 @@ paths:
         '401':
           $ref: '#/components/responses/unauthorized'
 
-  /api/book/library/list:
-    get:
+  /api/library/status/list:
+    post:
       tags:
         - book
-      operationId: ListLibraryBooks
+      operationId: ListLibraryBooksByStatus
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListLibraryBooksByStatusRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListLibraryBooksResponseData'
+                $ref: '#/components/schemas/ListLibraryBooksByStatusResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -1081,13 +1080,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
-    ListLibraryBooksResponseData:
+    ListLibraryBooksByStatusRequest:
+      type: object
+      properties:
+        readingStatus:
+          type: string
+          enum:
+            - inProgress
+            - finished
+            - planned
+    ListLibraryBooksByStatusResponseData:
       type: object
       properties:
         books:
           type: array
           items:
             $ref: '#/components/schemas/bookInLibrary'
+        totalNumber:
+          type: integer
+      required:
+        - books
+        - totalNumber
     ChangeReadingStatusRequest:
       type: object
       properties:
@@ -1344,7 +1357,7 @@ components:
           items:
             $ref: '#/components/schemas/authorInfo'
         starCount:
-          type: integer
+          type: number
         readingStatus:
           type: string
           enum:

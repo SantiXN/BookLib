@@ -154,17 +154,12 @@ func (p *publicAPI) AddBook(ctx context.Context, request api.AddBookRequestObjec
 	panic("implement me")
 }
 
-func (p *publicAPI) ListLibraryBooks(ctx context.Context, request api.ListLibraryBooksRequestObject) (api.ListLibraryBooksResponseObject, error) {
+func (p *publicAPI) ListLibraryBooksByStatus(ctx context.Context, request api.ListLibraryBooksByStatusRequestObject) (api.ListLibraryBooksByStatusResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
 func (p *publicAPI) GetLibraryStats(ctx context.Context, request api.GetLibraryStatsRequestObject) (api.GetLibraryStatsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p *publicAPI) ListBooks(ctx context.Context, request api.ListBooksRequestObject) (api.ListBooksResponseObject, error) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -48,6 +48,7 @@ const AuthMenu = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setResponseError('');
 
         UserApiClient.loginUser({loginUserRequest: {login: login, password: password}})
             .then((response) => {
@@ -60,7 +61,7 @@ const AuthMenu = () => {
             .catch((err) => {
                 console.error(err);
                 setResponseError(`Ошибка авторизации: ${err}`); 
-            })
+            });
     };
 
     return (
@@ -70,7 +71,6 @@ const AuthMenu = () => {
                     <div className={s.menuHeader}>
                         <p className={s.menuTitle}>Войти</p>
                     </div>
-                    {responseError && (<p>{responseError}</p>)}
                     <div className={s.menuContainer}>
                         <form className={s.form} onSubmit={handleSubmit}>
                             <div className={s.formFieldContainer}>
@@ -98,6 +98,7 @@ const AuthMenu = () => {
                                     />
                                 </label>
                             </div>
+                            {responseError && (<p>Ошибка авторизации. Данные некорректны</p>)}
                             <button type="submit" className={`${s.button} ${s.formButton} ${isDataError ? s.disabledButton : ''}`}
                             disabled={isDataError}
                             >

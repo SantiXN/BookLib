@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from './RegisterMenu.module.css';
 import PasswordInputField from '../common/PasswordInputField/PasswordInputField';
+import { UserApiClient } from '../../../api/ApiClient';
+import { RegisterUserRequest } from '../../../api';
 
 interface RegisterMenuProps {
     isOpen: boolean;
@@ -96,13 +98,22 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
         return valid;
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
         if (validateForm()) {
-            // Отправка данных формы или дальнейшая обработка
+
+            const request: RegisterUserRequest = {
+                firstName: formData.firstname,
+                lastName: formData.lastname,
+                email: formData.email,
+                password: formData.password,
+            };
             console.log('Данные формы:', formData);
-            // Здесь можно добавить логику отправки данных на сервер
+            await UserApiClient.registerUser({ registerUserRequest: request })
+                .then((response) => {
+                    console.log(response)
+                })
             onClose(); // Закрыть меню после успешной регистрации
         }
     };

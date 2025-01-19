@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import s from './Header.module.css';
 import SearchBar from "../common/SearchBar/SearchBar";
+import ProtectedLink from '../ProtectedLink/ProtectedLink';
 
 const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string }) => (
     <li>
@@ -46,17 +47,17 @@ const Header = () => {
                 </div>
 
                 <div className={`${s.menuItem} ${s.headerWrapperItem}`}>
-                    <Link to="/library" className={s.link}>
+                    <ProtectedLink to="/library" className={s.link}>
                         <div className={s.iconBook} />
                         Мои книги
-                    </Link>
+                    </ProtectedLink>
                 </div>
 
                 <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>
                     <div className={s.iconUser} />
-                    <Link to="/profile" className={s.link}>
+                    <ProtectedLink to="/profile" className={s.link}>
                         Профиль
-                    </Link>
+                    </ProtectedLink>
                 </div>
             </div>
         </header>

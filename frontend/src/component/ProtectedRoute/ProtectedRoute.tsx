@@ -1,5 +1,4 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 interface ProtectedRouteProps {
@@ -7,11 +6,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const { isAuthenticated } = useAuth();
-    const location = useLocation();
+    const { isAuthenticated, toggleAuthModal } = useAuth();
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            toggleAuthModal();
+        }
+    }, [isAuthenticated, toggleAuthModal]);
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} />;
+        return null; // Пока пользователь не авторизован, ничего не рендерим
     }
 
     return children;

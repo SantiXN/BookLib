@@ -38,7 +38,7 @@ const ProfilePage = () => {
     const handleLogout = () => {
         if (window.confirm('Вы уверены, что хотите выйти из аккаунта?')) {
             logout();
-            navigate('/', { replace: true });
+            navigate('/');
             navigate(0);    
         }
     };

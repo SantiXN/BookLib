@@ -17,6 +17,7 @@ import SearchPage from './pages/SearchPage/SearchPage.tsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
 import ErrorPage from './pages/ErrorPage/ErrorPage.tsx';
+import AuthPage from './pages/AuthPage/AuthPage.tsx';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
               <Route path="/genre/:genreID" element={<GenrePage />} />
               <Route path="/articles" element={<ArticlesPage />} />
               <Route path="/search" element={<SearchPage />} />
+              <Route path="/login" element={<AuthPage />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>
           </div>

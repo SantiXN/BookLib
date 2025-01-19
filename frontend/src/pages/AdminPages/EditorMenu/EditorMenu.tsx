@@ -1,15 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from './EditorMenu.module.css'
 import AddArticleBlock from '../FunctionalWindows/AddArticleBlock/AddArticleBlock';
 import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleBlock';
 import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
+import { useNavigate } from 'react-router-dom';
+import { UserApiClient } from '../../../../api/ApiClient';
+import { UserInfoRoleEnum } from '../../../../api';
 
 const EditorMenu = () => {
+    const navigate = useNavigate();
+    const [isEditor, setIsEditor] = useState(false);
+    
+    useEffect(() => {
+        UserApiClient.getAuthorizedUser()
+            .then((response) => {
+                if (response.user.role !== UserInfoRoleEnum.Editor) {
+                    navigate('/');
+                } else {
+                    setIsEditor(true);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+                navigate('/');
+            });
+    }, [navigate]);
+
     const [activeWindowMenu, setActiveWindowMenu] = useState<string | null>(null);
 
     const handleButtonClick = (window: string) => setActiveWindowMenu(window); 
 
     const closeWindow = () => setActiveWindowMenu(null);
+
+    if (!isEditor) return null;
 
     return (
         <div className={s.adminMenuContainer}>

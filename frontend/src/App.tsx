@@ -17,6 +17,7 @@ import SearchPage from './pages/SearchPage/SearchPage.tsx';
 import AuthPage from './pages/AuthPage/AuthPage.tsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
+import ErrorPage from './pages/ErrorPage/ErrorPage.tsx';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
       <div className={s.container}>
         <Routes>
           <Route path="/login" element={<AuthPage />} />
+          <Route path="*" element={<ErrorPage />} />
           <Route path="/" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
           <Route path="/book/:id" element={<ProtectedRoute><BookPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminMenu /></ProtectedRoute>} />

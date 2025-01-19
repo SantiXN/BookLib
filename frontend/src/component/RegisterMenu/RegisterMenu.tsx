@@ -25,7 +25,6 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
         repeatPassword: '',
         firstname: '',
         lastname: '',
-        login: '',
     });
 
     useEffect(() => {
@@ -215,7 +214,6 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
                                 placeholder='Повторите пароль'
                                 value={formData.repeatPassword}
                                 onChange={handleChange}
-                                error={errors.repeatPassword}
                             />
                         </label>
                         {errors.repeatPassword && <p className={s.error}>{errors.repeatPassword}</p>}

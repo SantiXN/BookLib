@@ -1,8 +1,11 @@
+import { replace, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import s from './ProfilePage.module.css'
 import React, {useState} from 'react';
 
 const ProfilePage = () => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         firstName: 'firstName',
         lastName: 'lastName',
@@ -33,9 +36,10 @@ const ProfilePage = () => {
     const { logOut: logout } = useAuth();
 
     const handleLogout = () => {
-        
         if (window.confirm('Вы уверены, что хотите выйти из аккаунта?')) {
             logout();
+            navigate('/', { replace: true });
+            navigate(0);    
         }
     };
 

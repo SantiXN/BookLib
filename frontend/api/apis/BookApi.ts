@@ -19,6 +19,7 @@ import type {
   AddBookResponseData,
   BadRequestResponseData,
   ChangeReadingStatusRequest,
+  CheckBookInLibrary200Response,
   EditBookRequest,
   GetBookInfoResponseData,
   ListAuthorBooksResponseData,
@@ -43,6 +44,8 @@ import {
     BadRequestResponseDataToJSON,
     ChangeReadingStatusRequestFromJSON,
     ChangeReadingStatusRequestToJSON,
+    CheckBookInLibrary200ResponseFromJSON,
+    CheckBookInLibrary200ResponseToJSON,
     EditBookRequestFromJSON,
     EditBookRequestToJSON,
     GetBookInfoResponseDataFromJSON,
@@ -84,6 +87,10 @@ export interface AddBookToLibraryRequest {
 export interface ChangeReadingStatusOperationRequest {
     bookID: number;
     changeReadingStatusRequest?: ChangeReadingStatusRequest;
+}
+
+export interface CheckBookInLibraryRequest {
+    bookID: number;
 }
 
 export interface DeleteBookRequest {
@@ -256,6 +263,45 @@ export class BookApi extends runtime.BaseAPI {
      */
     async changeReadingStatus(requestParameters: ChangeReadingStatusOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.changeReadingStatusRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async checkBookInLibraryRaw(requestParameters: CheckBookInLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckBookInLibrary200Response>> {
+        if (requestParameters['bookID'] == null) {
+            throw new runtime.RequiredError(
+                'bookID',
+                'Required parameter "bookID" was null or undefined when calling checkBookInLibrary().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/book/{bookID}/library/contains`.replace(`{${"bookID"}}`, encodeURIComponent(String(requestParameters['bookID']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CheckBookInLibrary200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async checkBookInLibrary(requestParameters: CheckBookInLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckBookInLibrary200Response> {
+        const response = await this.checkBookInLibraryRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

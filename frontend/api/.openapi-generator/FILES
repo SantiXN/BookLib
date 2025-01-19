@@ -18,6 +18,7 @@ models/BookInfo.ts
 models/CategoryInfo.ts
 models/ChangeReadingStatusRequest.ts
 models/ChangeUserRoleRequest.ts
+models/CheckBookInLibrary200Response.ts
 models/CreateArticleRequest.ts
 models/CreateArticleResponseData.ts
 models/CreateAuthorRequest.ts

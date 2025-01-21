@@ -4,12 +4,16 @@ import (
 	"booklib/pkg/app/model"
 	"booklib/pkg/app/service/provider"
 	"context"
+	"errors"
 )
+
+var ErrBookNotFound = errors.New("book not found")
 
 type BookQueryService interface {
 	ListBooks(limit, offset *int)
 	IsBookExist(ctx context.Context, bookID int) (bool, error)
 	ListBooksByCategory(ctx context.Context, categoryID int, limit, offset *int) ([]model.Book, error)
+	GetBook(ctx context.Context, id int) (model.Book, error)
 }
 
 func NewBookQueryService(
@@ -54,4 +58,25 @@ func (b *bookQueryService) ListBooksByCategory(ctx context.Context, categoryID i
 	}
 
 	return books, nil
+}
+
+func (b *bookQueryService) GetBook(ctx context.Context, id int) (model.Book, error) {
+	book, err := b.storageQueryService.GetBook(ctx, id)
+	if err != nil {
+		return model.Book{}, err
+	}
+
+	authors, err := b.authorProvider.GetAuthorsByBookID(ctx, book.ID)
+	if err != nil {
+		return model.Book{}, err
+	}
+	book.Authors = authors
+
+	categories, err := b.categoryProvider.GetCategoriesByBook(ctx, book.ID)
+	if err != nil {
+		return model.Book{}, err
+	}
+	book.Categories = categories
+
+	return book, nil
 }

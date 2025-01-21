@@ -6,11 +6,12 @@ type Category struct {
 }
 
 type Book struct {
-	ID         int
-	Title      string
-	FilePath   string
-	CoverPath  string
-	Authors    []Author
-	Categories []Category
-	StarCount  float32
+	ID          int
+	Title       string
+	Description *string
+	FilePath    string
+	CoverPath   string
+	Authors     []Author
+	Categories  []Category
+	StarCount   float32
 }

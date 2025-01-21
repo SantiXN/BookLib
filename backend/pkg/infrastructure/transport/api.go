@@ -285,8 +285,40 @@ func (p *publicAPI) ListBookFeedback(ctx context.Context, request api.ListBookFe
 }
 
 func (p *publicAPI) GetBookInfo(ctx context.Context, request api.GetBookInfoRequestObject) (api.GetBookInfoResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	book, err := p.bookQueryService.GetBook(ctx, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiAuthors := make([]api.AuthorInfo, 0, len(book.Authors))
+	for _, author := range book.Authors {
+		apiAuthor := api.AuthorInfo{
+			Id:        author.ID,
+			FirstName: author.FirstName,
+			LastName:  author.LastName,
+		}
+		apiAuthors = append(apiAuthors, apiAuthor)
+	}
+	apiCategories := make([]api.CategoryInfo, 0, len(book.Categories))
+	for _, category := range book.Categories {
+		apiCategory := api.CategoryInfo{
+			Id:       category.ID,
+			Category: category.Name,
+		}
+		apiCategories = append(apiCategories, apiCategory)
+	}
+
+	return api.GetBookInfo200JSONResponse{Book: api.BookInfo{
+		Id:          book.ID,
+		Title:       book.Title,
+		Description: book.Description,
+		FilePath:    book.FilePath,
+		CoverPath:   book.CoverPath,
+		StarCount:   float32(math.Round(float64(book.StarCount)*10) / 10),
+		Authors:     apiAuthors,
+		Categories:  apiCategories,
+	}}, nil
+
 }
 
 func (p *publicAPI) AddBookToLibrary(ctx context.Context, request api.AddBookToLibraryRequestObject) (api.AddBookToLibraryResponseObject, error) {

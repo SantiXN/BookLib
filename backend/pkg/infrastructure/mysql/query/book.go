@@ -2,6 +2,9 @@ package query
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/app/model"
@@ -97,10 +100,49 @@ func (b *bookQueryService) ListBooksByCategory(ctx context.Context, categoryID i
 	return books, nil
 }
 
+func (b *bookQueryService) GetBook(ctx context.Context, id int) (model.Book, error) {
+	const query = `
+        SELECT 
+            b.id,
+            b.title,
+            b.description,
+            b.file_path,
+            b.cover_path,
+            COALESCE(
+                (SELECT AVG(br.star_count) 
+                  FROM book_review br 
+                  WHERE br.book_id = b.id
+                 ), 0) AS star_count
+        FROM 
+            book b
+        WHERE 
+            b.id = ?
+    `
+
+	var book sqlxBook
+	err := b.client.GetContext(ctx, &book, query, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return model.Book{}, appquery.ErrBookNotFound
+		}
+		return model.Book{}, err
+	}
+
+	return model.Book{
+		ID:          book.ID,
+		Title:       book.Title,
+		Description: book.Description,
+		FilePath:    book.FilePath,
+		CoverPath:   book.CoverPath,
+		StarCount:   book.StarCount,
+	}, nil
+}
+
 type sqlxBook struct {
-	ID        int     `db:"id"`
-	Title     string  `db:"title"`
-	FilePath  string  `db:"file_path"`
-	CoverPath string  `db:"cover_path"`
-	StarCount float32 `db:"star_count"`
+	ID          int     `db:"id"`
+	Title       string  `db:"title"`
+	Description *string `db:"description"`
+	FilePath    string  `db:"file_path"`
+	CoverPath   string  `db:"cover_path"`
+	StarCount   float32 `db:"star_count"`
 }

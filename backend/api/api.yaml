@@ -1140,6 +1140,8 @@ components:
       properties:
         book:
           $ref: '#/components/schemas/bookInfo'
+      required:
+        - book
     GetAuthorInfoResponseData:
       type: object
       properties:
@@ -1147,13 +1149,6 @@ components:
           $ref: '#/components/schemas/authorInfo'
       required:
         - author
-    ListBooksResponseData:
-      type: object
-      properties:
-        books:
-          type: array
-          items:
-            $ref: '#/components/schemas/bookData'
     ListAuthorBooksResponseData:
       type: object
       properties:
@@ -1290,10 +1285,12 @@ components:
     ListBookFeedbackResponseData:
       type: object
       properties:
-        books:
+        feedback:
           type: array
           items:
             $ref: '#/components/schemas/feedbackInfo'
+      required:
+        - feedback
     EditBookRequest:
       type: object
       properties:
@@ -1549,10 +1546,6 @@ components:
             $ref: '#/components/schemas/authorInfo'
         starCount:
           type: number
-        feedback:
-          type: array
-          items:
-            $ref: '#/components/schemas/feedbackInfo'
         categories:
           type: array
           items:
@@ -1562,7 +1555,6 @@ components:
       required:
         - id
         - title
-        - description
         - coverPath
         - authors
         - starCount

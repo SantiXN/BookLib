@@ -116,6 +116,8 @@ export interface ListBookFeedbackRequest {
 
 export interface ListBooksByCategoryRequest {
     categoryID: number;
+    page?: number;
+    limit?: number;
 }
 
 export interface ListLibraryBooksByStatusOperationRequest {
@@ -542,6 +544,14 @@ export class BookApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 

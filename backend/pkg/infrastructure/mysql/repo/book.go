@@ -10,25 +10,21 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/domain/model"
-	inframysql "booklib/pkg/infrastructure/mysql"
 )
 
 func NewBookRepository(
 	ctx context.Context,
-	client inframysql.ClientContext,
-	userID int,
+	client sqlx.DB,
 ) model.BookRepository {
 	return &bookRepository{
 		ctx:    ctx,
 		client: client,
-		userID: userID,
 	}
 }
 
 type bookRepository struct {
 	ctx    context.Context
-	client inframysql.ClientContext
-	userID int
+	client sqlx.DB
 }
 
 func (repo *bookRepository) NextID() (int, error) {
@@ -52,10 +48,11 @@ func (repo *bookRepository) Store(book model.Book) error {
 	            id,
 	            title,
 	            description,
+	            file_path,
 				cover_path,
 	            created_by
 	        )
-		VALUES (?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
 			title = VALUES(title),
 			description = VALUES(description),
@@ -68,8 +65,9 @@ func (repo *bookRepository) Store(book model.Book) error {
 		book.ID(),
 		book.Title(),
 		book.Description(),
+		book.FilePath(),
 		book.CoverPath(),
-		repo.userID,
+		book.CreatedBy(),
 	)
 	if err != nil {
 		return err
@@ -89,6 +87,7 @@ func (repo *bookRepository) StoreAll(books []model.Book) error {
 	            id,
 	            title,
 	            description,
+	            file_path,
 				cover_path,
 	            created_by
 	        )
@@ -102,13 +101,14 @@ func (repo *bookRepository) StoreAll(books []model.Book) error {
 	args := make([]interface{}, 0, len(books))
 	queryPlaceholders := make([]string, 0, len(books))
 	for _, b := range books {
-		queryPlaceholders = append(queryPlaceholders, "(?, ?, ?, ?, ?)")
+		queryPlaceholders = append(queryPlaceholders, "(?, ?, ?, ?, ?, ?)")
 		args = append(args,
 			b.ID(),
 			b.Title(),
 			b.Description(),
+			b.FilePath(),
 			b.CoverPath(),
-			repo.userID,
+			b.CreatedBy(),
 		)
 	}
 
@@ -136,7 +136,9 @@ func (repo *bookRepository) FindOne(id int) (model.Book, error) {
 			id,
 			title,
 			description,
-			cover_path
+			file_path,
+			cover_path,
+			created_by
 		FROM
 			book
 		WHERE id = ?
@@ -162,9 +164,11 @@ func (repo *bookRepository) FindOne(id int) (model.Book, error) {
 		b.ID,
 		b.Title,
 		b.Description,
+		b.FilePath,
 		b.CoverPath,
 		authorIDs,
 		categoryIDs,
+		b.CreatedBy,
 	), nil
 }
 
@@ -177,7 +181,9 @@ func (repo *bookRepository) FindAll(ids []int) ([]model.Book, error) {
 			id,
 			title,
 			description,
-			cover_path
+			file_path,
+			cover_path,
+			created_by
 		FROM
 			book
 		WHERE id IN (?)
@@ -209,9 +215,11 @@ func (repo *bookRepository) FindAll(ids []int) ([]model.Book, error) {
 				book.ID,
 				book.Title,
 				book.Description,
+				book.FilePath,
 				book.CoverPath,
 				authorIDs,
 				categoryIDs,
+				book.CreatedBy,
 			),
 		)
 	}
@@ -300,5 +308,7 @@ type sqlxBook struct {
 	ID          int     `db:"id"`
 	Title       string  `db:"title"`
 	Description *string `db:"description"`
+	FilePath    string  `db:"file_path"`
 	CoverPath   *string `db:"cover_path"`
+	CreatedBy   int     `db:"created_by"`
 }

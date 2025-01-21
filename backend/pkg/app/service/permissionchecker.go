@@ -16,6 +16,7 @@ var (
 type PermissionChecker interface {
 	AssertCanEditUser(ctx context.Context) error
 	AssertCanWatchUserInfo(ctx context.Context) error
+	AssertCanAddBook(ctx context.Context) error
 }
 
 type permissionChecker struct {
@@ -48,6 +49,23 @@ func (p *permissionChecker) AssertCanEditUser(ctx context.Context) error {
 }
 
 func (p *permissionChecker) AssertCanWatchUserInfo(ctx context.Context) error {
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+	role, err := p.userProvider.GetRole(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if role != model.Admin {
+		return ErrPermissionDenied
+	}
+
+	return nil
+}
+
+func (p *permissionChecker) AssertCanAddBook(ctx context.Context) error {
 	id, err := utils.GetUserID(ctx)
 	if err != nil {
 		return err

@@ -13,3 +13,12 @@ const (
 	InProgress
 	Finished
 )
+
+type BookInLibrary struct {
+	BookID        int
+	Title         string
+	CoverPath     *string
+	Authors       []Author
+	StarCount     float32
+	ReadingStatus ReadingStatus
+}

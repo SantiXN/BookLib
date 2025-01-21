@@ -494,21 +494,6 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-
-  #TODO Получить статистику по книгам в библиотеке (Н: сколько книг прочитал)
-  /api/book/library/stats:
-    get:
-      tags:
-        - book
-      operationId: GetLibraryStats
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/badRequest'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-
   /api/category/list:
     get:
       tags:
@@ -1148,6 +1133,8 @@ components:
       properties:
         id:
           type: integer
+      required:
+        - id
     GetBookInfoResponseData:
       type: object
       properties:
@@ -1250,6 +1237,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
+      required:
+        - books
     ListLibraryBooksByStatusRequest:
       type: object
       properties:
@@ -1259,6 +1248,8 @@ components:
             - inProgress
             - finished
             - planned
+      required:
+        - readingStatus
     ListLibraryBooksByStatusResponseData:
       type: object
       properties:
@@ -1537,7 +1528,6 @@ components:
       required:
         - id
         - title
-        - coverPath
         - authors
         - starCount
         - readingStatus

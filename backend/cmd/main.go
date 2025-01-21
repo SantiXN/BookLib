@@ -79,6 +79,9 @@ func main() {
 		dependencyContainer.CategoryQueryService,
 		dependencyContainer.FileService,
 		dependencyContainer.UserBookService,
+		dependencyContainer.UserBookQueryService,
+		dependencyContainer.BookService,
+		dependencyContainer.BookQueryService,
 	)
 	publicAPIHandler := api.NewStrictHandler(
 		publicAPI,

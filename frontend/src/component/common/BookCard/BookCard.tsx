@@ -21,7 +21,7 @@ const BookCard: React.FC<BookCardProps> = ({ title, author, coverImage, rating, 
                     <p className={s.bookCardAuthor}>{author}</p>
                         <div className={s.bookCardRating}>
                             <div className={s.bookCardRatingLogo}></div>
-                            <p>{rating}</p>
+                            <p style={{color: '#000'}}>{rating}</p>
                         </div>
                     </div>
                 </a>

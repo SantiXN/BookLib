@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/app/model"
@@ -128,7 +126,6 @@ func (b *bookQueryService) ListBooksByAuthor(ctx context.Context, authorID int) 
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("sqlBooks", sqlxBooks)
 	var books []model.Book
 	for _, sqlBook := range sqlxBooks {
 		book := model.Book{

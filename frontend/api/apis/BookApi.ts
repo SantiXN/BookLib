@@ -19,7 +19,7 @@ import type {
   AddBookResponseData,
   BadRequestResponseData,
   ChangeReadingStatusRequest,
-  CheckBookInLibrary200Response,
+  CheckBookInLibraryResponseData,
   EditBookRequest,
   GetBookInfoResponseData,
   ListAuthorBooksResponseData,
@@ -44,8 +44,8 @@ import {
     BadRequestResponseDataToJSON,
     ChangeReadingStatusRequestFromJSON,
     ChangeReadingStatusRequestToJSON,
-    CheckBookInLibrary200ResponseFromJSON,
-    CheckBookInLibrary200ResponseToJSON,
+    CheckBookInLibraryResponseDataFromJSON,
+    CheckBookInLibraryResponseDataToJSON,
     EditBookRequestFromJSON,
     EditBookRequestToJSON,
     GetBookInfoResponseDataFromJSON,
@@ -269,7 +269,7 @@ export class BookApi extends runtime.BaseAPI {
 
     /**
      */
-    async checkBookInLibraryRaw(requestParameters: CheckBookInLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckBookInLibrary200Response>> {
+    async checkBookInLibraryRaw(requestParameters: CheckBookInLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckBookInLibraryResponseData>> {
         if (requestParameters['bookID'] == null) {
             throw new runtime.RequiredError(
                 'bookID',
@@ -296,12 +296,12 @@ export class BookApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CheckBookInLibrary200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CheckBookInLibraryResponseDataFromJSON(jsonValue));
     }
 
     /**
      */
-    async checkBookInLibrary(requestParameters: CheckBookInLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckBookInLibrary200Response> {
+    async checkBookInLibrary(requestParameters: CheckBookInLibraryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckBookInLibraryResponseData> {
         const response = await this.checkBookInLibraryRaw(requestParameters, initOverrides);
         return await response.value();
     }

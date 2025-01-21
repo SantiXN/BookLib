@@ -12,7 +12,7 @@ export * from './BookInfo';
 export * from './CategoryInfo';
 export * from './ChangeReadingStatusRequest';
 export * from './ChangeUserRoleRequest';
-export * from './CheckBookInLibrary200Response';
+export * from './CheckBookInLibraryResponseData';
 export * from './CreateArticleRequest';
 export * from './CreateArticleResponseData';
 export * from './CreateAuthorRequest';

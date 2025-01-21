@@ -168,10 +168,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  contains:
-                    type: boolean
+                $ref: '#/components/schemas/CheckBookInLibraryResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -320,6 +317,18 @@ paths:
           required: true
           schema:
             type: integer
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: OK
@@ -1191,6 +1200,13 @@ components:
           type: string
       required:
         - searchString
+    CheckBookInLibraryResponseData:
+      type: object
+      properties:
+        contains:
+          type: boolean
+      required:
+        - contains
     SearchBooksResponseData:
       type: object
       properties:

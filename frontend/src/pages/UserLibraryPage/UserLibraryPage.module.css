@@ -117,3 +117,15 @@
     left: 15px;
     border-radius: 0;
 }
+
+.readButton {
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.readButton:active {
+    transform: scale(0.95);
+}

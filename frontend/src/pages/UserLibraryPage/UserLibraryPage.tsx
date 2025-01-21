@@ -9,8 +9,12 @@ import {
 import { BookApiClient } from '../../../api/ApiClient';
 import { FaTrash } from 'react-icons/fa';
 import ChangeBookStatusBlock from './ChangeBookStatusBlock';
+import { FaReadme } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
 
 const UserLibraryPage = () => {
+    const navigate = useNavigate();
+    
     const [inProgressBooks, setInProgressBooks] = useState<BookInLibrary[]>([]);
     const [plannedBooks, setPlannedBooks] = useState<BookInLibrary[]>([]);
     const [finishedBooks, setFinishedBooks] = useState<BookInLibrary[]>([]);
@@ -151,6 +155,17 @@ const UserLibraryPage = () => {
 
     const totalPages = Math.ceil(getCountBooks() / booksPerPage) || 1;
 
+    const handleOpenBook = (id: number) => {
+        //TODO: реализовать
+        BookApiClient.getBookInfo({bookID: id})
+            .then((response) => {
+                if (response.book) {
+                    navigate(response.book.filePath);
+                }
+            })
+            .catch(() => alert('Ошибка при получении pdf-файла. Попробуйте позже.'));
+    }
+
     return (
         <div className={s.libraryContainer}>
             <div>
@@ -187,6 +202,29 @@ const UserLibraryPage = () => {
                                 &gt;
                             </button>
                         </div>
+                            <div className={s.libraryBooksBodyContainer}>
+                                <div key={1} className={s.libraryBookContainer}>
+                                    <FaTrash
+                                        className={s.deleteIcon}
+                                        onClick={() => handleDeleteBook(1)}
+                                    />
+                                    <BookCard
+                                        title='asd'
+                                        author='asd'
+                                        coverImage='book.jpg'
+                                        rating={4}
+                                        toDirect='3'
+                                        classname={s.libraryBookCard}
+                                    />
+                                    <button
+                                        className={s.changeStatusButton}
+                                        onClick={() => handleChangeStatus(4)}
+                                    >
+                                        Изменить статус
+                                    </button>
+                                    <FaReadme onClick={()=> handleOpenBook(4)} color='#2441C1' size={22} className={s.readButton}/>
+                                </div>
+                            </div>
                         {getCurrentBooks().length > 0 ? (
                             <div className={s.libraryBooksBodyContainer}>
                                 {getCurrentBooks().map((book, key) => (
@@ -209,6 +247,7 @@ const UserLibraryPage = () => {
                                         >
                                             Изменить статус
                                         </button>
+                                        <FaReadme onClick={()=> handleOpenBook(book.id)} color='#2441C1' size={22} className={s.readButton}/>
                                     </div>
                                 ))}
                             </div>

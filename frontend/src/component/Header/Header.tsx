@@ -57,8 +57,8 @@ const Header = () => {
                 </div>
 
                 <div className={`${s.userMenu} ${s.menuItem} ${s.headerWrapperItem}`}>
-                    <div className={s.iconUser} />
                     <Link to="/profile" className={s.link}>
+                        <div className={s.iconUser} />
                         Профиль
                     </Link>
                 </div>

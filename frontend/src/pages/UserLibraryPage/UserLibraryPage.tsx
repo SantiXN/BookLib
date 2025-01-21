@@ -156,19 +156,41 @@ const UserLibraryPage = () => {
     const totalPages = Math.ceil(getCountBooks() / booksPerPage) || 1;
 
     const handleOpenBook = async (id: number) => {
-        
-        const response = await BookApiClient.getBookInfo({bookID: id});
-        if (!response.book) {
-            alert('Ошибка получения URL для книги!');
-            return;
-        } 
-
-        FileApiClient.getFile({filePath: response.book.filePath})
-            .then((reponse) => {
-                // TODO: логика получения файла
-            })
-
-    }
+        try {
+            // Получаем информацию о книге
+            const response = await BookApiClient.getBookInfo({ bookID: id });
+            if (!response.book) {
+                alert('Ошибка получения URL для книги!');
+                return;
+            }
+    
+            // Получаем файл
+            // const fileResponse = await FileApiClient.getFile({
+            //     filePath: response.book.filePath,
+            // });
+    
+            // Создаем Blob-объект для файла
+            // const blob = new Blob([fileResponse.data], { type: fileResponse.headers['content-type'] });
+    
+            // // Генерируем ссылку для скачивания
+            // const downloadUrl = URL.createObjectURL(blob);
+    
+            // // Создаем временную ссылку
+            // const a = document.createElement('a');
+            // a.href = downloadUrl;
+            // a.download = response.book.title || 'book.pdf'; // Укажите имя файла
+            // document.body.appendChild(a);
+            // a.click();
+    
+            // // Очищаем ссылку
+            // URL.revokeObjectURL(downloadUrl);
+            // document.body.removeChild(a);
+    
+        } catch (error) {
+            console.error('Ошибка при скачивании файла:', error);
+            alert('Не удалось скачать файл!');
+        }
+    };
 
     return (
         <div className={s.libraryContainer}>

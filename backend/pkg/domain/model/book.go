@@ -18,6 +18,10 @@ type Book interface {
 	AuthorIDs() []int
 	CategoryIDs() []int
 	CreatedBy() int
+
+	SetTitle(title string)
+	SetDescription(description string)
+	SetCoverPath(coverPath string)
 }
 
 func NewBook(
@@ -83,4 +87,16 @@ func (b *book) CategoryIDs() []int {
 
 func (b *book) CreatedBy() int {
 	return b.createdBy
+}
+
+func (b *book) SetTitle(title string) {
+	b.title = title
+}
+
+func (b *book) SetDescription(description string) {
+	b.description = &description
+}
+
+func (b *book) SetCoverPath(coverPath string) {
+	b.coverPath = &coverPath
 }

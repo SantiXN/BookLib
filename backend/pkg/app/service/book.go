@@ -17,6 +17,8 @@ type BookData struct {
 
 type BookService interface {
 	CreateBook(ctx context.Context, bookData BookData) (int, error)
+	DeleteBook(ctx context.Context, id int) error
+	EditBookInfo(ctx context.Context, id int, title, description, coverPath *string) error
 }
 
 type bookService struct {
@@ -35,7 +37,10 @@ func NewBookService(
 }
 
 func (b *bookService) CreateBook(ctx context.Context, bookData BookData) (int, error) {
-	err := b.permissionChecker.AssertCanAddBook(ctx)
+	err := b.permissionChecker.AssertCanModifyBook(ctx)
+	if err != nil {
+		return 0, err
+	}
 	id, err := b.domainBookService.CreateBook(service.BookData{
 		Title:       bookData.Title,
 		Description: bookData.Description,
@@ -47,4 +52,22 @@ func (b *bookService) CreateBook(ctx context.Context, bookData BookData) (int, e
 	})
 
 	return id, err
+}
+
+func (b *bookService) DeleteBook(ctx context.Context, id int) error {
+	err := b.permissionChecker.AssertCanModifyBook(ctx)
+	if err != nil {
+		return err
+	}
+
+	return b.domainBookService.RemoveBook(id)
+}
+
+func (b *bookService) EditBookInfo(ctx context.Context, id int, title, description, coverPath *string) error {
+	err := b.permissionChecker.AssertCanModifyBook(ctx)
+	if err != nil {
+		return err
+	}
+
+	return b.domainBookService.EditBook(id, title, description, coverPath)
 }

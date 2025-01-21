@@ -15,6 +15,7 @@ type BookData struct {
 type BookService interface {
 	CreateBook(bookData BookData) (int, error)
 	RemoveBook(id int) error
+	EditBook(id int, title *string, description *string, coverPath *string) error
 }
 
 func NewBookService(
@@ -57,4 +58,23 @@ func (s *bookService) RemoveBook(id int) error {
 		return err
 	}
 	return s.repo.Remove(id)
+}
+
+func (s *bookService) EditBook(id int, title *string, description *string, coverPath *string) error {
+	book, err := s.repo.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	if title != nil {
+		book.SetTitle(*title)
+	}
+	if description != nil {
+		book.SetDescription(*description)
+	}
+	if coverPath != nil {
+		book.SetCoverPath(*coverPath)
+	}
+
+	return s.repo.Store(book)
 }

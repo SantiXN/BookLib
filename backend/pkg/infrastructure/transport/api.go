@@ -265,13 +265,21 @@ func (p *publicAPI) ListAuthorBooks(ctx context.Context, request api.ListAuthorB
 }
 
 func (p *publicAPI) DeleteBook(ctx context.Context, request api.DeleteBookRequestObject) (api.DeleteBookResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.bookService.DeleteBook(ctx, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.DeleteBook200Response{}, nil
 }
 
 func (p *publicAPI) EditBook(ctx context.Context, request api.EditBookRequestObject) (api.EditBookResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.bookService.EditBookInfo(ctx, request.BookID, request.Body.NewTitle, request.Body.NewDescription, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.EditBook200Response{}, nil
 }
 
 func (p *publicAPI) SaveBookFeedback(ctx context.Context, request api.SaveBookFeedbackRequestObject) (api.SaveBookFeedbackResponseObject, error) {

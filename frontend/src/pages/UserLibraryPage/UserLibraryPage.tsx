@@ -6,7 +6,7 @@ import {
     BookInLibrary,
     ListLibraryBooksByStatusRequestReadingStatusEnum
 } from '../../../api';
-import { BookApiClient } from '../../../api/ApiClient';
+import { BookApiClient, FileApiClient } from '../../../api/ApiClient';
 import { FaTrash } from 'react-icons/fa';
 import ChangeBookStatusBlock from './ChangeBookStatusBlock';
 import { FaReadme } from 'react-icons/fa6';
@@ -155,15 +155,19 @@ const UserLibraryPage = () => {
 
     const totalPages = Math.ceil(getCountBooks() / booksPerPage) || 1;
 
-    const handleOpenBook = (id: number) => {
-        //TODO: реализовать
-        BookApiClient.getBookInfo({bookID: id})
-            .then((response) => {
-                if (response.book) {
-                    navigate(response.book.filePath);
-                }
+    const handleOpenBook = async (id: number) => {
+        
+        const response = await BookApiClient.getBookInfo({bookID: id});
+        if (!response.book) {
+            alert('Ошибка получения URL для книги!');
+            return;
+        } 
+
+        FileApiClient.getFile({filePath: response.book.filePath})
+            .then((reponse) => {
+                // TODO: логика получения файла
             })
-            .catch(() => alert('Ошибка при получении pdf-файла. Попробуйте позже.'));
+
     }
 
     return (

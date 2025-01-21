@@ -478,7 +478,7 @@ export class BookApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/book/{authorID}/list`.replace(`{${"authorID"}}`, encodeURIComponent(String(requestParameters['authorID']))),
+            path: `/api/book/author/{authorID}/list`.replace(`{${"authorID"}}`, encodeURIComponent(String(requestParameters['authorID']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -564,7 +564,7 @@ export class BookApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/book/{categoryID}/list`.replace(`{${"categoryID"}}`, encodeURIComponent(String(requestParameters['categoryID']))),
+            path: `/api/book/category/{categoryID}/list`.replace(`{${"categoryID"}}`, encodeURIComponent(String(requestParameters['categoryID']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

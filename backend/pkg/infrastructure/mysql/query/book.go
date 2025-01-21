@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 
@@ -82,6 +83,52 @@ func (b *bookQueryService) ListBooksByCategory(ctx context.Context, categoryID i
 		return nil, err
 	}
 
+	var books []model.Book
+	for _, sqlBook := range sqlxBooks {
+		book := model.Book{
+			ID:         sqlBook.ID,
+			Title:      sqlBook.Title,
+			FilePath:   sqlBook.FilePath,
+			CoverPath:  sqlBook.CoverPath,
+			Authors:    nil,
+			Categories: nil,
+			StarCount:  sqlBook.StarCount,
+		}
+
+		books = append(books, book)
+	}
+
+	return books, nil
+}
+
+func (b *bookQueryService) ListBooksByAuthor(ctx context.Context, authorID int) ([]model.Book, error) {
+	const query = `
+        SELECT 
+            b.id,
+            b.title,
+            b.file_path,
+            b.cover_path,
+            COALESCE(
+                (SELECT AVG(br.star_count) 
+                  FROM book_review br 
+                  WHERE br.book_id = b.id
+                 ), 0) AS star_count
+        FROM 
+            book b
+        JOIN 
+            author_book ab ON b.id = ab.book_id
+        WHERE 
+            ab.author_id = ?
+        ORDER BY 
+            b.created_at DESC
+    `
+
+	var sqlxBooks []sqlxBook
+	err := b.client.SelectContext(ctx, &sqlxBooks, query, authorID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("sqlBooks", sqlxBooks)
 	var books []model.Book
 	for _, sqlBook := range sqlxBooks {
 		book := model.Book{

@@ -260,8 +260,37 @@ func (p *publicAPI) ListLibraryBooksByStatus(ctx context.Context, request api.Li
 }
 
 func (p *publicAPI) ListAuthorBooks(ctx context.Context, request api.ListAuthorBooksRequestObject) (api.ListAuthorBooksResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	books, err := p.bookQueryService.ListBooksByAuthor(ctx, request.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiBooks := make([]api.BookData, 0, len(books))
+	for _, book := range books {
+		apiBook := api.BookData{
+			Id:        book.ID,
+			Title:     book.Title,
+			CoverPath: book.CoverPath,
+			StarCount: float32(math.Round(float64(book.StarCount)*10) / 10),
+		}
+
+		authors := book.Authors
+		apiAuthors := make([]api.AuthorInfo, 0, len(authors))
+		for _, author := range authors {
+			apiAuthor := api.AuthorInfo{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			}
+
+			apiAuthors = append(apiAuthors, apiAuthor)
+		}
+		apiBook.Authors = apiAuthors
+
+		apiBooks = append(apiBooks, apiBook)
+	}
+
+	return api.ListAuthorBooks200JSONResponse{Books: apiBooks}, nil
 }
 
 func (p *publicAPI) DeleteBook(ctx context.Context, request api.DeleteBookRequestObject) (api.DeleteBookResponseObject, error) {

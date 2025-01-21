@@ -103,7 +103,7 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
 
-  /api/book/{authorID}/list:
+  /api/book/author/{authorID}/list:
     get:
       tags:
         - book
@@ -306,7 +306,7 @@ paths:
         '401':
           $ref: '#/components/responses/unauthorized'
 
-  /api/book/{categoryID}/list:
+  /api/book/category/{categoryID}/list:
     get:
       tags:
         - book
@@ -1156,11 +1156,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
-        totalCount:
-          type: integer
       required:
         - books
-        - totalCount
     SearchBooksRequest:
       type: object
       properties:

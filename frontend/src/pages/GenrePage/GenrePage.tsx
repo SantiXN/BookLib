@@ -13,11 +13,12 @@ const GenrePage = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
+    const booksInPage = 20;
+
     const loadBooks = useCallback(async () => {
         setLoading(true);
         try {
-            // TODO: добавить пагинацию
-            const response = await BookApiClient.listBooksByCategory({ categoryID: Number(id) });
+            const response = await BookApiClient.listBooksByCategory({ categoryID: Number(id), limit: booksInPage, page: page });
             const newBooks = parseBookCardsResponse(response);
             setBooks((prevBooks) => [...prevBooks, ...newBooks]);
             setHasMore(newBooks.length > 0);

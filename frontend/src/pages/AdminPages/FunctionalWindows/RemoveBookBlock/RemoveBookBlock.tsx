@@ -55,7 +55,7 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     setBookData(response.book);
                 }
             })
-            .catch(() => alert('Книга с данным ID не найдена'));
+            .catch(() => alert('Книга с заданным ID не найдена'));
     }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

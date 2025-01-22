@@ -13,22 +13,9 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [authors, setAuthors] = useState<AuthorInfo[]>([]);
-    const [selectedAuthorID, setSelectedAuthorID] = useState<number | null>(null);
+    const [authorInfo, setAuthorInfo] = useState<AuthorInfo | null>(null);
 
-    useEffect(() => {
-        AuthorApi.listAuthors()
-            .then((response) => {
-                if (response.authors) {
-                    setAuthors(response.authors);
-                } else {
-                    console.error('Error fetching authors');
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, []);
+    const [selectedAuthorID, setSelectedAuthorID] = useState<number | null>(null);
     
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -55,15 +42,27 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);
 
-    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleAuthorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const authorID = Number(e.target.value);
         setSelectedAuthorID(authorID);
     }; 
 
+    const handleSearchAuthor = () => {
+        if (!selectedAuthorID) return;
+
+        AuthorApi.getAuthorInfo({ authorID: selectedAuthorID })
+            .then((response) => {
+                if (response.author) {
+                    setAuthorInfo(response.author)
+                }
+            })
+            .catch(() => alert('Автора с заданным ID не найден!'));
+    }
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!selectedAuthorID || !authors.some(author => author.id === selectedAuthorID)) return;
+        if (!selectedAuthorID || !authorInfo) return;
 
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить этого автора? Это действие необратимо.');
         if (!confirmDelete) return;
@@ -87,22 +86,29 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Автор</label>
-                            <select id="author" className={s.input} value={selectedAuthorID || ''} onChange={handleAuthorChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {authors.map((author, index) => (
-                                    <option key={index} value={author.id}>
-                                        {author.firstName} {author.lastName}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className={`${s.formFieldContainer} ${s.removeInputContainer}`}>
+                            <label className={s.formLabel} htmlFor='authorId'>ID автора</label>
+                            <input
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='authorId'
+                                type='number'  
+                                value={selectedAuthorID || ''}
+                                onChange={(value) => handleAuthorChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleSearchAuthor}
+                                disabled={!selectedAuthorID}
+                                className={`${s.button} ${!selectedAuthorID ? s.disabledButton : ''}`}
+                            >
+                                Поиск
+                            </button>
                         </div>
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${!selectedAuthorID ? s.disabledButton : ""}`}
-                                disabled={!selectedAuthorID}
+                                className={`${s.button} ${s.formButton} ${!authorInfo ? s.disabledButton : ""}`}
+                                disabled={!authorInfo}
                             >
                                 Удалить
                             </button>

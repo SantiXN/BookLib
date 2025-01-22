@@ -104,6 +104,11 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 Поиск
                             </button>
                         </div>
+                        {authorInfo && (
+                            <div>
+                                <a href={`/author/${selectedAuthorID}`}><p>{authorInfo.firstName} {authorInfo.lastName}</p></a>
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

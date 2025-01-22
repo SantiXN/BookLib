@@ -27,13 +27,6 @@ import {
     AuthorInfoToJSON,
     AuthorInfoToJSONTyped,
 } from './AuthorInfo';
-import type { FeedbackInfo } from './FeedbackInfo';
-import {
-    FeedbackInfoFromJSON,
-    FeedbackInfoFromJSONTyped,
-    FeedbackInfoToJSON,
-    FeedbackInfoToJSONTyped,
-} from './FeedbackInfo';
 
 /**
  * 
@@ -58,7 +51,7 @@ export interface BookInfo {
      * @type {string}
      * @memberof BookInfo
      */
-    description: string;
+    description?: string;
     /**
      * 
      * @type {string}
@@ -79,12 +72,6 @@ export interface BookInfo {
     starCount: number;
     /**
      * 
-     * @type {Array<FeedbackInfo>}
-     * @memberof BookInfo
-     */
-    feedback?: Array<FeedbackInfo>;
-    /**
-     * 
      * @type {Array<CategoryInfo>}
      * @memberof BookInfo
      */
@@ -103,7 +90,6 @@ export interface BookInfo {
 export function instanceOfBookInfo(value: object): value is BookInfo {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
-    if (!('description' in value) || value['description'] === undefined) return false;
     if (!('coverPath' in value) || value['coverPath'] === undefined) return false;
     if (!('authors' in value) || value['authors'] === undefined) return false;
     if (!('starCount' in value) || value['starCount'] === undefined) return false;
@@ -124,11 +110,10 @@ export function BookInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         
         'id': json['id'],
         'title': json['title'],
-        'description': json['description'],
+        'description': json['description'] == null ? undefined : json['description'],
         'coverPath': json['coverPath'],
         'authors': ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
         'starCount': json['starCount'],
-        'feedback': json['feedback'] == null ? undefined : ((json['feedback'] as Array<any>).map(FeedbackInfoFromJSON)),
         'categories': ((json['categories'] as Array<any>).map(CategoryInfoFromJSON)),
         'filePath': json['filePath'],
     };
@@ -151,7 +136,6 @@ export function BookInfoToJSONTyped(value?: BookInfo | null, ignoreDiscriminator
         'coverPath': value['coverPath'],
         'authors': ((value['authors'] as Array<any>).map(AuthorInfoToJSON)),
         'starCount': value['starCount'],
-        'feedback': value['feedback'] == null ? undefined : ((value['feedback'] as Array<any>).map(FeedbackInfoToJSON)),
         'categories': ((value['categories'] as Array<any>).map(CategoryInfoToJSON)),
         'filePath': value['filePath'],
     };

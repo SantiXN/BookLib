@@ -32,13 +32,14 @@ export interface ListBooksByCategoryResponseData {
      * @type {Array<BookData>}
      * @memberof ListBooksByCategoryResponseData
      */
-    books?: Array<BookData>;
+    books: Array<BookData>;
 }
 
 /**
  * Check if a given object implements the ListBooksByCategoryResponseData interface.
  */
 export function instanceOfListBooksByCategoryResponseData(value: object): value is ListBooksByCategoryResponseData {
+    if (!('books' in value) || value['books'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function ListBooksByCategoryResponseDataFromJSONTyped(json: any, ignoreDi
     }
     return {
         
-        'books': json['books'] == null ? undefined : ((json['books'] as Array<any>).map(BookDataFromJSON)),
+        'books': ((json['books'] as Array<any>).map(BookDataFromJSON)),
     };
 }
 
@@ -67,7 +68,7 @@ export function ListBooksByCategoryResponseDataToJSONTyped(value?: ListBooksByCa
 
     return {
         
-        'books': value['books'] == null ? undefined : ((value['books'] as Array<any>).map(BookDataToJSON)),
+        'books': ((value['books'] as Array<any>).map(BookDataToJSON)),
     };
 }
 

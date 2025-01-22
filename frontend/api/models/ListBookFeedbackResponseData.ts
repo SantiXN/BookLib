@@ -32,13 +32,14 @@ export interface ListBookFeedbackResponseData {
      * @type {Array<FeedbackInfo>}
      * @memberof ListBookFeedbackResponseData
      */
-    books?: Array<FeedbackInfo>;
+    feedback: Array<FeedbackInfo>;
 }
 
 /**
  * Check if a given object implements the ListBookFeedbackResponseData interface.
  */
 export function instanceOfListBookFeedbackResponseData(value: object): value is ListBookFeedbackResponseData {
+    if (!('feedback' in value) || value['feedback'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function ListBookFeedbackResponseDataFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-        'books': json['books'] == null ? undefined : ((json['books'] as Array<any>).map(FeedbackInfoFromJSON)),
+        'feedback': ((json['feedback'] as Array<any>).map(FeedbackInfoFromJSON)),
     };
 }
 
@@ -67,7 +68,7 @@ export function ListBookFeedbackResponseDataToJSONTyped(value?: ListBookFeedback
 
     return {
         
-        'books': value['books'] == null ? undefined : ((value['books'] as Array<any>).map(FeedbackInfoToJSON)),
+        'feedback': ((value['feedback'] as Array<any>).map(FeedbackInfoToJSON)),
     };
 }
 

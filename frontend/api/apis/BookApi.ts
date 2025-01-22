@@ -426,37 +426,6 @@ export class BookApi extends runtime.BaseAPI {
 
     /**
      */
-    async getLibraryStatsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/api/book/library/stats`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     */
-    async getLibraryStats(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.getLibraryStatsRaw(initOverrides);
-    }
-
-    /**
-     */
     async listAuthorBooksRaw(requestParameters: ListAuthorBooksRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListAuthorBooksResponseData>> {
         if (requestParameters['authorID'] == null) {
             throw new runtime.RequiredError(

@@ -24,13 +24,14 @@ export interface AddBookResponseData {
      * @type {number}
      * @memberof AddBookResponseData
      */
-    id?: number;
+    id: number;
 }
 
 /**
  * Check if a given object implements the AddBookResponseData interface.
  */
 export function instanceOfAddBookResponseData(value: object): value is AddBookResponseData {
+    if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
@@ -44,7 +45,7 @@ export function AddBookResponseDataFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
     };
 }
 

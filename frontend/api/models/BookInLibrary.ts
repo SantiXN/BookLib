@@ -44,7 +44,7 @@ export interface BookInLibrary {
      * @type {string}
      * @memberof BookInLibrary
      */
-    coverPath: string;
+    coverPath?: string;
     /**
      * 
      * @type {Array<AuthorInfo>}
@@ -83,7 +83,6 @@ export type BookInLibraryReadingStatusEnum = typeof BookInLibraryReadingStatusEn
 export function instanceOfBookInLibrary(value: object): value is BookInLibrary {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
-    if (!('coverPath' in value) || value['coverPath'] === undefined) return false;
     if (!('authors' in value) || value['authors'] === undefined) return false;
     if (!('starCount' in value) || value['starCount'] === undefined) return false;
     if (!('readingStatus' in value) || value['readingStatus'] === undefined) return false;
@@ -102,7 +101,7 @@ export function BookInLibraryFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'id': json['id'],
         'title': json['title'],
-        'coverPath': json['coverPath'],
+        'coverPath': json['coverPath'] == null ? undefined : json['coverPath'],
         'authors': ((json['authors'] as Array<any>).map(AuthorInfoFromJSON)),
         'starCount': json['starCount'],
         'readingStatus': json['readingStatus'],

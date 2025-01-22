@@ -40,7 +40,6 @@ models/ListAuthorBooksResponseData.ts
 models/ListAuthorsResponseData.ts
 models/ListBookFeedbackResponseData.ts
 models/ListBooksByCategoryResponseData.ts
-models/ListBooksResponseData.ts
 models/ListCategoriesResponseData.ts
 models/ListLibraryBooksByStatusRequest.ts
 models/ListLibraryBooksByStatusResponseData.ts

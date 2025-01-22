@@ -34,7 +34,6 @@ export * from './ListAuthorBooksResponseData';
 export * from './ListAuthorsResponseData';
 export * from './ListBookFeedbackResponseData';
 export * from './ListBooksByCategoryResponseData';
-export * from './ListBooksResponseData';
 export * from './ListCategoriesResponseData';
 export * from './ListLibraryBooksByStatusRequest';
 export * from './ListLibraryBooksByStatusResponseData';

@@ -32,13 +32,14 @@ export interface GetBookInfoResponseData {
      * @type {BookInfo}
      * @memberof GetBookInfoResponseData
      */
-    book?: BookInfo;
+    book: BookInfo;
 }
 
 /**
  * Check if a given object implements the GetBookInfoResponseData interface.
  */
 export function instanceOfGetBookInfoResponseData(value: object): value is GetBookInfoResponseData {
+    if (!('book' in value) || value['book'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function GetBookInfoResponseDataFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'book': json['book'] == null ? undefined : BookInfoFromJSON(json['book']),
+        'book': BookInfoFromJSON(json['book']),
     };
 }
 

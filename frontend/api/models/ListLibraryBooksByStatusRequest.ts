@@ -24,7 +24,7 @@ export interface ListLibraryBooksByStatusRequest {
      * @type {string}
      * @memberof ListLibraryBooksByStatusRequest
      */
-    readingStatus?: ListLibraryBooksByStatusRequestReadingStatusEnum;
+    readingStatus: ListLibraryBooksByStatusRequestReadingStatusEnum;
 }
 
 
@@ -43,6 +43,7 @@ export type ListLibraryBooksByStatusRequestReadingStatusEnum = typeof ListLibrar
  * Check if a given object implements the ListLibraryBooksByStatusRequest interface.
  */
 export function instanceOfListLibraryBooksByStatusRequest(value: object): value is ListLibraryBooksByStatusRequest {
+    if (!('readingStatus' in value) || value['readingStatus'] === undefined) return false;
     return true;
 }
 
@@ -56,7 +57,7 @@ export function ListLibraryBooksByStatusRequestFromJSONTyped(json: any, ignoreDi
     }
     return {
         
-        'readingStatus': json['readingStatus'] == null ? undefined : json['readingStatus'],
+        'readingStatus': json['readingStatus'],
     };
 }
 

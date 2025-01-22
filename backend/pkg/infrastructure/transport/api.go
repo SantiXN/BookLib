@@ -10,6 +10,7 @@ import (
 	"booklib/pkg/infrastructure/utils"
 	"context"
 	"errors"
+	"math"
 )
 
 var (
@@ -30,6 +31,9 @@ func NewPublicAPI(
 	categoryQueryService query.CategoryQueryService,
 	fileService service.FileService,
 	userBookService service.UserBookService,
+	userBookQueryService query.UserBookQueryService,
+	bookService service.BookService,
+	bookQueryService query.BookQueryService,
 ) API {
 	return &publicAPI{
 		userService:          userService,
@@ -39,6 +43,9 @@ func NewPublicAPI(
 		categoryQueryService: categoryQueryService,
 		fileService:          fileService,
 		userBookService:      userBookService,
+		userBookQueryService: userBookQueryService,
+		bookService:          bookService,
+		bookQueryService:     bookQueryService,
 	}
 }
 
@@ -50,6 +57,9 @@ type publicAPI struct {
 	categoryQueryService query.CategoryQueryService
 	fileService          service.FileService
 	userBookService      service.UserBookService
+	userBookQueryService query.UserBookQueryService
+	bookService          service.BookService
+	bookQueryService     query.BookQueryService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -120,6 +130,20 @@ func (p *publicAPI) ListAuthors(ctx context.Context, request api.ListAuthorsRequ
 
 }
 
+func (p *publicAPI) CheckBookInLibrary(ctx context.Context, request api.CheckBookInLibraryRequestObject) (api.CheckBookInLibraryResponseObject, error) {
+	userID, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	inLib, err := p.userBookQueryService.IsInLibrary(ctx, request.BookID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.CheckBookInLibrary200JSONResponse{Contains: inLib}, nil
+}
+
 func (p *publicAPI) DeleteAuthor(ctx context.Context, request api.DeleteAuthorRequestObject) (api.DeleteAuthorResponseObject, error) {
 	err := p.authorService.DeleteAuthor(ctx, request.AuthorID)
 	if err != nil {
@@ -150,33 +174,141 @@ func (p *publicAPI) GetAuthorInfo(ctx context.Context, request api.GetAuthorInfo
 }
 
 func (p *publicAPI) AddBook(ctx context.Context, request api.AddBookRequestObject) (api.AddBookResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	userID, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := p.bookService.CreateBook(ctx, service.BookData{
+		Title:       request.Body.Title,
+		Description: request.Body.Description,
+		FilePath:    request.Body.FilePath,
+		CoverPath:   request.Body.CoverPath,
+		AuthorIDs:   request.Body.AuthorIDs,
+		CategoryIDs: request.Body.CategoryIDs,
+		CreatedBy:   userID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api.AddBook200JSONResponse{Id: id}, nil
 }
 
 func (p *publicAPI) ListLibraryBooksByStatus(ctx context.Context, request api.ListLibraryBooksByStatusRequestObject) (api.ListLibraryBooksByStatusResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
-}
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-func (p *publicAPI) GetLibraryStats(ctx context.Context, request api.GetLibraryStatsRequestObject) (api.GetLibraryStatsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	var status appmodel.ReadingStatus
+	switch request.Body.ReadingStatus {
+	case api.ListLibraryBooksByStatusRequestReadingStatusFinished:
+		status = appmodel.Finished
+	case api.ListLibraryBooksByStatusRequestReadingStatusPlanned:
+		status = appmodel.Planned
+	case api.ListLibraryBooksByStatusRequestReadingStatusInProgress:
+		status = appmodel.InProgress
+	}
+
+	var offset *int
+	if request.Params.Page != nil && request.Params.Limit != nil {
+		page := *request.Params.Page
+		limit := *request.Params.Limit
+		offsetExpr := (page - 1) * limit
+		offset = &offsetExpr
+	}
+	books, err := p.userBookQueryService.ListUserBooksByStatus(ctx, id, status, request.Params.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount, err := p.userBookQueryService.GetTotalCount(ctx, id, status)
+	if err != nil {
+		return nil, err
+	}
+
+	apiBooks := make([]api.BookInLibrary, 0, len(books))
+	for _, book := range books {
+		apiBook := api.BookInLibrary{
+			Id:            book.BookID,
+			Title:         book.Title,
+			CoverPath:     book.CoverPath,
+			StarCount:     float32(math.Round(float64(book.StarCount)*10) / 10),
+			ReadingStatus: toBookInLibReadingStatus(book.ReadingStatus),
+		}
+
+		authors := book.Authors
+		apiAuthors := make([]api.AuthorInfo, 0, len(authors))
+		for _, author := range authors {
+			apiAuthor := api.AuthorInfo{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			}
+
+			apiAuthors = append(apiAuthors, apiAuthor)
+		}
+		apiBook.Authors = apiAuthors
+
+		apiBooks = append(apiBooks, apiBook)
+	}
+
+	return api.ListLibraryBooksByStatus200JSONResponse{
+		Books:       apiBooks,
+		TotalNumber: totalCount,
+	}, nil
 }
 
 func (p *publicAPI) ListAuthorBooks(ctx context.Context, request api.ListAuthorBooksRequestObject) (api.ListAuthorBooksResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	books, err := p.bookQueryService.ListBooksByAuthor(ctx, request.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiBooks := make([]api.BookData, 0, len(books))
+	for _, book := range books {
+		apiBook := api.BookData{
+			Id:        book.ID,
+			Title:     book.Title,
+			CoverPath: book.CoverPath,
+			StarCount: float32(math.Round(float64(book.StarCount)*10) / 10),
+		}
+
+		authors := book.Authors
+		apiAuthors := make([]api.AuthorInfo, 0, len(authors))
+		for _, author := range authors {
+			apiAuthor := api.AuthorInfo{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			}
+
+			apiAuthors = append(apiAuthors, apiAuthor)
+		}
+		apiBook.Authors = apiAuthors
+
+		apiBooks = append(apiBooks, apiBook)
+	}
+
+	return api.ListAuthorBooks200JSONResponse{Books: apiBooks}, nil
 }
 
 func (p *publicAPI) DeleteBook(ctx context.Context, request api.DeleteBookRequestObject) (api.DeleteBookResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.bookService.DeleteBook(ctx, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.DeleteBook200Response{}, nil
 }
 
 func (p *publicAPI) EditBook(ctx context.Context, request api.EditBookRequestObject) (api.EditBookResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.bookService.EditBookInfo(ctx, request.BookID, request.Body.NewTitle, request.Body.NewDescription, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.EditBook200Response{}, nil
 }
 
 func (p *publicAPI) SaveBookFeedback(ctx context.Context, request api.SaveBookFeedbackRequestObject) (api.SaveBookFeedbackResponseObject, error) {
@@ -190,8 +322,40 @@ func (p *publicAPI) ListBookFeedback(ctx context.Context, request api.ListBookFe
 }
 
 func (p *publicAPI) GetBookInfo(ctx context.Context, request api.GetBookInfoRequestObject) (api.GetBookInfoResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	book, err := p.bookQueryService.GetBook(ctx, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiAuthors := make([]api.AuthorInfo, 0, len(book.Authors))
+	for _, author := range book.Authors {
+		apiAuthor := api.AuthorInfo{
+			Id:        author.ID,
+			FirstName: author.FirstName,
+			LastName:  author.LastName,
+		}
+		apiAuthors = append(apiAuthors, apiAuthor)
+	}
+	apiCategories := make([]api.CategoryInfo, 0, len(book.Categories))
+	for _, category := range book.Categories {
+		apiCategory := api.CategoryInfo{
+			Id:       category.ID,
+			Category: category.Name,
+		}
+		apiCategories = append(apiCategories, apiCategory)
+	}
+
+	return api.GetBookInfo200JSONResponse{Book: api.BookInfo{
+		Id:          book.ID,
+		Title:       book.Title,
+		Description: book.Description,
+		FilePath:    book.FilePath,
+		CoverPath:   book.CoverPath,
+		StarCount:   float32(math.Round(float64(book.StarCount)*10) / 10),
+		Authors:     apiAuthors,
+		Categories:  apiCategories,
+	}}, nil
+
 }
 
 func (p *publicAPI) AddBookToLibrary(ctx context.Context, request api.AddBookToLibraryRequestObject) (api.AddBookToLibraryResponseObject, error) {
@@ -246,8 +410,44 @@ func (p *publicAPI) ChangeReadingStatus(ctx context.Context, request api.ChangeR
 }
 
 func (p *publicAPI) ListBooksByCategory(ctx context.Context, request api.ListBooksByCategoryRequestObject) (api.ListBooksByCategoryResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	var offset *int
+	if request.Params.Page != nil && request.Params.Limit != nil {
+		page := *request.Params.Page
+		limit := *request.Params.Limit
+		offsetExpr := (page - 1) * limit
+		offset = &offsetExpr
+	}
+	books, err := p.bookQueryService.ListBooksByCategory(ctx, request.CategoryID, request.Params.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	apiBooks := make([]api.BookData, 0, len(books))
+	for _, book := range books {
+		apiBook := api.BookData{
+			Id:        book.ID,
+			Title:     book.Title,
+			CoverPath: book.CoverPath,
+			StarCount: float32(math.Round(float64(book.StarCount)*10) / 10),
+		}
+
+		authors := book.Authors
+		apiAuthors := make([]api.AuthorInfo, 0, len(authors))
+		for _, author := range authors {
+			apiAuthor := api.AuthorInfo{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			}
+
+			apiAuthors = append(apiAuthors, apiAuthor)
+		}
+		apiBook.Authors = apiAuthors
+
+		apiBooks = append(apiBooks, apiBook)
+	}
+
+	return api.ListBooksByCategory200JSONResponse{Books: apiBooks}, nil
 }
 
 func (p *publicAPI) ListCategories(ctx context.Context, request api.ListCategoriesRequestObject) (api.ListCategoriesResponseObject, error) {
@@ -393,7 +593,6 @@ func (p *publicAPI) ListUsers(ctx context.Context, request api.ListUsersRequestO
 }
 
 func (p *publicAPI) GetUserInfo(ctx context.Context, request api.GetUserInfoRequestObject) (api.GetUserInfoResponseObject, error) {
-	//TODO Возможно, что только админ вызывает запрос
 	userInfo, err := p.userQueryService.GetUserInfo(ctx, request.UserID)
 	if err != nil {
 		return nil, err
@@ -484,6 +683,19 @@ func toReadingStatus(status api.ChangeReadingStatusRequestReadingStatus) (appmod
 	default:
 		return appmodel.Planned, errors.New(ErrInvalidReadingStatus.Error())
 	}
+}
+
+func toBookInLibReadingStatus(status appmodel.ReadingStatus) api.BookInLibraryReadingStatus {
+	switch status {
+	case appmodel.InProgress:
+		return api.InProgress
+	case appmodel.Finished:
+		return api.Finished
+	case appmodel.Planned:
+		return api.Planned
+	}
+
+	return api.InProgress
 }
 
 func toAPIUserInfo(userInfo query.UserInfo) (api.UserInfo, error) {

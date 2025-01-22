@@ -55,7 +55,7 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     setUserInfo(response.user);
                 }
             })
-            .catch(() => alert('Пользовать с данным ID не найден!'));
+            .catch(() => alert('Пользовать с заданным ID не найден!'));
     }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

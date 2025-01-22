@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { UserData, UserInfo } from '../../../../../api';
+import { UserInfo } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
@@ -13,24 +13,9 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [users, setUsers] = useState<UserData[]>([]);
     const [selectedUserID, setSelectedUserID] = useState<number | null>(null);
 
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-
-    useEffect(() => {
-        UserApi.listUsers()
-            .then((response) => {
-                if (response?.users) {
-                    setUsers(response.users);
-                } else {
-                    console.error('No users found');
-                }
-            })
-            .catch((error) => {
-                console.error('Ошибка загрузки пользователей:', error);
-            });
-    }, []);
     
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -69,9 +54,6 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 if (response.user) {
                     setUserInfo(response.user);
                 }
-                else {
-                    alert('Пользовать с данным ID не найден')
-                }
             })
             .catch(() => alert('Пользовать с данным ID не найден!'));
     }
@@ -79,7 +61,7 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!selectedUserID || !users.some(user => user.id === selectedUserID)) return;
+        if (!userInfo || !selectedUserID) return;
 
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.');
         if (!confirmDelete) return;
@@ -104,7 +86,7 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={`${s.formFieldContainer} ${s.removeInputContainer}`} style={{display: 'flex'}}>
+                        <div className={`${s.formFieldContainer} ${s.removeInputContainer}`}>
                             <label className={s.formLabel} htmlFor='userId'>ID пользователя</label>
                             <input
                                 className={`${s.input} ${s.autoWidth}`}

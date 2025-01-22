@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { UserData } from '../../../../../api';
+import { UserData, UserInfo } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
@@ -15,6 +15,8 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     const [users, setUsers] = useState<UserData[]>([]);
     const [selectedUserID, setSelectedUserID] = useState<number | null>(null);
+
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
     useEffect(() => {
         UserApi.listUsers()
@@ -54,10 +56,25 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);
 
-    const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const userId = Number(e.target.value);
         setSelectedUserID(userId);
     }; 
+
+    const handleSearchUser = () => {
+        if (!selectedUserID) return;
+
+        UserApi.getUserInfo({ userID: selectedUserID})
+            .then((response) => {
+                if (response.user) {
+                    setUserInfo(response.user);
+                }
+                else {
+                    alert('Пользовать с данным ID не найден')
+                }
+            })
+            .catch(() => alert('Пользовать с данным ID не найден!'));
+    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -76,8 +93,7 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
             console.error('Ошибка удаления пользователя:', error);
             alert('Не удалось удалить пользователя. Попробуйте позже.');
         });
-    };    
-
+    };
         
     return (
         <div className={s.container}>
@@ -88,22 +104,36 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='users'>Пользователь</label>
-                            <select id="users" className={s.input} value={selectedUserID || ''} onChange={handleUserChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {users.map((user, index) => (
-                                    <option key={index} value={user.id}>
-                                        {user.firstName} {user.lastName} (id={user.id})
-                                    </option>
-                                ))}
-                            </select>
+                        <div className={`${s.formFieldContainer} ${s.removeInputContainer}`} style={{display: 'flex'}}>
+                            <label className={s.formLabel} htmlFor='userId'>ID пользователя</label>
+                            <input
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='userId'
+                                type='number'  
+                                value={selectedUserID || ''}
+                                onChange={(value) => handleUserChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleSearchUser}
+                                disabled={!selectedUserID}
+                                className={`${s.button} ${!selectedUserID ? s.disabledButton : ''}`}
+                            >
+                                Поиск
+                            </button>
                         </div>
+                        {userInfo && (
+                            <div>
+                                <p>E-mail: {userInfo.email}</p>
+                                <p>Имя, фамилия: {userInfo.firstName} {userInfo.lastName}</p>
+                                <p>Роль: {userInfo.role}</p>
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${!selectedUserID ? s.disabledButton : ""}`}
-                                disabled={!selectedUserID}
+                                className={`${s.button} ${s.formButton} ${!userInfo ? s.disabledButton : ""}`}
+                                disabled={!userInfo}
                             >
                                 Удалить
                             </button>

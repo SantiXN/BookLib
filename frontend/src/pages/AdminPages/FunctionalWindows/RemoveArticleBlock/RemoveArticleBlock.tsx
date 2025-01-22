@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import useApi from '../../../../../api/ApiClient';
-import { ArticleData } from '../../../../../api';
+import { ArticleInfo } from '../../../../../api';
 
 interface BlockProps {
     isOpen: string | null;
@@ -13,22 +13,8 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [articles, setArticles] = useState<ArticleData[]>([]);
+    const [articleInfo, setArticleInfo] = useState<ArticleInfo | null>(null);
     const [selectedArticleID, setSelectedArticleID] = useState<number | null>(null);
-
-    useEffect(() => {
-        ArticleApi.listArticles()
-            .then((response) => {
-                if (response.articles) {
-                    setArticles(response.articles);
-                } else {
-                    console.error('Error fetching articles');
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, []);
 
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -55,14 +41,26 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);    
 
-    const handleArticleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleArticleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const articleId = Number(e.target.value);
         setSelectedArticleID(articleId);
     };    
 
+    const handleSearchArticle = () => {
+        if (!selectedArticleID) return;
+
+        ArticleApi.getArticle({ articleID: selectedArticleID })
+            .then((response) => {
+                if (response.article) {
+                    setArticleInfo(response.article)
+                }
+            })
+            .catch(() => alert('Статья с заданным ID не найдена!'));
+    }
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!selectedArticleID || !articles.some(article => article.id === selectedArticleID)) return;
+        if (!selectedArticleID || !articleInfo) return;
 
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить эту статью? Это действие необратимо.');
         if (!confirmDelete) return;
@@ -86,18 +84,31 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Статья</label>
-                            <select id="author" className={s.input} value={selectedArticleID || ''} onChange={handleArticleChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {articles.map((art, index) => (
-                                    <option key={index} value={art.id}>
-                                        {art.title}
-                                    </option>
-                                ))}
-                            </select>
+                     <div className={`${s.formFieldContainer} ${s.removeInputContainer}`}>
+                            <label className={s.formLabel} htmlFor='articleId'>Статья</label>
+                            <input
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='articleId'
+                                type='number'  
+                                value={selectedArticleID || ''}
+                                onChange={(value) => handleArticleChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleSearchArticle}
+                                disabled={!selectedArticleID}
+                                className={`${s.button} ${!selectedArticleID ? s.disabledButton : ''}`}
+                            >
+                                Поиск
+                            </button>
                         </div>
-                        <p>Восстановить статью будет невозможно.</p>
+                        {articleInfo && (
+                            <div>
+                                <a href={`/article/${selectedArticleID}`}><p>{articleInfo.title}</p></a>
+                                <p>{articleInfo.status}</p>
+                                <p>Восстановить статью будет невозможно.</p>
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

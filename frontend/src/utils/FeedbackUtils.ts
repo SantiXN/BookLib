@@ -1,13 +1,13 @@
-import { GetBookInfoResponseData, SaveBookFeedbackOperationRequest, SaveBookFeedbackRequest } from "../../api";
+import { ListBookFeedbackResponseData, SaveBookFeedbackOperationRequest, SaveBookFeedbackRequest } from "../../api";
 import { ParsedFeedbackInfo } from "../types/FeedbackTypes";
 
 
-export function parseFeedbacksInBookResponse(response: GetBookInfoResponseData): ParsedFeedbackInfo[] {
-    if (!response || !response.book || !response.book.feedback) {
+export function parseFeedbacksInBookResponse(response: ListBookFeedbackResponseData): ParsedFeedbackInfo[] {
+    if (!response || !response.feedback) {
         return [];
     }
     
-    return response.book.feedback.map((feedback) => ({
+    return response.feedback.map((feedback) => ({
         id: feedback.id,
         userID: feedback.userID,
         starCount: feedback.starCount,

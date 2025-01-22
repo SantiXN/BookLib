@@ -2,7 +2,7 @@ import React, {  useRef, useState } from 'react';
 import s from './AuthMenu.module.css'
 import RegisterMenu from '../RegisterMenu/RegisterMenu';
 import PasswordInputField from '../common/PasswordInputField/PasswordInputField';
-import { UserApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
 
 const isValidEmail = (email: string) => {
@@ -11,6 +11,8 @@ const isValidEmail = (email: string) => {
 };
 
 const AuthMenu = () => {
+    const { UserApi } = useApi();
+
     const { logIn } = useAuth();
     const containerRef = useRef<HTMLDivElement>(null);
     const [isRegisterMenuOpen, setIsRegisterMenuOpen] = useState(false);
@@ -50,12 +52,13 @@ const AuthMenu = () => {
         e.preventDefault();
         setResponseError('');
 
-        UserApiClient.loginUser({loginUserRequest: {login: login, password: password}})
+        console.log(localStorage.getItem('token'))
+        UserApi.loginUser({loginUserRequest: {login: login, password: password}})
             .then((response) => {
                 if (response) {
-                    const token = response.token; // Предполагается, что токен находится в response.data.token
+                    const token = response.token;
                     logIn(token);
-                    setResponseError(''); // Clear any previous error
+                    setResponseError(''); 
                 }
             })
             .catch((err) => {

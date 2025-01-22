@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import s from './ArticlesPage.module.css';
-import { ArticleApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { ArticleData, UserData } from '../../../api';
 
 const ArticlesPage = () => {
+    const { ArticleApi } = useApi();
+
     const [articles, setArticles] = useState<ArticleData[]>([]);
     const [authors, setAuthors] = useState<UserData[]>([]);
     const [page, setPage] = useState(1);
@@ -14,7 +16,7 @@ const ArticlesPage = () => {
         setLoading(true);
         try {
             // TODO: добавить пагинацию
-            const response = await ArticleApiClient.listArticles();
+            const response = await ArticleApi.listArticles();
             const newArticles = response.articles ? response.articles : [];
             setArticles((prevArticles) => [...prevArticles, ...newArticles]);
             setHasMore(newArticles.length > 0);

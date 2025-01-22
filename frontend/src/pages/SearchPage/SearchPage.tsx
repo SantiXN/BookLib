@@ -1,13 +1,15 @@
 import { useSearchParams } from 'react-router-dom';
 import s from './SearchPage.module.css';
 import { useEffect, useState, useCallback } from 'react';
-import { ArticleApiClient, AuthorApiClient, BookApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
 import { ArticleData, AuthorInfo } from '../../../api';
 import BookCard from '../../component/common/BookCard/BookCard';
 
 const SearchPage = () => {
+    const { ArticleApi, AuthorApi, BookApi } = useApi();
+
     const [searchParams, setSearchParams] = useSearchParams();
     const query = searchParams.get('q');
     const initialCategory = searchParams.get('category') || 'books';
@@ -30,7 +32,7 @@ const SearchPage = () => {
             let response: any;
             switch (selectedCategory) {
                 case 'books':
-                    response = await BookApiClient.searchBooks({
+                    response = await BookApi.searchBooks({
                         searchBooksRequest: { searchString: query },
                         page: page,
                         limit: itemsInPage
@@ -41,7 +43,7 @@ const SearchPage = () => {
                     }
                     break;
                 case 'authors':
-                    response = await AuthorApiClient.searchAuthors({
+                    response = await AuthorApi.searchAuthors({
                         searchAuthorsRequest: { searchString: query },
                         page: page,
                         limit: itemsInPage
@@ -52,7 +54,7 @@ const SearchPage = () => {
                     }
                     break;
                 case 'articles':
-                    response = await ArticleApiClient.searchArticles({
+                    response = await ArticleApi.searchArticles({
                         searchArticlesRequest: { searchString: query },
                         page: page,
                         limit: itemsInPage

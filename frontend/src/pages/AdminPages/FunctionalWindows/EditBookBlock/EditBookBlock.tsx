@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { AuthorData, BookData, BookInfo, CategoryInfo, EditBookOperationRequest, EditBookRequest } from '../../../../../api';
-import { AuthorApiClient, BookApiClient, CategoryApiClient } from '../../../../../api/ApiClient';
+import { AuthorInfo, BookData, BookInfo, CategoryInfo, EditBookOperationRequest, EditBookRequest } from '../../../../../api';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,6 +9,8 @@ interface BlockProps {
 }
 
 const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { AuthorApi, BookApi, CategoryApi } = useApi();
+
     const [books, setBooks] = useState<BookData[]>([]);
     const [selectedBook, setSelectedBook] = useState<BookInfo | null>(null);
     
@@ -20,7 +22,9 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     useEffect(() => {
         if (selectedBook) {
             setTitle(selectedBook.title);
-            setDescription(selectedBook.description);
+            if (selectedBook.description) {
+                setDescription(selectedBook.description!);
+            }
             // Assuming bookFile and bookCoverFile are URLs or some identifiers in selectedBook
             // TODO
             //setBookFile(selectedBook.bookFile ? new File([], selectedBook.bookFile) : null);
@@ -35,15 +39,16 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         : false;
 
     useEffect(() => {
-        BookApiClient.listBooks()
-            .then((response) => {
-                if (response.books) {
-                    setBooks(response.books);
-                }
-                else {
-                    console.error('Ошибка получения списка книг');
-                }
-            });
+        // TODO
+        // BookApi.listBooks()
+        //     .then((response) => {
+        //         if (response.books) {
+        //             setBooks(response.books);
+        //         }
+        //         else {
+        //             console.error('Ошибка получения списка книг');
+        //         }
+        //     });
     }, []);
 
     const close = () => {
@@ -83,7 +88,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedBookID = Number(e.target.value);
 
-        BookApiClient.getBookInfo({bookID: selectedBookID})
+        BookApi.getBookInfo({bookID: selectedBookID})
             .then((response) => {
                 if (response.book) {
                     setSelectedBook(response.book);
@@ -118,7 +123,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         if (description !== selectedBook?.description) request.newDescription = description;
         // Book cover
 
-        BookApiClient.editBook({bookID: selectedBook?.id || 0, editBookRequest: request})
+        BookApi.editBook({bookID: selectedBook?.id || 0, editBookRequest: request})
             .then(() => {
                 alert('Книга успешно отредактирована');
                 close();

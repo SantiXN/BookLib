@@ -11,16 +11,18 @@ import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleB
 import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
 import EditUserRoleBlock from '../FunctionalWindows/EditUserRoleBlock/EditUserRoleBlock';
 import RemoveUserBlock from '../FunctionalWindows/RemoveUserBlock/RemoveUserBlock';
-import { UserApiClient } from '../../../../api/ApiClient';
+import useApi from '../../../../api/ApiClient';
 import { UserInfoRoleEnum } from '../../../../api';
 import { useNavigate } from 'react-router-dom';
 
 const AdminMenu = () => {
+    const { UserApi } = useApi();
+
     const navigate = useNavigate();
     const [isAdmin, setIsAdmin] = useState(false);
     
     useEffect(() => {
-        UserApiClient.getAuthorizedUser()
+        UserApi.getAuthorizedUser()
             .then((response) => {
                 if (response.user.role !== UserInfoRoleEnum.Admin) {
                     navigate('/');

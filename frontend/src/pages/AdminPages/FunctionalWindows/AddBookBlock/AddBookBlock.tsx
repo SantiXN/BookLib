@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css';
 import { AuthorInfo, CategoryInfo } from '../../../../../api';
-import { AuthorApiClient, BookApiClient, CategoryApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,6 +9,8 @@ interface BlockProps {
 }
 
 const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { AuthorApi, BookApi, CategoryApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [authors, setAuthors] = useState<AuthorInfo[]>([]);
@@ -44,23 +46,20 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     };
 
     useEffect(() => {
-        AuthorApiClient.listAuthors()
+        AuthorApi.listAuthors()
             .then((response) => {
                 if (response?.authors) {
                     setAuthors(response.authors);
-                    console.log(response);
-                } else {
-                    console.error('No authors found');
                 }
-            });
+            })
+            .catch((err) => alert(`Не удалось получить список авторов. Попробуйте позже ${err}`))
         
-        CategoryApiClient.listCategories()
+        CategoryApi.listCategories()
             .then((response) => {
                 if (response?.categories) {
                     setCategories(response.categories);
-                    console.log(response);
                 } else {
-                    console.error('No categories found');
+                    alert('No categories found');
                 }
             })
     }, []);
@@ -130,11 +129,13 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 description,
                 authorIDs: selectedAuthors.map(author => author.id),
                 categoryIDs: selectedCategories.map(category => category.id),
-                filePath: bookFile ? bookFile.name : '',
+                filePath: bookFile.name,
+                coverPath: bookCover.name
+                
             }
         };
-
-        BookApiClient.addBook(request)
+        console.log(request)
+        BookApi.addBook(request)
             .then((response) => {
                 if (response) {
                     console.log(response);

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { ArticleApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 import { ArticleData } from '../../../../../api';
 
 interface BlockProps {
@@ -9,13 +9,15 @@ interface BlockProps {
 }
 
 const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { ArticleApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [articles, setArticles] = useState<ArticleData[]>([]);
     const [selectedArticleID, setSelectedArticleID] = useState<number | null>(null);
 
     useEffect(() => {
-        ArticleApiClient.listArticles()
+        ArticleApi.listArticles()
             .then((response) => {
                 if (response.articles) {
                     setArticles(response.articles);
@@ -65,7 +67,7 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить эту статью? Это действие необратимо.');
         if (!confirmDelete) return;
 
-        ArticleApiClient.deleteArticle({articleID: selectedArticleID})
+        ArticleApi.deleteArticle({articleID: selectedArticleID})
             .then(() => {
                 alert('Статья успешно удалена');
                 onClose();

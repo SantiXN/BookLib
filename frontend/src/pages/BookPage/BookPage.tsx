@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
 import s from './BookPage.module.css'
-import { BookApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { useParams } from 'react-router-dom';
 import { ParsedBookInfo } from '../../types/BookTypes';
 import { parseAuthorInfoInBookResponse } from '../../utils/AuthorUtils';
@@ -13,6 +13,8 @@ import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
 
 const BookPage = () => {
+    const { BookApi } = useApi();
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +23,7 @@ const BookPage = () => {
     // TODO: добавление проверять через список книг, находящихся в библиотеке пользователя
     const [isAddedToRead, setIsAddedToRead] = useState(false);
     const changeBookToReadStateHandleClick = ({ isAdded }: { isAdded: boolean }) => {
-        BookApiClient.addBookToLibrary({ bookID: curBookId })
+        BookApi.addBookToLibrary({ bookID: curBookId })
             .catch((err) => {
                 console.error('Не удалось добавить книгу в библиотеку: ', err);
             });
@@ -36,11 +38,10 @@ const BookPage = () => {
     const curBookId = id ? Number(id) : 0;
 
     useEffect(() => {
-        BookApiClient.getBookInfo({ bookID: curBookId})
+        BookApi.getBookInfo({ bookID: curBookId})
             .then((response) => {
                 setBookInfo(parseBookInfoResponse(response));
                 setAuthorInfo(parseAuthorInfoInBookResponse(response));
-                setFeedbackInfo(parseFeedbacksInBookResponse(response));
                 setLoading(false);
             })
             .catch((err) => {
@@ -49,8 +50,15 @@ const BookPage = () => {
                 console.error('Ошибка при запросе данных: ', err);
             });
 
+            BookApi.listBookFeedback({bookID: curBookId})
+            .then((response) => {
+                if (response.feedback) {
+                    setFeedbackInfo(parseFeedbacksInBookResponse(response))
+                }
+            })
+
         if (bookInfo) {
-            BookApiClient.checkBookInLibrary({ bookID: curBookId })
+            BookApi.checkBookInLibrary({ bookID: curBookId })
                 .then((response) => {
                     if (response.contains) {
                         setIsAddedToRead(response.contains.valueOf());

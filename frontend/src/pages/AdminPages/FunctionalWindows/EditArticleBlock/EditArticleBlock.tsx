@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { ArticleData, ArticleInfo, EditArticleRequest } from '../../../../../api';
-import { ArticleApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 import MarkdownEditor from '@uiw/react-markdown-editor';
 
 interface BlockProps {
@@ -10,13 +10,15 @@ interface BlockProps {
 }
 
 const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { ArticleApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [articles, setArticles] = useState<ArticleData[]>([]);
     const [selectedArticle, setSelectedArticle] = useState<ArticleInfo | null>(null);
 
     useEffect(() => {
-        ArticleApiClient.managementArticles()
+        ArticleApi.managementArticles()
             .then((response) => {
                 if (response.articles) {
                     console.log(response.articles);
@@ -64,7 +66,7 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         const articleId = Number(e.target.value);
         console.log(articleId)
         
-        ArticleApiClient.getArticle({articleID: articleId})
+        ArticleApi.getArticle({articleID: articleId})
             .then((response) => {
                 console.log(response)
                 if (response.article) {
@@ -91,7 +93,7 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         if (title !== selectedArticle.title) updatedFields.newTitle = title;
         if (content !== selectedArticle.content) updatedFields.newContent = content;
 
-        ArticleApiClient
+        ArticleApi
             .editArticle({
                 articleID: selectedArticle.id,
                 editArticleRequest: updatedFields

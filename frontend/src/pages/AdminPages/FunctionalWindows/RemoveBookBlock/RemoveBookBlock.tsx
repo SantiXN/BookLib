@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { BookData } from '../../../../../api';
-import { BookApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,23 +9,26 @@ interface BlockProps {
 }
 
 const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { BookApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [books, setBooks] = useState<BookData[]>([]);
     const [selectedBookID, setSelectedBookID] = useState<number | null>(null);
 
     useEffect(() => {
-        BookApiClient.listBooks()
-            .then((response) => {
-                if (response.books) {
-                    setBooks(response.books);
-                } else {
-                    console.error('Error fetching books');
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        // TODO
+        // BookApi.()
+        //     .then((response) => {
+        //         if (response.books) {
+        //             setBooks(response.books);
+        //         } else {
+        //             console.error('Error fetching books');
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.error(error);
+        //     });
     }, []);
     
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,7 +68,7 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить эту книгу? Это действие необратимо.');
         if (!confirmDelete) return;
 
-        BookApiClient.deleteBook({bookID: selectedBookID})
+        BookApi.deleteBook({bookID: selectedBookID})
             .then(() => {
                 alert('Автор успешно удален');
                 onClose();

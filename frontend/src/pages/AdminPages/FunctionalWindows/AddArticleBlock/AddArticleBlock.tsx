@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import MarkdownEditor from '@uiw/react-markdown-editor';
-import { ArticleApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,6 +9,8 @@ interface BlockProps {
 }
 
 const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { ArticleApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [title, setTitle] = useState('');
@@ -53,7 +55,7 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
         if (isFieldsEmpty) return;
 
-        ArticleApiClient.createArticle({ createArticleRequest: { title: title, content: content} })
+        ArticleApi.createArticle({ createArticleRequest: { title: title, content: content} })
             .then((response) => {
                 if (response) {
                     console.log(response);

@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import s from './GenrePage.module.css';
 import { useParams } from 'react-router-dom';
-import { BookApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
 
 const GenrePage = () => {
+    const { BookApi } = useApi();
+
     const { genreID } = useParams<{ genreID: string }>();
     const [genre, id] = genreID!.split('-');
     const [books, setBooks] = useState<ParsedBookCard[]>([]);
@@ -18,7 +20,7 @@ const GenrePage = () => {
     const loadBooks = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await BookApiClient.listBooksByCategory({ categoryID: Number(id), limit: booksInPage, page: page });
+            const response = await BookApi.listBooksByCategory({ categoryID: Number(id), limit: booksInPage, page: page });
             const newBooks = parseBookCardsResponse(response);
             setBooks((prevBooks) => [...prevBooks, ...newBooks]);
             setHasMore(newBooks.length > 0);

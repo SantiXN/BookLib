@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { UserData, UserInfo } from '../../../../../api';
-import { UserApiClient } from '../../../../../api/ApiClient';
+import { UserData } from '../../../../../api';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,13 +9,15 @@ interface BlockProps {
 }
 
 const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { UserApi } = useApi();
+    
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [users, setUsers] = useState<UserData[]>([]);
     const [selectedUserID, setSelectedUserID] = useState<number | null>(null);
 
     useEffect(() => {
-        UserApiClient.listUsers()
+        UserApi.listUsers()
             .then((response) => {
                 if (response?.users) {
                     setUsers(response.users);
@@ -65,8 +67,8 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.');
         if (!confirmDelete) return;
         
-        UserApiClient.deleteUser({ userID: selectedUserID })
-            .then((response) => {
+        UserApi.deleteUser({ userID: selectedUserID })
+            .then(() => {
                 alert('Пользователь успешно удален!');
                 onClose();
             })

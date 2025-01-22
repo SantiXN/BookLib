@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css';
-import { UserApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 import { ChangeUserRoleRequestRoleEnum, UserInfo } from '../../../../../api';
 
 interface BlockProps {
@@ -9,6 +9,8 @@ interface BlockProps {
 }
 
 const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { UserApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [users, setUsers] = useState<UserInfo[]>([]);
@@ -37,7 +39,7 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         try {
             // TODO: Проверить правильность работы
             const request: ChangeUserRoleRequestRoleEnum = selectedRole as ChangeUserRoleRequestRoleEnum;
-            await UserApiClient.changeUserRole({ userID: selectedUser.id, changeUserRoleRequest: {role: request} });
+            await UserApi.changeUserRole({ userID: selectedUser.id, changeUserRoleRequest: {role: request} });
             alert('Роль пользователя успешно обновлена!');
             setIsRoleChanged(false); 
         } catch (error) {
@@ -59,7 +61,7 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     };
 
     useEffect(() => {
-        UserApiClient.listUsers()
+        UserApi.listUsers()
             .then((response) => {
                 if (response?.users) {
                     setUsers(response.users);

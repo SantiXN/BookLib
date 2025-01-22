@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import s from './BookReviews.module.css';
 import ReviewForm from './ReviewForm';
 import { ParsedFeedbackInfo } from '../../../types/FeedbackTypes';
-import { UserApiClient } from '../../../../api/ApiClient';
+import useApi from '../../../../api/ApiClient';
 import { GetUserDataRequest } from '../../../../api';
 
 interface BookReviewsProps {
@@ -11,6 +11,8 @@ interface BookReviewsProps {
 }
 
 const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
+    const { UserApi } = useApi();
+
     const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
     const [userNames, setUserNames] = useState<Record<number, string>>({});
     const [userAvatarPaths, setUserAvatarPaths] = useState<Record<number, string>>({});
@@ -22,7 +24,7 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
 
             const userRequests = feedbackInfo.map((review) => {
                 const request: GetUserDataRequest = { userID: review.userID };
-                return UserApiClient.getUserData(request)
+                return UserApi.getUserData(request)
                     .then((response) => {
                         names[review.userID] = `${response.data?.firstName} ${response.data?.lastName}`;
                         avatarPaths[review.userID] = response.data?.avatarPath || '';
@@ -71,7 +73,7 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
                         </div>
                     ))
                 ) : (
-                    <div>Отзывов нет</div>
+                    <div style={{fontSize: '24px'}}>Отзывов нет</div>
                 )}
             </div>
         </div>

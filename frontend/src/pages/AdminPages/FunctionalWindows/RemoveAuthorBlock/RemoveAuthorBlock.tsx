@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { AuthorInfo } from '../../../../../api';
-import { AuthorApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,13 +9,15 @@ interface BlockProps {
 }
 
 const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { AuthorApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     const [selectedAuthorID, setSelectedAuthorID] = useState<number | null>(null);
 
     useEffect(() => {
-        AuthorApiClient.listAuthors()
+        AuthorApi.listAuthors()
             .then((response) => {
                 if (response.authors) {
                     setAuthors(response.authors);
@@ -66,7 +68,7 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         const confirmDelete = window.confirm('Вы уверены, что хотите удалить этого автора? Это действие необратимо.');
         if (!confirmDelete) return;
 
-        AuthorApiClient.deleteAuthor({authorID: selectedAuthorID})
+        AuthorApi.deleteAuthor({authorID: selectedAuthorID})
             .then(() => {
                 alert('Автор успешно удален');
                 onClose();

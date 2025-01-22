@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { AuthorApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 import { CreateAuthorRequest } from '../../../../../api';
 
 interface BlockProps {
@@ -9,6 +9,8 @@ interface BlockProps {
 }
 
 const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { AuthorApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -62,7 +64,7 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         if (lastName) request.lastName = lastName;
         if (description) request.description = description;
 
-        AuthorApiClient.createAuthor({ createAuthorRequest: request })
+        AuthorApi.createAuthor({ createAuthorRequest: request })
             .then((response) => {
                 alert(`Автор успешно добавлен! ID: ${response.id}`);
                 onClose();

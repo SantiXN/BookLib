@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { AuthorInfo, EditAuthorRequest } from '../../../../../api';
-import { AuthorApiClient } from '../../../../../api/ApiClient';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
     isOpen: string | null;
@@ -9,6 +9,8 @@ interface BlockProps {
 }
 
 const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+    const { AuthorApi } = useApi();
+
     // TODO: загрузка файлов 
     const [authors, setAuthors] = useState<AuthorInfo[]>([])
     const [author, setAuthor] = useState<AuthorInfo | null>(null);    
@@ -32,7 +34,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        AuthorApiClient.listAuthors()
+        AuthorApi.listAuthors()
             .then((response) => {
                 if (response.authors) {
                     setAuthors(response.authors);
@@ -94,7 +96,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         if (lastName !== author!.lastName) updatedData.newLastName = lastName;
         if (description !== author!.description) updatedData.newDescription = description;
 
-        AuthorApiClient.editAuthor({ authorID: author!.id, editAuthorRequest: updatedData })
+        AuthorApi.editAuthor({ authorID: author!.id, editAuthorRequest: updatedData })
             .then(() => {
                 alert('Данные автора успешно обновлены!');
                 onClose();

@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { EditUserInfoRequest, UserApi } from '../../../api';
-import { UserApiClient } from '../../../api/ApiClient';
+import { EditUserInfoRequest } from '../../../api';
+import useApi from '../../../api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
 import s from './ProfilePage.module.css'
 import React, {useEffect, useState} from 'react';
 import { FaTrash } from 'react-icons/fa';
 
 const ProfilePage = () => {
+    const { UserApi } = useApi();
+    const { isAuthenticated, logOut } = useAuth();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -27,19 +29,46 @@ const ProfilePage = () => {
     const isDataChanged = newData.firstName != formData.firstName || newData.lastName != formData.lastName;
 
     useEffect(() => {
-        UserApiClient.getAuthorizedUser()
-            .then((response) => {
-                if (response.user) {
-                    setFormData({
-                        firstName: response.user.firstName,
-                        lastName: response.user.lastName || '',
-                        email: response.user.email,
-                        avatar: response.user.avatarPath || ''
-                    })
-                    setNewData({ firstName: response.user.firstName, lastName: response.user.lastName || '' });
-                }
-            })
-    }, [])
+        // Очистка данных при загрузке страницы
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            avatar: '',
+        });
+    
+        setNewData({
+            firstName: '',
+            lastName: '',
+        });
+    
+        // Проверка авторизации
+        if (isAuthenticated) {
+        console.log(localStorage.getItem('token'))
+
+        UserApi.getAuthorizedUser()
+                .then((response) => {
+                    if (response.user) {
+                        setFormData({
+                            firstName: response.user.firstName,
+                            lastName: response.user.lastName || '',
+                            email: response.user.email,
+                            avatar: response.user.avatarPath || '',
+                        });
+    
+                        setNewData({
+                            firstName: response.user.firstName,
+                            lastName: response.user.lastName || '',
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.error('Ошибка при получении данных пользователя:', err);
+                });
+        } else {
+            navigate('/login'); // Перенаправление на страницу входа, если не авторизован
+        }
+    }, [isAuthenticated, navigate]);  
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -65,7 +94,7 @@ const ProfilePage = () => {
         
         console.log(request)
 
-        UserApiClient.editUserInfo({ editUserInfoRequest: request})
+        UserApi.editUserInfo({ editUserInfoRequest: request})
             .then(() => {
                 navigate(0);
             })
@@ -95,12 +124,9 @@ const ProfilePage = () => {
         setAvatarFile(null);
     }
 
-    const { logOut: logout } = useAuth();
-
     const handleLogout = () => {
-        
         if (window.confirm('Вы уверены, что хотите выйти из аккаунта?')) {
-            logout();
+            logOut();
         }
     };
 

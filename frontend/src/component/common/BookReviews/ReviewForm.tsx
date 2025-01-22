@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from './ReviewForm.module.css';
 import { SaveBookFeedbackOperationRequest } from '../../../../api';
-import { BookApiClient } from '../../../../api/ApiClient';
+import useApi from '../../../../api/ApiClient';
 import { getFeedbackOperationRequest } from '../../../utils/FeedbackUtils';
 
 interface ReviewFormProps {
@@ -11,6 +11,8 @@ interface ReviewFormProps {
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, bookID }) => {
+    const { BookApi } = useApi();
+
     const [rating, setRating] = useState<number>(0); // Состояние для хранения текущей оценки
     const [comment, setComment] = useState<string>(''); // Состояние для комментария
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Состояние для загрузки
@@ -53,7 +55,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, bookID }) => {
         const request: SaveBookFeedbackOperationRequest = getFeedbackOperationRequest(bookID, rating, comment);
 
         try {
-            await BookApiClient.saveBookFeedback(request);
+            await BookApi.saveBookFeedback(request);
 
             setRating(0);
             setComment('');

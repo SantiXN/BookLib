@@ -6,14 +6,13 @@ import {
     BookInLibrary,
     ListLibraryBooksByStatusRequestReadingStatusEnum
 } from '../../../api';
-import { BookApiClient, FileApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { FaTrash } from 'react-icons/fa';
 import ChangeBookStatusBlock from './ChangeBookStatusBlock';
 import { FaReadme } from 'react-icons/fa6';
-import { useNavigate } from 'react-router-dom';
 
 const UserLibraryPage = () => {
-    const navigate = useNavigate();
+    const { BookApi, FileApi } = useApi();
     
     const [inProgressBooks, setInProgressBooks] = useState<BookInLibrary[]>([]);
     const [plannedBooks, setPlannedBooks] = useState<BookInLibrary[]>([]);
@@ -63,7 +62,7 @@ const UserLibraryPage = () => {
 
     const fetchBooks = (status: string, page: number) => {
         const readingStatus = getReadingStatusEnum(status);
-        BookApiClient.listLibraryBooksByStatus({
+        BookApi.listLibraryBooksByStatus({
             listLibraryBooksByStatusRequest: { readingStatus },
             limit: booksPerPage,
             page
@@ -134,7 +133,7 @@ const UserLibraryPage = () => {
         }
 
         try {
-            await BookApiClient.removeBookFromLibrary({ bookID: bookId });
+            await BookApi.removeBookFromLibrary({ bookID: bookId });
             setInProgressBooks((prev) => prev.filter((book) => book.id !== bookId));
             setPlannedBooks((prev) => prev.filter((book) => book.id !== bookId));
             setFinishedBooks((prev) => prev.filter((book) => book.id !== bookId));
@@ -158,7 +157,7 @@ const UserLibraryPage = () => {
     const handleOpenBook = async (id: number) => {
         try {
             // Получаем информацию о книге
-            const response = await BookApiClient.getBookInfo({ bookID: id });
+            const response = await BookApi.getBookInfo({ bookID: id });
             if (!response.book) {
                 alert('Ошибка получения URL для книги!');
                 return;
@@ -262,7 +261,7 @@ const UserLibraryPage = () => {
                                         <BookCard
                                             title={book.title}
                                             author={getAuthorsString(book.authors)}
-                                            coverImage={book.coverPath}
+                                            coverImage={book.coverPath || ''}
                                             rating={book.starCount}
                                             toDirect={`/book/${book.id}`}
                                             classname={s.libraryBookCard}

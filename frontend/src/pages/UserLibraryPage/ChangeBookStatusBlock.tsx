@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import s from './ChangeBookStatusBlock.module.css'
-import { BookApiClient } from "../../../api/ApiClient";
+import useApi from "../../../api/ApiClient";
 import { ChangeReadingStatusRequest, ChangeReadingStatusRequestReadingStatusEnum } from "../../../api";
 
 interface BlockProps
@@ -13,6 +13,8 @@ interface BlockProps
 }
 
 const ChangeBookStatusBlock: React.FC<BlockProps> = ({ bookID, bookReadingStatus, onClose, onUpdate, isOpen }) => {
+    const { BookApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [selectedBookStatus, setSelectedBookStatus] = useState<string>(bookReadingStatus);
@@ -57,7 +59,7 @@ const ChangeBookStatusBlock: React.FC<BlockProps> = ({ bookID, bookReadingStatus
         };
 
         try {
-            await BookApiClient.changeReadingStatus({bookID: bookID, changeReadingStatusRequest: statusRequest}); // Запрос на сервер
+            await BookApi.changeReadingStatus({bookID: bookID, changeReadingStatusRequest: statusRequest}); // Запрос на сервер
             onUpdate(bookID, statusRequest.readingStatus);
             alert('Статус книги успешно изменен');
             onClose();

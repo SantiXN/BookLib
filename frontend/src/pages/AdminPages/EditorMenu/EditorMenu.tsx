@@ -4,15 +4,17 @@ import AddArticleBlock from '../FunctionalWindows/AddArticleBlock/AddArticleBloc
 import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleBlock';
 import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
 import { useNavigate } from 'react-router-dom';
-import { UserApiClient } from '../../../../api/ApiClient';
+import useApi from '../../../../api/ApiClient';
 import { UserInfoRoleEnum } from '../../../../api';
 
 const EditorMenu = () => {
+    const { UserApi } = useApi();
+
     const navigate = useNavigate();
     const [isEditor, setIsEditor] = useState(false);
     
     useEffect(() => {
-        UserApiClient.getAuthorizedUser()
+        UserApi.getAuthorizedUser()
             .then((response) => {
                 if (response.user.role !== UserInfoRoleEnum.Editor) {
                     navigate('/');

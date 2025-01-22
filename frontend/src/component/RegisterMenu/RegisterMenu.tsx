@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import s from './RegisterMenu.module.css';
 import PasswordInputField from '../common/PasswordInputField/PasswordInputField';
-import { UserApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { RegisterUserRequest } from '../../../api';
 
 interface RegisterMenuProps {
@@ -10,6 +10,8 @@ interface RegisterMenuProps {
 }
 
 const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
+    const { UserApi } = useApi();
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({
         firstname: '',
@@ -122,7 +124,7 @@ const RegisterMenu: React.FC<RegisterMenuProps> = ({ isOpen, onClose }) => {
                 ...(formData.lastname && { lastName: formData.lastname }),
             };
             console.log('Данные формы:', formData);
-            await UserApiClient.registerUser({ registerUserRequest: request })
+            await UserApi.registerUser({ registerUserRequest: request })
                 .then(() => {
                     alert('Пользователь создан!');
                     onClose(); // Закрыть меню после успешной регистрации

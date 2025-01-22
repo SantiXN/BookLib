@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import s from './MainPage.module.css';
 import BookCard from '../../component/common/BookCard/BookCard';
-import { BookApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
 import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
 import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 
 const MainPage = () => {
+    const { BookApi } = useApi();
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -19,9 +21,9 @@ const MainPage = () => {
         const fetchAllBooks = async () => {    
             try {
                 const requests = [
-                    BookApiClient.listBooksByCategory({ categoryID: 1 }).then(parseBookCardsResponse),
-                    BookApiClient.listBooksByCategory({ categoryID: 2 }).then(parseBookCardsResponse),
-                    BookApiClient.listBooksByCategory({ categoryID: 3 }).then(parseBookCardsResponse),
+                    BookApi.listBooksByCategory({ categoryID: 1 }).then(parseBookCardsResponse),
+                    BookApi.listBooksByCategory({ categoryID: 2 }).then(parseBookCardsResponse),
+                    BookApi.listBooksByCategory({ categoryID: 3 }).then(parseBookCardsResponse),
                 ];
     
                 const [fantasy, mystery, detective] = await Promise.all(requests);

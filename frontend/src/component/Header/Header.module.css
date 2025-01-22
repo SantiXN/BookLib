@@ -56,6 +56,7 @@
 }
 
 .megaDropdown {
+    z-index: 1;
     position: absolute;
     display: none; /* Скрываем по умолчанию */
     border-radius: 10px;

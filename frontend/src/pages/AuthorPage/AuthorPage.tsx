@@ -3,7 +3,7 @@ import s from './AuthorPage.module.css'
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
 import { useEffect, useState } from 'react';
-import {BookApiClient, AuthorApiClient } from '../../../api/ApiClient';
+import useApi from '../../../api/ApiClient';
 import { ListAuthorBooksRequest, GetAuthorInfoRequest } from '../../../api';
 import { useParams } from 'react-router-dom';
 import { parseAuthorResponse } from '../../utils/AuthorUtils';
@@ -12,6 +12,8 @@ import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage
 import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 
 const AuthorPage = () => {
+    const { AuthorApi, BookApi } = useApi();
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -29,8 +31,8 @@ const AuthorPage = () => {
         const fetchAuthorData = async () => {
             try {
                 const [authorResponse, booksResponse] = await Promise.all([
-                    AuthorApiClient.getAuthorInfo(getAuthorInfoRequest).then(parseAuthorResponse),
-                    BookApiClient.listAuthorBooks(getAuthorBooksRequest).then((response) =>
+                    AuthorApi.getAuthorInfo(getAuthorInfoRequest).then(parseAuthorResponse),
+                    BookApi.listAuthorBooks(getAuthorBooksRequest).then((response) =>
                         response?.books ? parseBookCardsResponse(response) : [],
                     ),
                 ]);

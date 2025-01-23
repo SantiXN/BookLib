@@ -68,7 +68,7 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
         BookApi.deleteBook({bookID: selectedBookID})
             .then(() => {
-                alert('Автор успешно удален');
+                alert('Книга успешно удалена');
                 onClose();
             })
             .catch((error) => {

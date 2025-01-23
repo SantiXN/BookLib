@@ -35,7 +35,7 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 }
                 if (response.user) {
                     setSelectedUser(response.user);
-                    setSelectedRole(response.user.role!)
+                    setSelectedRole(response.user.role || '')
                 }
             })
             .catch(() => alert('Пользовать с заданным ID не найден!'));

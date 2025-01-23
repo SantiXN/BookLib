@@ -3,15 +3,15 @@ import s from './GenrePage.module.css';
 import { useParams } from 'react-router-dom';
 import useApi from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
-import { getGenreNameByGenre, parseBookCardsResponse } from '../../utils/BookUtils';
+import { parseBookCardsResponse } from '../../utils/BookUtils';
 import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
 import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
+import { BookCategories } from '../../utils/CategoryUtils';
 
 const GenrePage = () => {
     const { BookApi } = useApi();
 
-    const { genreID } = useParams<{ genreID: string }>();
-    const [genre, id] = genreID!.split('-');
+    const { id } = useParams<{ id: string }>();
     const [books, setBooks] = useState<ParsedBookCard[]>([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -34,8 +34,13 @@ const GenrePage = () => {
     }, [id, page]);
 
     useEffect(() => {
+        setBooks([]);
+        setPage(1); 
+    }, [id]);
+    
+    useEffect(() => {
         loadBooks();
-    }, [loadBooks]);
+    }, [page, loadBooks]);
 
     const handleLoadMore = () => {
         setPage((prevPage) => prevPage + 1);
@@ -44,13 +49,13 @@ const GenrePage = () => {
     return (
         <div className={s.container}>
             <div className={s.catalogHeader}>
-                <p className={s.title}>{getGenreNameByGenre(genre)}</p>
+                <p className={s.title}>{BookCategories.find((item) => item.id === Number(id))?.label || 'Категория не найдена'}</p>
                 <div className={s.filteringContainer}></div>
             </div>
             <div className={s.catalog}>
                 {books.map((book, index) => (
                     <div className={s.catalogItem} key={index}>
-                        <a href={book.toDirect} className={s.catalogItemLink}>
+                        <a href={book.toDirect} className={s.catalogItemLink} target="_blank">
                             <img src={book.coverImage} alt={book.title} className={s.bookCover} />
                             <div className={s.bookInfo}>
                                 <p className={s.bookTitle}>{book.title}</p>

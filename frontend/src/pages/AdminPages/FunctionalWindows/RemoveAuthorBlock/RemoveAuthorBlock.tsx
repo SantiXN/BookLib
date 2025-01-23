@@ -106,7 +106,7 @@ const RemoveAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                         </div>
                         {authorInfo && (
                             <div>
-                                <a href={`/author/${selectedAuthorID}`}><p>{authorInfo.firstName} {authorInfo.lastName}</p></a>
+                                <a href={`/author/${selectedAuthorID}`} target='_blank'><p>{authorInfo.firstName} {authorInfo.lastName}</p></a>
                             </div>
                         )}
                         <div className={s.actionButtonContainer}>

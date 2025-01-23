@@ -105,7 +105,7 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                         </div>
                         {bookData && (
                             <div>
-                                <a href={`/book/${selectedBookID}`}><p>{bookData.title}</p></a>
+                                <a href={`/book/${selectedBookID}`} target='_blank'><p>{bookData.title}</p></a>
                             </div>
                         )}
                         <div className={s.actionButtonContainer}>

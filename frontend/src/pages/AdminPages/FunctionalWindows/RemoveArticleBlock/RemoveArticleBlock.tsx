@@ -140,7 +140,7 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) 
                         )}
                         {articleInfo && (
                             <div>
-                                <a href={`/article/${selectedArticleID}`}><p>{articleInfo.title}</p></a>
+                                <a href={`/article/${selectedArticleID}`} target='_blank'><p>{articleInfo.title}</p></a>
                                 <p>{articleInfo.status}</p>
                                 <p>Восстановить статью будет невозможно.</p>
                             </div>

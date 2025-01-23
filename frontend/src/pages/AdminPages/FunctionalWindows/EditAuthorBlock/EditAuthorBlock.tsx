@@ -12,7 +12,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const { AuthorApi } = useApi();
 
     // TODO: загрузка файлов 
-    const [authors, setAuthors] = useState<AuthorInfo[]>([])
+    const [selectedAuthorId, setSelectedAuthorId] = useState<number | null>(null);
     const [author, setAuthor] = useState<AuthorInfo | null>(null);    
 
     const [firstName, setFirstName] = useState(author ? author.firstName : '');
@@ -31,19 +31,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         ? (firstName !== author.firstName || lastName !== author.lastName || description !== author.description) 
         : false;
 
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        AuthorApi.listAuthors()
-            .then((response) => {
-                if (response.authors) {
-                    setAuthors(response.authors);
-                }
-                else {
-                    console.error('Ошибка получения списка авторов');
-                }
-            });
-    }, []);    
+    const containerRef = useRef<HTMLDivElement>(null);   
     
     const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -56,10 +44,22 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedAuthor = authors.find(a => a.id === Number(e.target.value)) || null;
-        setAuthor(selectedAuthor);
-    };
+    const handleAuthorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const authorID = Number(e.target.value);
+        setSelectedAuthorId(authorID);
+    }; 
+
+    const handleSearchAuthor = () => {
+        if (!selectedAuthorId) return;
+
+        AuthorApi.getAuthorInfo({ authorID: selectedAuthorId })
+            .then((response) => {
+                if (response.author) {
+                    setAuthor(response.author)
+                }
+            })
+            .catch(() => alert('Автора с заданным ID не найден!'));
+    }
 
     useEffect(() => {
         if (isOpen != null) {
@@ -115,55 +115,66 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Автор</label>
-                            <select id="author" className={s.input} value={author?.id || ''} onChange={handleAuthorChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {authors.map((author, index) => (
-                                    <option key={index} value={author.id}>
-                                        {author.firstName} {author.lastName}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
+                            <label className={s.formLabel} htmlFor='authorId'>ID автора</label>
+                            <input
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='authorId'
+                                type='number'  
+                                value={selectedAuthorId || ''}
+                                onChange={(value) => handleAuthorChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleSearchAuthor}
+                                disabled={!selectedAuthorId}
+                                className={`${s.button} ${!selectedAuthorId ? s.disabledButton : ''}`}
+                            >
+                                Поиск
+                            </button>
                         </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Имя
-                                <input
-                                    className={s.input}
-                                    id='first_name'
-                                    type='text'
-                                    placeholder='Имя'
-                                    value={firstName}
-                                    onChange={handleFirstNameChange}
-                                    disabled={!author}
-                                />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Фамилия
-                                <input
-                                    className={s.input}
-                                    id='last_name'
-                                    type='text'
-                                    placeholder='Фамилия'
-                                    value={lastName}
-                                    onChange={handleLastNameChange}
-                                    disabled={!author}
-                                />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea className={s.formTextArea} 
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                    disabled={!author}
-                                />
-                            </label>
-                        </div>
+                        {author && (
+                            <div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Имя
+                                        <input
+                                            className={s.input}
+                                            id='first_name'
+                                            type='text'
+                                            placeholder='Имя'
+                                            value={firstName}
+                                            onChange={handleFirstNameChange}
+                                            disabled={!author}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Фамилия
+                                        <input
+                                            className={s.input}
+                                            id='last_name'
+                                            type='text'
+                                            placeholder='Фамилия'
+                                            value={lastName}
+                                            onChange={handleLastNameChange}
+                                            disabled={!author}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Описание
+                                        <textarea className={s.formTextArea} 
+                                            value={description}
+                                            onChange={handleDescriptionChange}
+                                            disabled={!author}
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

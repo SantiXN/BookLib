@@ -7,14 +7,16 @@ import MarkdownEditor from '@uiw/react-markdown-editor';
 interface BlockProps {
     isOpen: string | null;
     onClose: () => void;
+    isAdmin: boolean;
 }
 
-const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) => {
     const { ArticleApi } = useApi();
 
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [articles, setArticles] = useState<ArticleData[]>([]);
+    const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
     const [selectedArticle, setSelectedArticle] = useState<ArticleInfo | null>(null);
 
     useEffect(() => {
@@ -60,21 +62,32 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     const handleChangeDescription = (value: string) => {
         setContent(value);
     } 
-
-    const handleArticleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const articleId = Number(e.target.value);
-        console.log(articleId)
-        
-        ArticleApi.getArticle({articleID: articleId})
+    
+    const handleArticleChange = () => {
+        if (!selectedArticleId) return;
+        ArticleApi.getArticle({articleID: selectedArticleId})
             .then((response) => {
                 console.log(response)
                 if (response.article) {
                     setSelectedArticle(response.article);
+                    setTitle(response.article.title);
+                    setContent(response.article.content);
                 }
                 else {
                     console.error('Ошибка получения статьи');
                 }
             });
+    }
+
+    const handleArticleChangeFromInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const articleId = Number(e.target.value);
+        setSelectedArticleId(articleId);
+    }
+
+    const handleArticleChangeFromSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const articleId = Number(e.target.value);
+        setSelectedArticleId(articleId);
+        handleArticleChange();
     };    
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,38 +126,64 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Статья</label>
-                            <select id="author" className={s.input} value={selectedArticle?.id || ''} onChange={handleArticleChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {articles.map((art, index) => (
-                                    <option key={index} value={art.id}>
-                                        {art.title} (id={art.id})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Название статьи
+                        {!isAdmin && (
+                            <div className={s.formFieldContainer}>
+                                <label className={s.formLabel} htmlFor='author'>Статья</label>
+                                <select id="author" className={s.input} value={selectedArticle?.id || ''} onChange={handleArticleChangeFromSelect}>
+                                    <option value='' disabled>Выберите...</option>
+                                    {articles.map((art, index) => (
+                                        <option key={index} value={art.id}>
+                                            {art.title} (id={art.id})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {isAdmin && (
+                            <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
+                                <label className={s.formLabel} htmlFor='articleId'>ID статьи</label>
                                 <input
-                                    className={s.input}
-                                    id='title'
-                                    type='text'
-                                    placeholder='Название'
-                                    value={title}
-                                    onChange={handleTitleChange}
+                                    className={`${s.input} ${s.autoWidth}`}
+                                    id='articleId'
+                                    type='number'  
+                                    value={selectedArticleId || ''}
+                                    onChange={(value) => handleArticleChangeFromInput(value)}
                                 />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>Описание</label>
-                            <MarkdownEditor
-                                className={s.mdEditor}
-                                onChange={(value) => handleChangeDescription(value)}
-                                value={content}
-                                visible={true}/>
-                        </div>
+                                <button
+                                    type="button"
+                                    onClick={handleArticleChange}
+                                    disabled={!selectedArticleId}
+                                    className={`${s.button} ${!selectedArticleId ? s.disabledButton : ''}`}
+                                >
+                                    Поиск
+                                </button>
+                            </div>
+                        )}
+                        {selectedArticle && (
+                            <div style={{width: '1200px'}}>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Название статьи
+                                        <input
+                                            className={s.input}
+                                            id='title'
+                                            type='text'
+                                            placeholder='Название'
+                                            value={title}
+                                            onChange={handleTitleChange}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>Описание</label>
+                                    <MarkdownEditor
+                                        className={s.mdEditor}
+                                        onChange={(value) => handleChangeDescription(value)}
+                                        value={content}
+                                        visible={true}/>
+                                </div>
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

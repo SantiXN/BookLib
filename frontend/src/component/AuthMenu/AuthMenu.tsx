@@ -101,7 +101,7 @@ const AuthMenu = () => {
                                     />
                                 </label>
                             </div>
-                            {responseError && (<p>Ошибка авторизации. Данные некорректны</p>)}
+                            {responseError && (<p>Логин или пароль неверны. Попробуйте еще раз</p>)}
                             <button type="submit" className={`${s.button} ${s.formButton} ${isDataError ? s.disabledButton : ''}`}
                             disabled={isDataError}
                             >

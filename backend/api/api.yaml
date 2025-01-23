@@ -933,6 +933,19 @@ paths:
       tags:
         - article
       operationId: ListArticles
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: OK

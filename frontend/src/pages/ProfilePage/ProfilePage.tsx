@@ -29,7 +29,6 @@ const ProfilePage = () => {
     const isDataChanged = newData.firstName != formData.firstName || newData.lastName != formData.lastName;
 
     useEffect(() => {
-        // Очистка данных при загрузке страницы
         setFormData({
             firstName: '',
             lastName: '',
@@ -42,7 +41,6 @@ const ProfilePage = () => {
             lastName: '',
         });
     
-        // Проверка авторизации
         if (isAuthenticated) {
         console.log(localStorage.getItem('token'))
 
@@ -66,7 +64,7 @@ const ProfilePage = () => {
                     console.error('Ошибка при получении данных пользователя:', err);
                 });
         } else {
-            navigate('/login'); // Перенаправление на страницу входа, если не авторизован
+            navigate('/login');
         }
     }, [isAuthenticated, navigate]);  
 
@@ -116,7 +114,7 @@ const ProfilePage = () => {
     const saveAvatar = () => {
         if (!avatarFile) return;
 
-        //UserApiClient.
+        // Logic
     }
 
     const removeAvatarHandle = () => {

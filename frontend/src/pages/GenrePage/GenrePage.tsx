@@ -3,7 +3,9 @@ import s from './GenrePage.module.css';
 import { useParams } from 'react-router-dom';
 import useApi from '../../../api/ApiClient';
 import { ParsedBookCard } from '../../types/BookTypes';
-import { parseBookCardsResponse } from '../../utils/BookUtils';
+import { getGenreNameByGenre, parseBookCardsResponse } from '../../utils/BookUtils';
+import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
+import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 
 const GenrePage = () => {
     const { BookApi } = useApi();
@@ -42,7 +44,7 @@ const GenrePage = () => {
     return (
         <div className={s.container}>
             <div className={s.catalogHeader}>
-                <p className={s.title}>{genre}</p>
+                <p className={s.title}>{getGenreNameByGenre(genre)}</p>
                 <div className={s.filteringContainer}></div>
             </div>
             <div className={s.catalog}>
@@ -62,7 +64,10 @@ const GenrePage = () => {
                     </div>
                 ))}
             </div>
-            {loading && <p>Loading...</p>}
+            {!loading && books.length == 0 && (
+                <ErrorMessage message='Книг с выбранным жанром на данный момент нет(' />
+            )}
+            {loading && <LoadingMessage />}
             {hasMore && !loading && (
                 <div className={s.loadMoreContainer}>
                     <button className={s.loadMoreButton} onClick={handleLoadMore}>

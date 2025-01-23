@@ -27,3 +27,15 @@ export function parseBookInfoResponse(response: GetBookInfoResponseData): Parsed
         description: response.book?.description || "No description available",
     }
 }
+
+export function getGenreNameByGenre(genre: string): string {
+    switch (genre) {
+        case 'novels': return 'Романы';
+        case 'detective': return 'Детективы';
+        case 'mystery': return 'Мистика';
+        case 'classic': return 'Классика';
+        case 'scifi': return 'Фантастика';
+        case 'fantasy': return 'Фэнтези';
+        default: return genre;
+    }
+}

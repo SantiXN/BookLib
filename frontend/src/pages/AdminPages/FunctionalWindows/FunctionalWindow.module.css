@@ -12,7 +12,7 @@
 }
 
 .block {
-    width: 600px;
+    width: auto;
     display: flex;
     flex-direction: column;
     background-color: #F6F6F6;
@@ -137,11 +137,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.articleBlock {
-    max-width: 1200px;
-    width: auto;
 }
 
 .articleTextArea {

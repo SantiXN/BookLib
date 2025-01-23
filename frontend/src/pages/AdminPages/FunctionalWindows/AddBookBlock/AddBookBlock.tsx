@@ -146,7 +146,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block}>
+            <div ref={containerRef} className={s.block} style={{width: '600px'}}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить книгу</p>
                     <span onClick={onClose} className={s.closeIcon} />

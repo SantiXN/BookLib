@@ -9,7 +9,7 @@ export function parseBookCardsResponse(response: ListBooksByCategoryResponseData
 
     return response.books.map((book) => ({
         title: book.title || "Untitled Book",
-        author: book.authors?.map((author) => `${author.firstName} ${author.lastName}`).join(", ") || "Unknown Author",
+        author: book.authors?.map((author) => `${author.firstName}${author.lastName ? ' ' + author.lastName : ''}`).join(", ") || "Unknown Author",
         coverImage: book.coverPath || "default.jpg",
         rating: book.starCount || 0,
         toDirect: `/book/${book.id}`,
@@ -25,17 +25,6 @@ export function parseBookInfoResponse(response: GetBookInfoResponseData): Parsed
         coverImage: response.book?.coverPath || "default.jpg",
         rating: response.book?.starCount || 0,
         description: response.book?.description || "No description available",
-    }
-}
-
-export function getGenreNameByGenre(genre: string): string {
-    switch (genre) {
-        case 'novels': return 'Романы';
-        case 'detective': return 'Детективы';
-        case 'mystery': return 'Мистика';
-        case 'classic': return 'Классика';
-        case 'scifi': return 'Фантастика';
-        case 'fantasy': return 'Фэнтези';
-        default: return genre;
+        categories: response.book.categories
     }
 }

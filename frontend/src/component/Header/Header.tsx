@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import s from './Header.module.css';
 import SearchBar from "../common/SearchBar/SearchBar";
 import { useAuth } from '../../context/AuthContext';
+import { BookCategories } from '../../utils/CategoryUtils';
 
 const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string }) => (
     <li>
@@ -9,25 +10,15 @@ const HeaderItem = ({ children, to }: { children: React.ReactNode, to: string })
     </li>
 );
 
-const MegaDropdown = ({ items }: { items: { id: number, label: string, link: string }[] }) => (
+const MegaDropdown = ({ items }: { items: { id: number, label: string }[] }) => (
     <div className={s.megaDropdown}>
         <ul className={s.dropdownList}>
             {items.map((item, index) => (
-                <HeaderItem key={index} to={`${item.link}${item.id != 1 ? '-' + item.id : ''}`}>{item.label}</HeaderItem>
+                <HeaderItem key={index} to={`${item.id != 0 ? '/genre/' + item.id : '/articles'}`}>{item.label}</HeaderItem>
             ))}
         </ul>
     </div>
 );
-
-const genres = [
-    { id: 1, label: 'Статьи', link: '/articles' },
-    { id: 2, label: 'Романы', link: '/genre/novels' },
-    { id: 3, label: 'Фэнтези', link: '/genre/fantasy' },
-    { id: 4, label: 'Фантастика', link: '/genre/scifi' },
-    { id: 5, label: 'Классика', link: '/genre/classic' },
-    { id: 6, label: 'Мистика', link: '/genre/mystery' },
-    { id: 7, label: 'Детективы', link: '/genre/detective' },
-];
 
 const Header = () => {
     const {isAuthenticated} = useAuth();
@@ -42,7 +33,7 @@ const Header = () => {
                 </Link>
                 <div className={`${s.catalog} ${s.headerWrapperItem}`}>
                     <div className={s.catalogButton}>Каталог</div>
-                    <MegaDropdown items={genres} />
+                    <MegaDropdown items={BookCategories} />
                 </div>
 
                 <div className={s.headerWrapperItem}>

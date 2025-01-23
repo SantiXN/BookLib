@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
 import s from './BookPage.module.css'
 import useApi from '../../../api/ApiClient';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ParsedBookInfo } from '../../types/BookTypes';
 import { parseAuthorInfoInBookResponse } from '../../utils/AuthorUtils';
 import { parseBookInfoResponse } from '../../utils/BookUtils';
@@ -18,9 +18,6 @@ const BookPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // TODO: добавить проверку на авторизацию, чтобы выполнять действия
-
-    // TODO: добавление проверять через список книг, находящихся в библиотеке пользователя
     const [isAddedToRead, setIsAddedToRead] = useState(false);
     const changeBookToReadStateHandleClick = ({ isAdded }: { isAdded: boolean }) => {
         BookApi.addBookToLibrary({ bookID: curBookId })
@@ -85,7 +82,7 @@ const BookPage = () => {
                         Автор:{" "}
                         {authorInfo.map((author, index) => (
                             <span key={author.id}>
-                            <a href={`/author/${author.id}`}>{`${author.firstName} ${author.lastName}`}</a>
+                            <a href={`/author/${author.id}`}>{`${author.firstName}${author.lastName ? ' ' + author.lastName : ''}`}</a>
                             {index < authorInfo.length - 1 && ", "}
                             </span>
                         ))}
@@ -111,7 +108,14 @@ const BookPage = () => {
                             </button>
                         </a>}
                     </div>
-                    <p className={s.bookCardDescription}><span className={s.descrpitionTitle}>Жанр:</span></p>
+                    <p className={s.bookCardDescription}>
+                        <span className={s.descrpitionTitle}>
+                            Жанр:
+                        </span>
+                        {bookInfo?.categories.map((category, index) => (
+                            <a href={`/genre/${category.id}`}> {`${category.category}`}</a>
+                        ))}
+                    </p>
                     <div className={s.descriptionContainer}>
                         <span className={s.descrpitionTitle}>Описание</span>
                         <p className={s.bookCardDescription}>

@@ -52,10 +52,10 @@ const EditorMenu = () => {
                 <AddArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'editArticle' && (
-                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={false}/>
             )}
             {activeWindowMenu === 'removeArticle' && (
-                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={false}/>
             )}
         </div>
     )

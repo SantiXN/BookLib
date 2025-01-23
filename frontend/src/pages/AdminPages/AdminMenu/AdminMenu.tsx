@@ -104,10 +104,10 @@ const AdminMenu = () => {
                 <AddArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
             )}
             {activeWindowMenu === 'editArticle' && (
-                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={true}/>    
             )}
             {activeWindowMenu === 'removeArticle' && (
-                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={true}/>    
             )}
             {activeWindowMenu === 'editUserRole' && (
                 <EditUserRoleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    

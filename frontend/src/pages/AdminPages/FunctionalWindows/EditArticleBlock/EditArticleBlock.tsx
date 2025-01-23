@@ -20,12 +20,14 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) =>
     const [selectedArticle, setSelectedArticle] = useState<ArticleInfo | null>(null);
 
     useEffect(() => {
-        ArticleApi.managementArticles()
+        if (!isAdmin) {
+            ArticleApi.managementArticles()
             .then((response) => {
                 if (response.articles) {
                     setArticles(response.articles);
                 }
-            })
+            });
+        }
     }, []);
 
     const [title, setTitle] = useState('');

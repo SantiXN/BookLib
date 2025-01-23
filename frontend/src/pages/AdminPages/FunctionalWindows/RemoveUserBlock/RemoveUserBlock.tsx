@@ -52,6 +52,10 @@ const RemoveUserBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         UserApi.getUserInfo({ userID: selectedUserID})
             .then((response) => {
                 if (response.user) {
+                    if (response.user.role == 'admin') {
+                        alert('Удалить администратора нельзя! Ай-яй-яй');
+                        return;
+                    }
                     setUserInfo(response.user);
                 }
             })

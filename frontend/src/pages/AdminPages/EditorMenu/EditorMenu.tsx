@@ -17,6 +17,7 @@ const EditorMenu = () => {
         UserApi.getAuthorizedUser()
             .then((response) => {
                 if (response.user.role !== UserInfoRoleEnum.Editor) {
+                    alert('Ошибка прав доступа!')
                     navigate('/');
                 } else {
                     setIsEditor(true);

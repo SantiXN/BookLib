@@ -25,6 +25,7 @@ const AdminMenu = () => {
         UserApi.getAuthorizedUser()
             .then((response) => {
                 if (response.user.role !== UserInfoRoleEnum.Admin) {
+                    alert('Ошибка прав доступа!')
                     navigate('/');
                 } else {
                     setIsAdmin(true);

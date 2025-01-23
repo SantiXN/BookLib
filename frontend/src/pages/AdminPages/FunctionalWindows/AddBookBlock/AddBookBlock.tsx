@@ -91,19 +91,11 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         setSelectedCategories(selectedOptions);
     };
 
-    const handleRemoveCategory = (id: number) => {
-        setSelectedAuthors((prevAuthors) => prevAuthors.filter((author) => author.id !== id));
-    };
-
     const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedOptions = Array.from(e.target.selectedOptions).map(
             (option) => authors.find(author => author.id === parseInt(option.value))
         ).filter((author): author is AuthorInfo => author !== undefined);
         setSelectedAuthors(selectedOptions);
-    };
-
-    const handleRemoveAuthor = (id: number) => {
-        setSelectedAuthors((prevAuthors) => prevAuthors.filter((author) => author.id !== id));
     };
 
     const handleBookCoverFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +131,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
             .then((response) => {
                 if (response) {
                     console.log(response);
-                    alert('Книга успешно добавлена!');
+                    alert(`Книга успешно добавлена! ID: ${response.id}`);
                     close();
                 } else {
                     console.error('No response from server');
@@ -189,19 +181,12 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     .map((selectedAuthor) => (
                                     <span key={selectedAuthor.id} className={s.selectedItem}>
                                         {selectedAuthor.firstName} {selectedAuthor.lastName}
-                                        <button
-                                        type="button"
-                                        onClick={() => handleRemoveAuthor(selectedAuthor.id)}
-                                        className={s.removeButton}
-                                        >
-                                        ×
-                                        </button>
                                     </span>
                                 ))}
                             </div>
                         </div>
                         <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='category'>Автор</label>
+                            <label className={s.formLabel} htmlFor='category'>Жанр</label>
                             <select id="category" className={`${s.input} ${s.multipleInput}`} multiple onChange={handleCategoryChange}>
                                 {categories.map((category, index) => (
                                     <option key={index} value={category.id}>
@@ -215,13 +200,6 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                     .map((selectedCategory) => (
                                     <span key={selectedCategory.id} className={s.selectedItem}>
                                         {selectedCategory.category}
-                                        <button
-                                        type="button"
-                                        onClick={() => handleRemoveCategory(selectedCategory.id)}
-                                        className={s.removeButton}
-                                        >
-                                        ×
-                                        </button>
                                     </span>
                                 ))}
                             </div>

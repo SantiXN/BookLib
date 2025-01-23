@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { EditUserInfoRequest } from '../../../api';
 import useApi from '../../../api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,7 @@ const ProfilePage = () => {
     const { isAuthenticated, logOut } = useAuth();
     const navigate = useNavigate();
 
+    const [userRole, setUserRole] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         firstName: 'firstName',
         lastName: 'lastName',
@@ -42,27 +43,25 @@ const ProfilePage = () => {
         });
     
         if (isAuthenticated) {
-        console.log(localStorage.getItem('token'))
-
-        UserApi.getAuthorizedUser()
-                .then((response) => {
-                    if (response.user) {
-                        setFormData({
-                            firstName: response.user.firstName,
-                            lastName: response.user.lastName || '',
-                            email: response.user.email,
-                            avatar: response.user.avatarPath || '',
-                        });
-    
-                        setNewData({
-                            firstName: response.user.firstName,
-                            lastName: response.user.lastName || '',
-                        });
-                    }
-                })
-                .catch((err) => {
-                    console.error('Ошибка при получении данных пользователя:', err);
-                });
+            UserApi.getAuthorizedUser()
+                    .then((response) => {
+                        if (response.user) {
+                            setFormData({
+                                firstName: response.user.firstName,
+                                lastName: response.user.lastName || '',
+                                email: response.user.email,
+                                avatar: response.user.avatarPath || '',
+                            });
+                            setUserRole(response.user.role || '');
+                            setNewData({
+                                firstName: response.user.firstName,
+                                lastName: response.user.lastName || '',
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        console.error('Ошибка при получении данных пользователя:', err);
+                    });
         } else {
             navigate('/login');
         }
@@ -133,9 +132,18 @@ const ProfilePage = () => {
             <div>
                 <div className={s.topBlock}>
                     <h2 className={s.title}>Личная информация</h2>
-                    <button type="button" onClick={handleLogout} style={{marginLeft: '10px'}}>
-                        Выйти
-                    </button>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        {userRole && userRole != '' && userRole != 'user' && (
+                            <Link to={`/${userRole ? userRole : ''}`}>
+                                <button>
+                                    Меню {userRole == 'admin' ? 'администратора' : 'редактора'}
+                                </button>
+                            </Link>
+                        )}
+                        <button type="button" onClick={handleLogout} style={{marginLeft: '10px'}}>
+                            Выйти
+                        </button>
+                    </div>
                 </div>
                 <div className={s.infoContainer}>
                     <div className={s.formContainer}>

@@ -1,3 +1,5 @@
+import { CategoryInfo } from "../../api";
+
 export type ParsedBookCard = {
     title: string;
     author: string;
@@ -11,4 +13,5 @@ export type ParsedBookInfo = {
     description: string;
     coverImage: string;
     rating: number;
+    categories: CategoryInfo[];
 };

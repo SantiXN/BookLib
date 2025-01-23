@@ -21,7 +21,6 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         ArticleApi.managementArticles()
             .then((response) => {
                 if (response.articles) {
-                    console.log(response.articles);
                     setArticles(response.articles);
                 }
             })
@@ -76,8 +75,6 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                     console.error('Ошибка получения статьи');
                 }
             });
-
-        console.log(selectedArticle)
     };    
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

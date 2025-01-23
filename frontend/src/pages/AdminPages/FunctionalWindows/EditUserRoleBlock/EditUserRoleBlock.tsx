@@ -13,19 +13,33 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [users, setUsers] = useState<UserInfo[]>([]);
+    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
     const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
     const [selectedRole, setSelectedRole] = useState<string>('');
     const [isRoleChanged, setIsRoleChanged] = useState<boolean>(false); 
-
     
-    const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const userId = Number(event.target.value);
-        const user = users.find((u) => u.id === userId) || null;
-        setSelectedUser(user);
-        setSelectedRole(user?.role || ''); 
-        setIsRoleChanged(false);
-    };
+    const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const userId = Number(e.target.value);
+        setSelectedUserId(userId);
+    }; 
+
+    const handleSearchUser = () => {
+        if (!selectedUserId) return;
+
+        UserApi.getUserInfo({ userID: selectedUserId})
+            .then((response) => {
+                if (response.user.role == 'admin') {
+                    alert('Роль администратора изменить нельзя!');
+                    return;
+                }
+                if (response.user) {
+                    setSelectedUser(response.user);
+                    setSelectedRole(response.user.role!)
+                }
+            })
+            .catch(() => alert('Пользовать с заданным ID не найден!'));
+    }
 
     const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedRole(event.target.value);
@@ -61,20 +75,6 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     };
 
     useEffect(() => {
-        UserApi.listUsers()
-            .then((response) => {
-                if (response?.users) {
-                    setUsers(response.users);
-                } else {
-                    console.error('No users found');
-                }
-            })
-            .catch((error) => {
-                console.error('Ошибка загрузки пользователей:', error);
-            });
-    }, []);
-
-    useEffect(() => {
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
             document.addEventListener('keydown', handleEscapeKey);
@@ -95,36 +95,45 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor="users">Пользователь</label>
-                            <select
-                                id="users"
-                                className={s.input}
-                                value={selectedUser?.id || ''}
-                                onChange={handleUserChange}
+                        <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
+                            <label className={s.formLabel} htmlFor='userId'>ID пользователя</label>
+                            <input
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='userId'
+                                type='number'  
+                                value={selectedUserId || ''}
+                                onChange={(value) => handleUserChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleSearchUser}
+                                disabled={!selectedUserId}
+                                className={`${s.button} ${!selectedUserId ? s.disabledButton : ''}`}
                             >
-                                <option value="" disabled>Выберите...</option>
-                                {users.map((user) => (
-                                    <option key={user.id} value={user.id}>
-                                        {user.firstName} {user.lastName} ({user.email})
-                                    </option>
-                                ))}
-                            </select>
+                                Поиск
+                            </button>
                         </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor="roles">Роль</label>
-                            <select
-                                id="roles"
-                                className={s.input}
-                                value={selectedRole}
-                                onChange={handleRoleChange}
-                                disabled={!selectedUser} // Блокируем выбор, если пользователь не выбран
-                            >
-                                <option value="" disabled>Выберите...</option>
-                                <option value="user">Обычный пользователь</option>
-                                <option value="editor">Редактор</option>
-                            </select>
-                        </div>
+                        {selectedUser && (
+                            <div className={s.formFieldContainer}>
+                                <div>
+                                    <p>Имя: {selectedUser.firstName}</p>
+                                    <p>Фамилия: {selectedUser.lastName}</p>
+                                    <p>E-mail: {selectedUser.email}</p>
+                                </div>
+                                <label className={s.formLabel} htmlFor="roles">Роль</label>
+                                <select
+                                    id="roles"
+                                    className={s.input}
+                                    value={selectedRole}
+                                    onChange={handleRoleChange}
+                                    disabled={!selectedUser}
+                                >
+                                    <option value="" disabled>Выберите...</option>
+                                    <option value="user">Обычный пользователь</option>
+                                    <option value="editor">Редактор</option>
+                                </select>
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

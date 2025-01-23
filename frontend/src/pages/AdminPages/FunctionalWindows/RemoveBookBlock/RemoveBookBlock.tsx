@@ -85,7 +85,7 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={`${s.formFieldContainer} ${s.removeInputContainer}`}>
+                        <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
                             <label className={s.formLabel} htmlFor='bookId'>Книга</label>
                             <input 
                                 className={`${s.input} ${s.autoWidth}`}

@@ -227,29 +227,6 @@ const UserLibraryPage = () => {
                                 &gt;
                             </button>
                         </div>
-                            <div className={s.libraryBooksBodyContainer}>
-                                <div key={1} className={s.libraryBookContainer}>
-                                    <FaTrash
-                                        className={s.deleteIcon}
-                                        onClick={() => handleDeleteBook(1)}
-                                    />
-                                    <BookCard
-                                        title='asd'
-                                        author='asd'
-                                        coverImage='book.jpg'
-                                        rating={4}
-                                        toDirect='3'
-                                        classname={s.libraryBookCard}
-                                    />
-                                    <button
-                                        className={s.changeStatusButton}
-                                        onClick={() => handleChangeStatus(4)}
-                                    >
-                                        Изменить статус
-                                    </button>
-                                    <FaReadme onClick={()=> handleOpenBook(4)} color='#2441C1' size={22} className={s.readButton}/>
-                                </div>
-                            </div>
                         {getCurrentBooks().length > 0 ? (
                             <div className={s.libraryBooksBodyContainer}>
                                 {getCurrentBooks().map((book, key) => (

@@ -1,22 +1,22 @@
 import { useEffect, useState, useCallback } from 'react';
 import s from './ArticlesPage.module.css';
 import useApi from '../../../api/ApiClient';
-import { ArticleData, UserData } from '../../../api';
+import { ArticleData } from '../../../api';
 
 const ArticlesPage = () => {
     const { ArticleApi } = useApi();
 
     const [articles, setArticles] = useState<ArticleData[]>([]);
-    const [authors, setAuthors] = useState<UserData[]>([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
+    const articlesInPage = 20;
+
     const loadBooks = useCallback(async () => {
         setLoading(true);
         try {
-            // TODO: добавить пагинацию
-            const response = await ArticleApi.listArticles();
+            const response = await ArticleApi.listArticles({ limit: articlesInPage, page: page});
             const newArticles = response.articles ? response.articles : [];
             setArticles((prevArticles) => [...prevArticles, ...newArticles]);
             setHasMore(newArticles.length > 0);
@@ -47,6 +47,7 @@ const ArticlesPage = () => {
                         className={s.catalogItemLink}
                         key={index}
                         href={`/article/${article.id}`}
+                        target="_blank"
                     >
                         <div className={s.catalogItem}>
                             <div className={s.articleInfo}>

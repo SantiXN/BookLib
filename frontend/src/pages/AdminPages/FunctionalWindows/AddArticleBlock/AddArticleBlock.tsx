@@ -91,7 +91,7 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 />
                             </label>
                         </div>
-                        <div className={s.formFieldContainer}>
+                        <div className={s.formFieldContainer} style={{width: '1200px'}}>
                             <label className={s.formLabel}>Описание</label>
                             <MarkdownEditor
                                 className={s.mdEditor}

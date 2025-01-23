@@ -165,3 +165,9 @@
 .autoWidth {
     width: auto;
 }
+
+.selectedValues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 10px;
+}

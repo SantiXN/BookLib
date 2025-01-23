@@ -9,12 +9,11 @@ interface BlockProps {
 }
 
 const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const { AuthorApi, BookApi, CategoryApi } = useApi();
+    const { BookApi} = useApi();
 
-    const [books, setBooks] = useState<BookData[]>([]);
+    const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
     const [selectedBook, setSelectedBook] = useState<BookInfo | null>(null);
     
-    // Изменение полей должно происходить по выбранной книге
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [bookCoverFile, setBookCoverFile] = useState<File | null>(null);
@@ -85,19 +84,22 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);
 
-    const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedBookID = Number(e.target.value);
+    const handleBookChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const bookId = Number(e.target.value);
+        setSelectedBookId(bookId);
+    }; 
 
-        BookApi.getBookInfo({bookID: selectedBookID})
+    const handleBookSearch = () => {
+        if (!selectedBookId) return;
+
+        BookApi.getBookInfo({ bookID: selectedBookId })
             .then((response) => {
                 if (response.book) {
                     setSelectedBook(response.book);
                 }
-                else {
-                    console.error('Ошибка получения информации о книге');
-                }
             })
-    }; 
+            .catch(() => alert('Книга с заданным ID не найдена'));
+    }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -139,61 +141,72 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='book'>Книга</label>
-                            <select id="book" className={s.input} value={selectedBook?.id || ''} onChange={handleBookChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {books.map((book, index) => (
-                                    <option key={index} value={book.id}>
-                                        {book.title}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
+                            <label className={s.formLabel} htmlFor='bookId'>ID книги</label>
+                            <input 
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='bookId'
+                                type='number'  
+                                value={selectedBookId || ''}
+                                onChange={(value) => handleBookChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleBookSearch}
+                                disabled={!selectedBookId}
+                                className={`${s.button} ${!selectedBookId ? s.disabledButton : ''}`}
+                            >
+                                Поиск
+                            </button>
                         </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Название
-                                <input
-                                    className={s.input}
-                                    id="title"
-                                    type="text"
-                                    placeholder="Название"
-                                    value={title}
-                                    onChange={handleTitleChange}
-                                    disabled={!selectedBook}
-                                />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea
-                                    className={s.formTextArea}
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                    disabled={!selectedBook}
-                                />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='book-cover'>Изображение</label>
-                            <div className={s.customFileContainer}>
-                                <input
-                                    accept=".jpg,.jpeg,.png"
-                                    id="book-cover"
-                                    type="file"
-                                    className={s.fileInput}
-                                    onChange={handleBookCoverFileChange}
-                                    disabled={!selectedBook}
-                                />
-                                <label
-                                    htmlFor="book-cover"
-                                    className={`${s.customFileLabel}`}
-                                >
-                                    {bookCoverFile ? bookCoverFile.name : "Выберите файл"}
-                                </label>
+                        {selectedBook && (
+                            <div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Название
+                                        <input
+                                            className={s.input}
+                                            id="title"
+                                            type="text"
+                                            placeholder="Название"
+                                            value={title}
+                                            onChange={handleTitleChange}
+                                            disabled={!selectedBook}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Описание
+                                        <textarea
+                                            className={s.formTextArea}
+                                            value={description}
+                                            onChange={handleDescriptionChange}
+                                            disabled={!selectedBook}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel} htmlFor='book-cover'>Изображение</label>
+                                    <div className={s.customFileContainer}>
+                                        <input
+                                            accept=".jpg,.jpeg,.png"
+                                            id="book-cover"
+                                            type="file"
+                                            className={s.fileInput}
+                                            onChange={handleBookCoverFileChange}
+                                            disabled={!selectedBook}
+                                        />
+                                        <label
+                                            htmlFor="book-cover"
+                                            className={`${s.customFileLabel}`}
+                                        >
+                                            {bookCoverFile ? bookCoverFile.name : "Выберите файл"}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"

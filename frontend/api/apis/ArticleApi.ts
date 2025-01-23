@@ -72,6 +72,11 @@ export interface GetArticleRequest {
     articleID: number;
 }
 
+export interface ListArticlesRequest {
+    page?: number;
+    limit?: number;
+}
+
 export interface PublishArticleRequest {
     articleID: number;
 }
@@ -256,8 +261,16 @@ export class ArticleApi extends runtime.BaseAPI {
 
     /**
      */
-    async listArticlesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListArticlesResponseData>> {
+    async listArticlesRaw(requestParameters: ListArticlesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListArticlesResponseData>> {
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -281,8 +294,8 @@ export class ArticleApi extends runtime.BaseAPI {
 
     /**
      */
-    async listArticles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListArticlesResponseData> {
-        const response = await this.listArticlesRaw(initOverrides);
+    async listArticles(requestParameters: ListArticlesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListArticlesResponseData> {
+        const response = await this.listArticlesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

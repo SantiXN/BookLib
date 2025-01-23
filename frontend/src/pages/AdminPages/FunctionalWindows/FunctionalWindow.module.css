@@ -140,7 +140,8 @@
 }
 
 .articleBlock {
-    width: 1200px;
+    max-width: 1200px;
+    width: auto;
 }
 
 .articleTextArea {
@@ -156,7 +157,7 @@
     border-radius: 5px;
 }
 
-.removeInputContainer {
+.inputContainerFromId {
     display: flex;
     align-items: center;
     gap: 15px;

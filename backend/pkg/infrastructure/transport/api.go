@@ -66,13 +66,32 @@ type publicAPI struct {
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	published := model.Published
+	err := p.articleService.EditArticle(ctx, request.ArticleID, nil, nil, &published)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.PublishArticle200Response{}, nil
 }
 
 func (p *publicAPI) CreateArticle(ctx context.Context, request api.CreateArticleRequestObject) (api.CreateArticleResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	userID, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := p.articleService.CreateArticle(ctx, service.ArticleData{
+		Title:    request.Body.Title,
+		Content:  request.Body.Content,
+		AuthorID: userID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api.CreateArticle200JSONResponse{
+		Id: id,
+	}, nil
 }
 
 func (p *publicAPI) ListArticles(ctx context.Context, request api.ListArticlesRequestObject) (api.ListArticlesResponseObject, error) {
@@ -91,13 +110,21 @@ func (p *publicAPI) GetArticle(ctx context.Context, request api.GetArticleReques
 }
 
 func (p *publicAPI) DeleteArticle(ctx context.Context, request api.DeleteArticleRequestObject) (api.DeleteArticleResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.articleService.DeleteArticle(ctx, request.ArticleID)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.DeleteArticle200Response{}, nil
 }
 
 func (p *publicAPI) EditArticle(ctx context.Context, request api.EditArticleRequestObject) (api.EditArticleResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	err := p.articleService.EditArticle(ctx, request.ArticleID, request.Body.NewTitle, request.Body.NewContent, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.EditArticle200Response{}, nil
 }
 
 func (p *publicAPI) CreateAuthor(ctx context.Context, request api.CreateAuthorRequestObject) (api.CreateAuthorResponseObject, error) {

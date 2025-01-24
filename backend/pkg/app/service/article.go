@@ -8,7 +8,6 @@ import (
 )
 
 type ArticleData struct {
-	ID       int
 	Title    string
 	Content  string
 	AuthorID int
@@ -36,7 +35,7 @@ func NewArticleService(
 }
 
 func (a *articleService) CreateArticle(ctx context.Context, articleData ArticleData) (int, error) {
-	err := a.permissionChecker.AssertCanModifyArticle(ctx, articleData.ID)
+	err := a.permissionChecker.AssertCanCreateArticle(ctx)
 	if err != nil {
 		return 0, err
 	}

@@ -15,6 +15,7 @@ var (
 
 type PermissionChecker interface {
 	AssertCanModifyArticle(ctx context.Context, articleID int) error
+	AssertCanCreateArticle(ctx context.Context) error
 	AssertCanEditUser(ctx context.Context) error
 	AssertCanWatchUserInfo(ctx context.Context) error
 	AssertCanModifyBook(ctx context.Context) error
@@ -113,4 +114,21 @@ func (p *permissionChecker) AssertCanModifyArticle(ctx context.Context, articleI
 	}
 
 	return nil
+}
+
+func (p *permissionChecker) AssertCanCreateArticle(ctx context.Context) error {
+	id, err := utils.GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+	role, err := p.userProvider.GetRole(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if role == model.Admin || role == model.Editor {
+		return nil
+	}
+
+	return ErrPermissionDenied
 }

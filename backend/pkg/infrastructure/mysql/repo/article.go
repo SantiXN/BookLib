@@ -52,7 +52,7 @@ func (a *articleRepository) Store(article model.Article) error {
 		VALUES (?, ?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
 			name = VALUES(name),
-			content = VALUES(content)
+			content = VALUES(content),
 		    status = VALUES(status)
 	`
 

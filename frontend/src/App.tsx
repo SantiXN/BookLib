@@ -18,6 +18,7 @@ import AuthPage from './pages/AuthPage/AuthPage.tsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
 import ErrorPage from './pages/ErrorPage/ErrorPage.tsx';
+import ReadPage from './pages/ReadPage/ReadPage.tsx';
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/genre/:id" element={<ProtectedRoute><GenrePage /></ProtectedRoute>} />
           <Route path="/articles" element={<ProtectedRoute><ArticlesPage /></ProtectedRoute>} />
           <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+          <Route path="/book/:id/read" element={<ProtectedRoute><ReadPage /></ProtectedRoute>} />
         </Routes>
       </div>
       <Footer />

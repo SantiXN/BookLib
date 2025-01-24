@@ -119,7 +119,8 @@ func (p *publicAPI) DeleteArticle(ctx context.Context, request api.DeleteArticle
 }
 
 func (p *publicAPI) EditArticle(ctx context.Context, request api.EditArticleRequestObject) (api.EditArticleResponseObject, error) {
-	err := p.articleService.EditArticle(ctx, request.ArticleID, request.Body.NewTitle, request.Body.NewContent, nil)
+	unpublished := model.Unpublished
+	err := p.articleService.EditArticle(ctx, request.ArticleID, request.Body.NewTitle, request.Body.NewContent, &unpublished)
 	if err != nil {
 		return nil, err
 	}

@@ -22,7 +22,8 @@ func NewPublicAPIErrorsMiddleware() api.StrictMiddlewareFunc {
 					errors.Is(err, model.ErrAuthorNotFound) ||
 					errors.Is(err, model.ErrBookNotFound) ||
 					errors.Is(err, query.ErrAuthorNotFound) ||
-					errors.Is(err, query.ErrBookNotFound) {
+					errors.Is(err, query.ErrBookNotFound) ||
+					errors.Is(err, model.ErrArticleNotFound) {
 					return api.NotFoundJSONResponse{
 						Code:    api.NotFoundResponseDataCodeNotFound,
 						Message: err.Error(),

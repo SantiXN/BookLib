@@ -22,11 +22,16 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	userRepository := repo.NewUserRepository(ctx, client)
 	authorRepository := repo.NewAuthorRepository(ctx, client)
 	bookRepository := repo.NewBookRepository(ctx, client)
+	articleRepository := repo.NewArticleRepository(ctx, client)
+
 	domainUserService := domainservice.NewUserService(userRepository)
 	domainAuthorService := domainservice.NewAuthorService(authorRepository)
 	domainBookService := domainservice.NewBookService(bookRepository)
+	domainArticleService := domainservice.NewArticleService(articleRepository)
+
 	userProvider := provider.NewUserProvider(client)
-	checker := service.NewPermissionChecker(userProvider)
+	articleProvider := provider.NewArticleProvider(client)
+	checker := service.NewPermissionChecker(userProvider, articleProvider)
 	infraUserQS := infraquery.NewUserQueryService(client)
 	infraAuthorQS := infraquery.NewAuthorQueryService(client)
 	infraCategoryQS := infraquery.NewCategoryQueryService(client)
@@ -47,6 +52,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	userBookQueryService := query.NewUserBookQueryService(infraUserBookQS, authorProvider)
 	bookService := service.NewBookService(domainBookService, checker)
 	bookQueryService := query.NewBookQueryService(infraBookQs, authorProvider, categoryProvider)
+	articleService := service.NewArticleService(domainArticleService, checker)
 
 	return &DependencyContainer{
 		UserService:          userService,
@@ -59,6 +65,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 		UserBookQueryService: userBookQueryService,
 		BookService:          bookService,
 		BookQueryService:     bookQueryService,
+		ArticleService:       articleService,
 	}
 }
 
@@ -73,4 +80,5 @@ type DependencyContainer struct {
 	UserBookQueryService query.UserBookQueryService
 	BookService          service.BookService
 	BookQueryService     query.BookQueryService
+	ArticleService       service.ArticleService
 }

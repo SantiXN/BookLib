@@ -34,6 +34,7 @@ func NewPublicAPI(
 	userBookQueryService query.UserBookQueryService,
 	bookService service.BookService,
 	bookQueryService query.BookQueryService,
+	articleServie service.ArticleService,
 ) API {
 	return &publicAPI{
 		userService:          userService,
@@ -46,6 +47,7 @@ func NewPublicAPI(
 		userBookQueryService: userBookQueryService,
 		bookService:          bookService,
 		bookQueryService:     bookQueryService,
+		articleService:       articleServie,
 	}
 }
 
@@ -60,6 +62,7 @@ type publicAPI struct {
 	userBookQueryService query.UserBookQueryService
 	bookService          service.BookService
 	bookQueryService     query.BookQueryService
+	articleService       service.ArticleService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {

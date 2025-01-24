@@ -1,0 +1,2 @@
+ALTER TABLE `article`
+    ADD COLUMN `status` TINYINT NOT NULL;

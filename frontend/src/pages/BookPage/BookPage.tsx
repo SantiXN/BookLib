@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
 import s from './BookPage.module.css'
 import useApi from '../../../api/ApiClient';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ParsedBookInfo } from '../../types/BookTypes';
 import { parseAuthorInfoInBookResponse } from '../../utils/AuthorUtils';
 import { parseBookInfoResponse } from '../../utils/BookUtils';
@@ -54,14 +54,13 @@ const BookPage = () => {
                 }
             })
 
-        if (bookInfo) {
-            BookApi.checkBookInLibrary({ bookID: curBookId })
-                .then((response) => {
-                    if (response.contains) {
-                        setIsAddedToRead(response.contains.valueOf());
-                    }
-                })
-        }
+        BookApi.checkBookInLibrary({ bookID: curBookId })
+            .then((response) => {
+                console.log('status', response.contains)
+                if (response.contains) {
+                    setIsAddedToRead(response.contains.valueOf());
+                }
+            })
     }, [])
 
     if (loading) {

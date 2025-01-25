@@ -32,7 +32,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
           bookCoverFile !== null
         : false;
 
-    const close = () => {
+    const clearFieldsAndCloseWindow = () => {
         setTitle('');
         setDescription('');
         setBookCoverFile(null);
@@ -83,16 +83,23 @@ const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
         BookApi.editBook({bookID: selectedBook?.id || 0, editBookRequest: request})
             .then(() => {
                 alert('Книга успешно отредактирована');
-                close();
+                clearFieldsAndCloseWindow();
             })
     };
+
+    const close = () => {
+        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        if (!confirmDelete) return;
+
+        clearFieldsAndCloseWindow();
+    }
         
     return (
         <div className={s.container}>
             <div className={s.block}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать книгу</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>

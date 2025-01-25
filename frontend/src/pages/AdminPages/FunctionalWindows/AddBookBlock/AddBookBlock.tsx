@@ -22,11 +22,12 @@ const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
 
     const isFormFieldsEmpty = !(title.trim() && description.trim() && selectedAuthors.length > 0 && selectedCategories.length > 0 && bookCover && bookFile);
 
-    const close = () => {
+    const clearFieldsAndCloseWindow = () => {
         setTitle('');
         setDescription('');
         setBookCover(null);
         setBookFile(null);
+
         onClose();
     };
 
@@ -105,7 +106,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
                 if (response) {
                     console.log(response);
                     alert(`Книга успешно добавлена! ID: ${response.id}`);
-                    close();
+                    clearFieldsAndCloseWindow();
                 } else {
                     console.error('No response from server');
                     alert('Не удалось добавить книгу. Попробуйте позже.');
@@ -117,12 +118,19 @@ const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
             });
     };
 
+    const close = () => {
+        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        if (!confirmDelete) return;
+
+        clearFieldsAndCloseWindow();
+    }
+
     return (
         <div className={s.container}>
             <div className={s.block} style={{width: '600px'}}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить книгу</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>

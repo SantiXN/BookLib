@@ -67,13 +67,20 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                 console.error(error);
             });
     };   
+
+    const close = () => {
+        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        if (!confirmDelete) return;
+
+        onClose();
+    }
     
     return (
         <div className={s.container}>
             <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Удалить статью</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>

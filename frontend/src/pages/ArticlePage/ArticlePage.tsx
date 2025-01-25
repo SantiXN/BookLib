@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown';
-import gfm from 'remark-gfm';  // Для поддержки таблиц и других GitHub Flavored Markdown (GFM) элементов
+import gfm from 'remark-gfm';
 import s from './ArticlePage.module.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useApi from '../../../api/ApiClient';
 import { ArticleInfo } from '../../../api';
@@ -9,36 +9,37 @@ import { ArticleInfo } from '../../../api';
 const ArticlePage = () => {
     const { ArticleApi, AuthorApi }  = useApi();
 
-    const navigate = useNavigate();
-    const { articleID } = useParams();
+    const { id } = useParams();
     const [data, setData] = useState<ArticleInfo | null>(null);
     const [author, setAuthor] = useState('');
 
     useEffect(() => {
-        ArticleApi.getArticle({articleID: Number(articleID)})
+        ArticleApi.getArticle({articleID: Number(id)})
             .then((response) => {
                 if (response.article) {
                     setData(response.article);
+                    updateAuthor(response.article.authorID);
                 }
             })
             .catch(() => {
-                navigate(-1);
+                alert('Ошибка загрузки статьи!');
             });
+    }, [id]);
 
-            if (data?.authorID !== undefined) {
-                AuthorApi.getAuthorInfo({authorID: data.authorID})
-                    .then((response) => {
-                        if (response.author) {
-                            setAuthor(response.author.firstName + response.author.lastName);
-                        }
-                    })
-                    .catch((err) => console.error(err));
-            }
-    }, [articleID]);
+    const updateAuthor = (authorID: number) => {
+        AuthorApi.getAuthorInfo({ authorID: authorID })
+            .then((response) => {
+                if (response.author) {
+                    setAuthor(`${response.author.firstName} ${response.author.lastName}`)
+                }
+            })
+            .catch((err) => console.error(err));
+    }
 
     return (
         <div className={s.articleContainer}>
-            {data?.authorID && <p className={s.author}>Автор: {author}</p>}
+            <p className={s.title}>{data?.title}</p>
+            <p className={s.author}>Автор: {author}</p>
             <div className={s.articleBody}>
                 <ReactMarkdown children={data?.content} remarkPlugins={[gfm]} />
             </div>

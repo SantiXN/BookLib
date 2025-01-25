@@ -16,7 +16,7 @@ const EditorMenu = () => {
     useEffect(() => {
         UserApi.getAuthorizedUser()
             .then((response) => {
-                if (response.user.role !== UserInfoRoleEnum.Editor) {
+                if (response.user.role == UserInfoRoleEnum.User) {
                     alert('Ошибка прав доступа!')
                     navigate('/');
                 } else {
@@ -49,13 +49,13 @@ const EditorMenu = () => {
             </div>
 
             {activeWindowMenu === 'addArticle' && (
-                <AddArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <AddArticleBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'editArticle' && (
-                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={false}/>
+                <EditArticleBlock onClose={closeWindow} isAdmin={false}/>
             )}
             {activeWindowMenu === 'removeArticle' && (
-                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={false}/>
+                <RemoveArticleBlock onClose={closeWindow} isAdmin={false}/>
             )}
         </div>
     )

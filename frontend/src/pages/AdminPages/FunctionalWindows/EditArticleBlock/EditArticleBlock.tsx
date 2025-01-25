@@ -175,11 +175,12 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                                         visible={true}/>
                                 </div>
                                 {selectedArticle.status == ArticleInfoStatusEnum.Unpublished && status !== ArticleInfoStatusEnum.Published && (
-                                    <div style={{gap: '10px'}}>
+                                    <div>
                                         Статья не опубликована  
                                         <button
                                             type='button'
                                             onClick={updateStatus}
+                                            style={{marginLeft: '10px'}}
                                         >
                                             Опубликовать
                                         </button>

@@ -24,13 +24,14 @@ export interface CreateArticleResponseData {
      * @type {number}
      * @memberof CreateArticleResponseData
      */
-    id?: number;
+    id: number;
 }
 
 /**
  * Check if a given object implements the CreateArticleResponseData interface.
  */
 export function instanceOfCreateArticleResponseData(value: object): value is CreateArticleResponseData {
+    if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
@@ -44,7 +45,7 @@ export function CreateArticleResponseDataFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
     };
 }
 

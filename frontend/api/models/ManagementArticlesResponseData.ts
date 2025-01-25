@@ -32,13 +32,14 @@ export interface ManagementArticlesResponseData {
      * @type {Array<ArticleData>}
      * @memberof ManagementArticlesResponseData
      */
-    articles?: Array<ArticleData>;
+    articles: Array<ArticleData>;
 }
 
 /**
  * Check if a given object implements the ManagementArticlesResponseData interface.
  */
 export function instanceOfManagementArticlesResponseData(value: object): value is ManagementArticlesResponseData {
+    if (!('articles' in value) || value['articles'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function ManagementArticlesResponseDataFromJSONTyped(json: any, ignoreDis
     }
     return {
         
-        'articles': json['articles'] == null ? undefined : ((json['articles'] as Array<any>).map(ArticleDataFromJSON)),
+        'articles': ((json['articles'] as Array<any>).map(ArticleDataFromJSON)),
     };
 }
 
@@ -67,7 +68,7 @@ export function ManagementArticlesResponseDataToJSONTyped(value?: ManagementArti
 
     return {
         
-        'articles': value['articles'] == null ? undefined : ((value['articles'] as Array<any>).map(ArticleDataToJSON)),
+        'articles': ((value['articles'] as Array<any>).map(ArticleDataToJSON)),
     };
 }
 

@@ -45,7 +45,6 @@ export * from './NotFoundResponseData';
 export * from './PermissionDeniedResponseData';
 export * from './RegisterUserRequest';
 export * from './SaveBookFeedbackRequest';
-export * from './SaveBookFeedbackResponseData';
 export * from './SearchArticlesRequest';
 export * from './SearchArticlesResponseData';
 export * from './SearchAuthorsRequest';

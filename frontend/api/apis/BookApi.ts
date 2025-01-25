@@ -30,7 +30,6 @@ import type {
   NotFoundResponseData,
   PermissionDeniedResponseData,
   SaveBookFeedbackRequest,
-  SaveBookFeedbackResponseData,
   SearchBooksRequest,
   SearchBooksResponseData,
   UnauthorizedResponseData,
@@ -66,8 +65,6 @@ import {
     PermissionDeniedResponseDataToJSON,
     SaveBookFeedbackRequestFromJSON,
     SaveBookFeedbackRequestToJSON,
-    SaveBookFeedbackResponseDataFromJSON,
-    SaveBookFeedbackResponseDataToJSON,
     SearchBooksRequestFromJSON,
     SearchBooksRequestToJSON,
     SearchBooksResponseDataFromJSON,
@@ -639,7 +636,7 @@ export class BookApi extends runtime.BaseAPI {
 
     /**
      */
-    async saveBookFeedbackRaw(requestParameters: SaveBookFeedbackOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SaveBookFeedbackResponseData>> {
+    async saveBookFeedbackRaw(requestParameters: SaveBookFeedbackOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['bookID'] == null) {
             throw new runtime.RequiredError(
                 'bookID',
@@ -669,14 +666,13 @@ export class BookApi extends runtime.BaseAPI {
             body: SaveBookFeedbackRequestToJSON(requestParameters['saveBookFeedbackRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SaveBookFeedbackResponseDataFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      */
-    async saveBookFeedback(requestParameters: SaveBookFeedbackOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SaveBookFeedbackResponseData> {
-        const response = await this.saveBookFeedbackRaw(requestParameters, initOverrides);
-        return await response.value();
+    async saveBookFeedback(requestParameters: SaveBookFeedbackOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.saveBookFeedbackRaw(requestParameters, initOverrides);
     }
 
     /**

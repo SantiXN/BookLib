@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { UserData } from './UserData';
+import {
+    UserDataFromJSON,
+    UserDataFromJSONTyped,
+    UserDataToJSON,
+    UserDataToJSONTyped,
+} from './UserData';
+
 /**
  * 
  * @export
@@ -39,16 +47,22 @@ export interface ArticleInfo {
     content: string;
     /**
      * 
-     * @type {number}
+     * @type {UserData}
      * @memberof ArticleInfo
      */
-    authorID: number;
+    author: UserData;
     /**
      * 
      * @type {string}
      * @memberof ArticleInfo
      */
     status: ArticleInfoStatusEnum;
+    /**
+     * unix timestamp
+     * @type {number}
+     * @memberof ArticleInfo
+     */
+    publishDate?: number;
 }
 
 
@@ -69,7 +83,7 @@ export function instanceOfArticleInfo(value: object): value is ArticleInfo {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('content' in value) || value['content'] === undefined) return false;
-    if (!('authorID' in value) || value['authorID'] === undefined) return false;
+    if (!('author' in value) || value['author'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
@@ -87,8 +101,9 @@ export function ArticleInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'id': json['id'],
         'title': json['title'],
         'content': json['content'],
-        'authorID': json['authorID'],
+        'author': UserDataFromJSON(json['author']),
         'status': json['status'],
+        'publishDate': json['publishDate'] == null ? undefined : json['publishDate'],
     };
 }
 
@@ -106,8 +121,9 @@ export function ArticleInfoToJSONTyped(value?: ArticleInfo | null, ignoreDiscrim
         'id': value['id'],
         'title': value['title'],
         'content': value['content'],
-        'authorID': value['authorID'],
+        'author': UserDataToJSON(value['author']),
         'status': value['status'],
+        'publishDate': value['publishDate'],
     };
 }
 

@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { UserData } from './UserData';
+import {
+    UserDataFromJSON,
+    UserDataFromJSONTyped,
+    UserDataToJSON,
+    UserDataToJSONTyped,
+} from './UserData';
+
 /**
  * 
  * @export
@@ -21,16 +29,10 @@ import { mapValues } from '../runtime';
 export interface FeedbackInfo {
     /**
      * 
-     * @type {number}
+     * @type {UserData}
      * @memberof FeedbackInfo
      */
-    id: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof FeedbackInfo
-     */
-    userID: number;
+    user: UserData;
     /**
      * 
      * @type {number}
@@ -55,8 +57,7 @@ export interface FeedbackInfo {
  * Check if a given object implements the FeedbackInfo interface.
  */
 export function instanceOfFeedbackInfo(value: object): value is FeedbackInfo {
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('userID' in value) || value['userID'] === undefined) return false;
+    if (!('user' in value) || value['user'] === undefined) return false;
     if (!('starCount' in value) || value['starCount'] === undefined) return false;
     if (!('postedAt' in value) || value['postedAt'] === undefined) return false;
     return true;
@@ -72,8 +73,7 @@ export function FeedbackInfoFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'id': json['id'],
-        'userID': json['userID'],
+        'user': UserDataFromJSON(json['user']),
         'starCount': json['starCount'],
         'comment': json['comment'] == null ? undefined : json['comment'],
         'postedAt': json['postedAt'],
@@ -91,8 +91,7 @@ export function FeedbackInfoToJSONTyped(value?: FeedbackInfo | null, ignoreDiscr
 
     return {
         
-        'id': value['id'],
-        'userID': value['userID'],
+        'user': UserDataToJSON(value['user']),
         'starCount': value['starCount'],
         'comment': value['comment'],
         'postedAt': value['postedAt'],

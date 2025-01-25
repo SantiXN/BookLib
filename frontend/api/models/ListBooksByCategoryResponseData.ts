@@ -33,6 +33,12 @@ export interface ListBooksByCategoryResponseData {
      * @memberof ListBooksByCategoryResponseData
      */
     books: Array<BookData>;
+    /**
+     * 
+     * @type {number}
+     * @memberof ListBooksByCategoryResponseData
+     */
+    totalCount: number;
 }
 
 /**
@@ -40,6 +46,7 @@ export interface ListBooksByCategoryResponseData {
  */
 export function instanceOfListBooksByCategoryResponseData(value: object): value is ListBooksByCategoryResponseData {
     if (!('books' in value) || value['books'] === undefined) return false;
+    if (!('totalCount' in value) || value['totalCount'] === undefined) return false;
     return true;
 }
 
@@ -54,6 +61,7 @@ export function ListBooksByCategoryResponseDataFromJSONTyped(json: any, ignoreDi
     return {
         
         'books': ((json['books'] as Array<any>).map(BookDataFromJSON)),
+        'totalCount': json['totalCount'],
     };
 }
 
@@ -69,6 +77,7 @@ export function ListBooksByCategoryResponseDataToJSONTyped(value?: ListBooksByCa
     return {
         
         'books': ((value['books'] as Array<any>).map(BookDataToJSON)),
+        'totalCount': value['totalCount'],
     };
 }
 

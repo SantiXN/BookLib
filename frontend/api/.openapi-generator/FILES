@@ -51,7 +51,6 @@ models/NotFoundResponseData.ts
 models/PermissionDeniedResponseData.ts
 models/RegisterUserRequest.ts
 models/SaveBookFeedbackRequest.ts
-models/SaveBookFeedbackResponseData.ts
 models/SearchArticlesRequest.ts
 models/SearchArticlesResponseData.ts
 models/SearchAuthorsRequest.ts

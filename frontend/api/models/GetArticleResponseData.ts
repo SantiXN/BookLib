@@ -32,13 +32,14 @@ export interface GetArticleResponseData {
      * @type {ArticleInfo}
      * @memberof GetArticleResponseData
      */
-    article?: ArticleInfo;
+    article: ArticleInfo;
 }
 
 /**
  * Check if a given object implements the GetArticleResponseData interface.
  */
 export function instanceOfGetArticleResponseData(value: object): value is GetArticleResponseData {
+    if (!('article' in value) || value['article'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +53,7 @@ export function GetArticleResponseDataFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'article': json['article'] == null ? undefined : ArticleInfoFromJSON(json['article']),
+        'article': ArticleInfoFromJSON(json['article']),
     };
 }
 

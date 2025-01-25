@@ -32,13 +32,21 @@ export interface ListArticlesResponseData {
      * @type {Array<ArticleData>}
      * @memberof ListArticlesResponseData
      */
-    articles?: Array<ArticleData>;
+    articles: Array<ArticleData>;
+    /**
+     * 
+     * @type {number}
+     * @memberof ListArticlesResponseData
+     */
+    totalCount: number;
 }
 
 /**
  * Check if a given object implements the ListArticlesResponseData interface.
  */
 export function instanceOfListArticlesResponseData(value: object): value is ListArticlesResponseData {
+    if (!('articles' in value) || value['articles'] === undefined) return false;
+    if (!('totalCount' in value) || value['totalCount'] === undefined) return false;
     return true;
 }
 
@@ -52,7 +60,8 @@ export function ListArticlesResponseDataFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'articles': json['articles'] == null ? undefined : ((json['articles'] as Array<any>).map(ArticleDataFromJSON)),
+        'articles': ((json['articles'] as Array<any>).map(ArticleDataFromJSON)),
+        'totalCount': json['totalCount'],
     };
 }
 
@@ -67,7 +76,8 @@ export function ListArticlesResponseDataToJSONTyped(value?: ListArticlesResponse
 
     return {
         
-        'articles': value['articles'] == null ? undefined : ((value['articles'] as Array<any>).map(ArticleDataToJSON)),
+        'articles': ((value['articles'] as Array<any>).map(ArticleDataToJSON)),
+        'totalCount': value['totalCount'],
     };
 }
 

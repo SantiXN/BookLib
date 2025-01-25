@@ -7,7 +7,7 @@ import React, {useEffect, useState} from 'react';
 import { FaTrash } from 'react-icons/fa';
 
 const ProfilePage = () => {
-    const { UserApi } = useApi();
+    const { UserApi, FileApi } = useApi();
     const { isAuthenticated, logOut } = useAuth();
     const navigate = useNavigate();
 
@@ -26,6 +26,7 @@ const ProfilePage = () => {
 
     const [preview, setPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const isDataChanged = newData.firstName != formData.firstName || newData.lastName != formData.lastName;
 
@@ -80,7 +81,7 @@ const ProfilePage = () => {
         e.preventDefault();
 
         if (!isDataChanged) return;
-        
+
         const request: EditUserInfoRequest = {};
         if (newData.firstName && newData.firstName !== formData.firstName) {
             request.firstName = newData.firstName;
@@ -88,8 +89,7 @@ const ProfilePage = () => {
         if (newData.lastName && newData.lastName !== formData.lastName) {
             request.lastName = newData.lastName;
         }
-        
-        console.log(request)
+
 
         UserApi.editUserInfo({ editUserInfoRequest: request})
             .then(() => {
@@ -110,20 +110,50 @@ const ProfilePage = () => {
         }
     };
 
-    const saveAvatar = () => {
+    const saveAvatar = async () => {
         if (!avatarFile) return;
 
-        // Logic
-    }
+        try {
+            setIsUploading(true);
+
+            const formData = new FormData();
+            formData.append('file', avatarFile); // Измените 'avatar' на 'file', если это необходимо
+
+            const response = await FileApi.uploadFile({ file: avatarFile });
+            console.log(response)
+            const request: EditUserInfoRequest = {};
+            // Проверяем, что ответ содержит URL аватара
+            if (response.filePath) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    avatar: response.filePath,
+                }));
+                request.avatarPath = response.filePath;
+                UserApi.editUserInfo({ editUserInfoRequest: request})
+                    .then(() => {
+                        navigate(0);
+                    })
+                    .catch((err) => console.error(err));
+            } else {
+                alert('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
+            }
+        } catch (error) {
+            alert('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const removeAvatarHandle = () => {
         setPreview(null);
         setAvatarFile(null);
     }
 
+    const { logOut: logout } = useAuth();
+
     const handleLogout = () => {
         if (window.confirm('Вы уверены, что хотите выйти из аккаунта?')) {
-            logOut();
+            logout();
         }
     };
 
@@ -132,25 +162,9 @@ const ProfilePage = () => {
             <div>
                 <div className={s.topBlock}>
                     <h2 className={s.title}>Личная информация</h2>
-                    <div style={{display: 'flex', alignItems: 'center'}}>
-                        {userRole && userRole == 'admin' && (
-                            <Link to={'/admin'} style={{marginRight: '10px'}}>
-                                <button>
-                                    Меню администратора
-                                </button>
-                            </Link>
-                        )}
-                        {userRole && userRole != '' && userRole != 'user' && (
-                            <Link to={'/editor'} style={{marginRight: '10px'}}>
-                                <button>
-                                    Меню редактора
-                                </button>
-                            </Link>
-                        )}
-                        <button type="button" onClick={handleLogout}>
-                            Выйти
-                        </button>
-                    </div>
+                    <button type="button" onClick={handleLogout} style={{ marginLeft: '10px' }}>
+                        Выйти
+                    </button>
                 </div>
                 <div className={s.infoContainer}>
                     <div className={s.formContainer}>
@@ -185,7 +199,13 @@ const ProfilePage = () => {
                                     required
                                 />
                             </div>
-                            <button className={`${s.submitButton} ${!isDataChanged && s.disabledButton}`} type='submit' disabled={!isDataChanged}>Сохранить изменения</button>
+                            <button
+                                className={`${s.submitButton} ${!isDataChanged && s.disabledButton}`}
+                                type='submit'
+                                disabled={!isDataChanged}
+                            >
+                                Сохранить изменения
+                            </button>
                         </form>
                     </div>
                     <div className={s.logotype}>
@@ -198,24 +218,24 @@ const ProfilePage = () => {
                             id="avatar-upload"
                         />
                         <div style={{ display: 'flex', margin: '10px 0', alignItems: 'center' }}>
-                            <label htmlFor="avatar-upload" className={s.avatarLabel}>
+                            <label htmlFor="avatar-upload" className={s.avatarLabel} style={avatarFile ? { display: 'none' } : {}}>
                                 Сменить аватар
                             </label>
+                            <button
+                                style={!avatarFile ? { display: 'none' } : {}}
+                                className={s.avatarLabel}
+                                disabled={isUploading || !avatarFile}
+                                onClick={saveAvatar}
+                            >
+                                {isUploading ? 'Загрузка...' : 'Сохранить аватар'}
+                            </button>
                             {avatarFile && (
                                 <FaTrash size={20} color='2441C1' style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={removeAvatarHandle} />
                             )}
                         </div>
-                        <button
-                            style={!avatarFile ? { display: 'none' } : {}}
-                            disabled={!avatarFile}
-                            onClick={saveAvatar}
-                        >
-                            Сохранить аватар
-                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
     );
 };

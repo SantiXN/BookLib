@@ -10,6 +10,8 @@ interface BlockProps {
 const AddArticleBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { ArticleApi } = useApi();
 
+    const [createdArticleId, setCreatedArticleId] = useState<number | null>(null);
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
@@ -32,15 +34,29 @@ const AddArticleBlock: React.FC<BlockProps> = ({ onClose }) => {
             .then((response) => {
                 if (response) {
                     console.log(response);
-                    alert('Статья успешно добавлена');
-                    onClose();
+                    alert('Статья успешно создана');
+                    setCreatedArticleId(response.id!)
                 }
             })
             .catch((error) => {
                 console.error(error);
-                alert('Ошибка добавления статьи');
+                alert('Ошибка создания статьи');
             });
     };   
+
+    const handleStatusChange = () => {
+        if (!createdArticleId) {
+            alert('Ошибка при опубликовании статьи');
+            return;
+        }
+
+        ArticleApi.publishArticle({ articleID: createdArticleId })
+            .then(() => {
+                alert('Статья успешно опубликована!');
+                onClose();
+            })
+            .catch((err) => alert(`Ошибка публикации статьи: ${err}`));
+    }
     
     const close = () => {
         const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
@@ -79,11 +95,18 @@ const AddArticleBlock: React.FC<BlockProps> = ({ onClose }) => {
                                 value={content}
                                 visible={true}/>
                         </div>
-                        <div className={s.actionButtonContainer}>
+                        <div className={s.actionButtonContainer} style={{gap: '10px'}}>
                             <button
                                 type="submit"
                                 className={`${s.button} ${s.formButton} ${isFieldsEmpty ? s.disabledButton : ""}`}
                                 disabled={isFieldsEmpty}
+                            >
+                                Создать
+                            </button>
+                            <button
+                                type='button'
+                                className={`${s.button} ${s.formButton} ${!createdArticleId ? s.disabledButton : ""}`}
+                                onClick={handleStatusChange}
                             >
                                 Опубликовать
                             </button>

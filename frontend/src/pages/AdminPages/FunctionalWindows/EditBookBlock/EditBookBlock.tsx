@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { AuthorInfo, BookData, BookInfo, CategoryInfo, EditBookOperationRequest, EditBookRequest } from '../../../../../api';
+import { BookInfo, EditBookRequest } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { BookApi} = useApi();
 
     const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
@@ -24,10 +23,6 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
             if (selectedBook.description) {
                 setDescription(selectedBook.description!);
             }
-            // Assuming bookFile and bookCoverFile are URLs or some identifiers in selectedBook
-            // TODO
-            //setBookFile(selectedBook.bookFile ? new File([], selectedBook.bookFile) : null);
-            //setBookCoverFile(selectedBook.bookCoverFile ? new File([], selectedBook.bookCoverFile) : null);
         }
     }, [selectedBook]);    
 
@@ -37,52 +32,12 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
           bookCoverFile !== null
         : false;
 
-    useEffect(() => {
-        // TODO
-        // BookApi.listBooks()
-        //     .then((response) => {
-        //         if (response.books) {
-        //             setBooks(response.books);
-        //         }
-        //         else {
-        //             console.error('Ошибка получения списка книг');
-        //         }
-        //     });
-    }, []);
-
     const close = () => {
         setTitle('');
         setDescription('');
         setBookCoverFile(null);
         onClose();
     };
-
-    const containerRef = useRef<HTMLDivElement>(null);
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
-            close();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            close();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const handleBookChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const bookId = Number(e.target.value);
@@ -134,7 +89,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block}>
+            <div className={s.block}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать книгу</p>
                     <span onClick={onClose} className={s.closeIcon} />

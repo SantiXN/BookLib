@@ -1,19 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { ArticleData, ArticleInfo, EditArticleRequest } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 import MarkdownEditor from '@uiw/react-markdown-editor';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
     isAdmin: boolean;
 }
 
-const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) => {
+const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
     const { ArticleApi } = useApi();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const [articles, setArticles] = useState<ArticleData[]>([]);
     const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
@@ -35,31 +32,7 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) =>
 
     const isFieldsChanged = selectedArticle 
         ? title !== selectedArticle.title || content !== selectedArticle.content 
-        : false;
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);    
+        : false;  
 
     const handleChangeDescription = (value: string) => {
         setContent(value);
@@ -121,7 +94,7 @@ const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) =>
     
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={`${s.block} ${s.articleBlock}`}>
+            <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать статью</p>
                     <span onClick={onClose} className={s.closeIcon} />

@@ -1,44 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import useApi from '../../../../../api/ApiClient';
 import { CreateAuthorRequest } from '../../../../../api';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const AddAuthorBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { AuthorApi } = useApi();
 
-    const containerRef = useRef<HTMLDivElement>(null);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [description, setDescription] = useState('');
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFirstName(e.target.value);
@@ -80,7 +54,7 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block} style={{width: '600px'}}>
+            <div className={s.block} style={{width: '600px'}}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить автора</p>
                     <span onClick={onClose} className={s.closeIcon} />

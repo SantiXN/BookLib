@@ -1,17 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import s from '../FunctionalWindow.module.css';
 import useApi from '../../../../../api/ApiClient';
 import { ChangeUserRoleRequestRoleEnum, UserInfo } from '../../../../../api';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const EditUserRoleBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { UserApi } = useApi();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
@@ -62,33 +59,9 @@ const EditUserRoleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
-
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={`${s.block} ${s.articleBlock}`}>
+            <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать роль пользователя</p>
                     <span onClick={onClose} className={s.closeIcon} />

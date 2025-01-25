@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { AuthorInfo, EditAuthorRequest } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const EditAuthorBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { AuthorApi } = useApi();
 
     // TODO: загрузка файлов 
@@ -31,19 +30,6 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         ? (firstName !== author.firstName || lastName !== author.lastName || description !== author.description) 
         : false;
 
-    const containerRef = useRef<HTMLDivElement>(null);   
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();        
-        }
-    };
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
     const handleAuthorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const authorID = Number(e.target.value);
         setSelectedAuthorId(authorID);
@@ -60,18 +46,6 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
             })
             .catch(() => alert('Автора с заданным ID не найден!'));
     }
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFirstName(e.target.value);
@@ -108,7 +82,7 @@ const EditAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block}>
+            <div className={s.block}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать данные автора</p>
                     <span onClick={onClose} className={s.closeIcon} />

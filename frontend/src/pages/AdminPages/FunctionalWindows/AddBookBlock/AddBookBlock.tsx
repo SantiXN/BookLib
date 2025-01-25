@@ -1,17 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css';
 import { AuthorInfo, CategoryInfo } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { AuthorApi, BookApi, CategoryApi } = useApi();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     const [categories, setCategories] = useState<CategoryInfo[]>([]);
@@ -32,18 +29,6 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         setBookFile(null);
         onClose();
     };
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            close();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            close();
-        }
-    };
 
     useEffect(() => {
         AuthorApi.listAuthors()
@@ -63,18 +48,6 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                 }
             })
     }, []);
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -146,7 +119,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
 
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block} style={{width: '600px'}}>
+            <div className={s.block} style={{width: '600px'}}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить книгу</p>
                     <span onClick={onClose} className={s.closeIcon} />

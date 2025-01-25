@@ -1,46 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import MarkdownEditor from '@uiw/react-markdown-editor';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const AddArticleBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { ArticleApi } = useApi();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
-    const isFieldsEmpty = !(title.trim() && content.trim())
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);    
+    const isFieldsEmpty = !(title.trim() && content.trim())   
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -71,7 +44,7 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={`${s.block} ${s.articleBlock}`}>
+            <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить статью</p>
                     <span onClick={onClose} className={s.closeIcon} />

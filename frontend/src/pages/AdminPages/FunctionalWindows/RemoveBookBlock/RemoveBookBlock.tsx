@@ -1,45 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import { BookData } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
+const RemoveBookBlock: React.FC<BlockProps> = ({ onClose }) => {
     const { BookApi } = useApi();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const [bookData, setBookData] = useState<BookData | null>(null);
 
     const [selectedBookID, setSelectedBookID] = useState<number | null>(null);
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            onClose();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const handleBookChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const bookId = Number(e.target.value);
@@ -78,7 +51,7 @@ const RemoveBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block}>
+            <div className={s.block}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Удалить книгу</p>
                     <span onClick={onClose} className={s.closeIcon} />

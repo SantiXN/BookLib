@@ -1,30 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import useApi from '../../../../../api/ApiClient';
 import { ArticleData, ArticleInfo } from '../../../../../api';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
     isAdmin: boolean;
 }
 
-const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) => {
+const RemoveArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
     const { ArticleApi } = useApi();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const [articles, setArticles] = useState<ArticleData[]>([]);
 
     const [articleInfo, setArticleInfo] = useState<ArticleInfo | null>(null);
     const [selectedArticleID, setSelectedArticleID] = useState<number | null>(null);
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
-            onClose();        
-        }
-    };
 
     useEffect(() => {
         if (!isAdmin) {
@@ -36,25 +26,7 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) 
                 })
                 .catch((err) => alert(`Ошибка получения статей: ${err}`));
         }
-    }, [])
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);    
+    }, [])   
 
     const handleArticleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const articleId = Number(e.target.value);
@@ -98,7 +70,7 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose, isAdmin }) 
     
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={`${s.block} ${s.articleBlock}`}>
+            <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Удалить статью</p>
                     <span onClick={onClose} className={s.closeIcon} />

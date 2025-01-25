@@ -96,6 +96,10 @@ func main() {
 
 	router.PathPrefix("/api/").Handler(api.Handler(publicAPIHandler))
 
+    // Serve static files from /app/uploads
+    router.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
+
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

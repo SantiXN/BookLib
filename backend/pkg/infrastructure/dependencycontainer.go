@@ -16,6 +16,7 @@ import (
 
 const (
 	saveDir = "/app/uploads"
+	fileDir = "/uploads"
 )
 
 func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyContainer {
@@ -50,7 +51,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	authorService := service.NewAuthorService(domainAuthorService, checker)
 	authorQueryService := query.NewAuthorQueryService(infraAuthorQS)
 	categoryQueryService := query.NewCategoryQueryService(infraCategoryQS)
-	fileService := service.NewFileService(saveDir)
+	fileService := service.NewFileService(saveDir, fileDir)
 	userBookService := service.NewUserBookService(userBookStorage)
 	userBookQueryService := query.NewUserBookQueryService(infraUserBookQS, authorProvider)
 	bookService := service.NewBookService(domainBookService, checker)

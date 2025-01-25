@@ -131,11 +131,11 @@ const ProfilePage = () => {
             if (uploadResponse.filePath) {
                 setFormData(prevData => ({
                     ...prevData,
-                    avatarPath: uploadResponse.filePath,
+                    avatarPath: "http://localhost:8080" + uploadResponse.filePath,
                 }));
 
                 const editUserInfoRequest: EditUserInfoRequest = {
-                    avatarPath: uploadResponse.filePath,
+                    avatarPath: "http://localhost:8080" + uploadResponse.filePath,
                 };
 
                 const editResponse = await UserApi.editUserInfo({ editUserInfoRequest });
@@ -212,7 +212,7 @@ const ProfilePage = () => {
                                 type='submit'
                                 disabled={!isDataChanged}
                             >
-                                Сохранить изменения {formData.avatarPath}
+                                Сохранить изменения
                             </button>
                         </form>
                     </div>

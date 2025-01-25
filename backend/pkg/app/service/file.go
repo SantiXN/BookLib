@@ -26,11 +26,13 @@ type FileService interface {
 
 type fileService struct {
 	uploadDir string
+	fileDir   string
 }
 
-func NewFileService(uploadDir string) FileService {
+func NewFileService(uploadDir string, fileDir string) FileService {
 	return &fileService{
 		uploadDir: uploadDir,
+		fileDir:   fileDir,
 	}
 }
 
@@ -41,6 +43,7 @@ func (f fileService) UploadFile(contentType string, content io.Reader) (string, 
 	}
 	uniqueFileName := uuid.New().String()
 	savePath := filepath.Join(f.uploadDir, uniqueFileName+extension)
+	savePathUrl := filepath.Join(f.fileDir, uniqueFileName+extension)
 
 	file, err := os.Create(savePath)
 	if err != nil {
@@ -53,7 +56,7 @@ func (f fileService) UploadFile(contentType string, content io.Reader) (string, 
 		return "", ErrFailedToSaveFile
 	}
 
-	return savePath, err
+	return savePathUrl, err
 }
 
 func GetExtensionByContentType(contentType string) (string, error) {

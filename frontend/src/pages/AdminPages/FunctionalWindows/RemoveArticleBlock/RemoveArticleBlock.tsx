@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
 import useApi from '../../../../../api/ApiClient';
-import { ArticleData, ArticleInfo } from '../../../../../api';
+import { ArticleData, ArticleInfo, ArticleInfoStatusEnum } from '../../../../../api';
 
 interface BlockProps {
     onClose: () => void;
@@ -36,13 +36,13 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
     const handleArticleChangeFromSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const articleId = Number(e.target.value);
         setSelectedArticleID(articleId);
-        handleSearchArticle();
+        handleSearchArticle(articleId);
     }
 
-    const handleSearchArticle = () => {
-        if (!selectedArticleID) return;
+    const handleSearchArticle = (id: number | null) => {
+        if (!id) return;
 
-        ArticleApi.getArticle({ articleID: selectedArticleID })
+        ArticleApi.getArticle({ articleID: id })
             .then((response) => {
                 if (response.article) {
                     setArticleInfo(response.article)
@@ -109,7 +109,7 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                                 />
                                 <button
                                     type="button"
-                                    onClick={handleSearchArticle}
+                                    onClick={() => handleSearchArticle(selectedArticleID)}
                                     disabled={!selectedArticleID}
                                     className={`${s.button} ${!selectedArticleID ? s.disabledButton : ''}`}
                                 >
@@ -119,8 +119,15 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                         )}
                         {articleInfo && (
                             <div>
-                                <a href={`/article/${selectedArticleID}`} target='_blank'><p>{articleInfo.title}</p></a>
-                                <p>{articleInfo.status}</p>
+                                <div style={{display: 'flex', gap: '5px'}}>
+                                    Название: 
+                                    {articleInfo.status == ArticleInfoStatusEnum.Published ? (
+                                            <a href={`/article/${selectedArticleID}`} target='_blank'><p style={{margin: 0}}>{articleInfo.title}</p></a>
+                                        ) 
+                                        : <p style={{margin: 0}}>{articleInfo.title}</p>
+                                    }
+                                </div>
+                                <p>Статус: {articleInfo.status}</p>
                                 <p>Восстановить статью будет невозможно.</p>
                             </div>
                         )}

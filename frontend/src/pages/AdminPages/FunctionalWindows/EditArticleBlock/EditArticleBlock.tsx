@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
-import { ArticleData, ArticleInfo, EditArticleRequest } from '../../../../../api';
+import { ArticleData, ArticleInfo, ArticleInfoStatusEnum, EditArticleRequest } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 import MarkdownEditor from '@uiw/react-markdown-editor';
 
@@ -28,24 +28,25 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
     }, []);
 
     const [title, setTitle] = useState('');
+    const [status, setStatus] = useState('');
     const [content, setContent] = useState('');
 
     const isFieldsChanged = selectedArticle 
-        ? title !== selectedArticle.title || content !== selectedArticle.content 
+        ? title !== selectedArticle.title || content !== selectedArticle.content || status !== selectedArticle.status 
         : false;  
 
     const handleChangeDescription = (value: string) => {
         setContent(value);
     } 
     
-    const handleArticleChange = () => {
-        if (!selectedArticleId) return;
-        ArticleApi.getArticle({articleID: selectedArticleId})
+    const handleArticleChange = (id: number | null) => {
+        if (!id) return;
+        ArticleApi.getArticle({articleID: id})
             .then((response) => {
-                console.log(response)
                 if (response.article) {
                     setSelectedArticle(response.article);
                     setTitle(response.article.title);
+                    setStatus(response.article.status);
                     setContent(response.article.content);
                 }
                 else {
@@ -62,12 +63,22 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
     const handleArticleChangeFromSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const articleId = Number(e.target.value);
         setSelectedArticleId(articleId);
-        handleArticleChange();
+        handleArticleChange(articleId);
     };    
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
     };    
+
+    const updateStatus = () => {
+        if (status != ArticleInfoStatusEnum.Unpublished || !selectedArticleId) return;
+
+        ArticleApi.publishArticle({ articleID: selectedArticleId })
+            .then(() => {
+                setStatus(ArticleInfoStatusEnum.Published);
+                alert("Статья опубликована!");
+            })
+    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -85,7 +96,6 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
             })
             .then(() => {
                 alert('Статья успешно отредактирована');
-                onClose();
             })
             .catch((error) => {
                 console.error('Ошибка редактирования статьи', error);
@@ -93,8 +103,8 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
     };   
 
     const close = () => {
-        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
-        if (!confirmDelete) return;
+        //const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        //if (!confirmDelete) return;
 
         onClose();
     }
@@ -133,7 +143,7 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                                 />
                                 <button
                                     type="button"
-                                    onClick={handleArticleChange}
+                                    onClick={() => handleArticleChange(selectedArticleId)}
                                     disabled={!selectedArticleId}
                                     className={`${s.button} ${!selectedArticleId ? s.disabledButton : ''}`}
                                 >
@@ -164,6 +174,17 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                                         value={content}
                                         visible={true}/>
                                 </div>
+                                {selectedArticle.status == ArticleInfoStatusEnum.Unpublished && status !== ArticleInfoStatusEnum.Published && (
+                                    <div style={{gap: '10px'}}>
+                                        Статья не опубликована  
+                                        <button
+                                            type='button'
+                                            onClick={updateStatus}
+                                        >
+                                            Опубликовать
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                         <div className={s.actionButtonContainer}>

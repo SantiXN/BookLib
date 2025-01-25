@@ -133,14 +133,21 @@ const ProfilePage = () => {
                 <div className={s.topBlock}>
                     <h2 className={s.title}>Личная информация</h2>
                     <div style={{display: 'flex', alignItems: 'center'}}>
-                        {userRole && userRole != '' && userRole != 'user' && (
-                            <Link to={`/${userRole ? userRole : ''}`}>
+                        {userRole && userRole == 'admin' && (
+                            <Link to={'/editor'} style={{marginRight: '10px'}}>
                                 <button>
-                                    Меню {userRole == 'admin' ? 'администратора' : 'редактора'}
+                                    Меню администратора
                                 </button>
                             </Link>
                         )}
-                        <button type="button" onClick={handleLogout} style={{marginLeft: '10px'}}>
+                        {userRole && userRole != '' && userRole != 'user' && (
+                            <Link to={'/editor'} style={{marginRight: '10px'}}>
+                                <button>
+                                    Меню редактора
+                                </button>
+                            </Link>
+                        )}
+                        <button type="button" onClick={handleLogout}>
                             Выйти
                         </button>
                     </div>

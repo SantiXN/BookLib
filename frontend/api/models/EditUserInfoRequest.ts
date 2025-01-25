@@ -31,6 +31,12 @@ export interface EditUserInfoRequest {
      * @memberof EditUserInfoRequest
      */
     lastName?: string;
+    /**
+     *
+     * @type {string}
+     * @memberof EditUserInfoRequest
+     */
+    avatarPath?: string;
 }
 
 /**

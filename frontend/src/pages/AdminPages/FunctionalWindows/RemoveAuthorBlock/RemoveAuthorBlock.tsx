@@ -4,7 +4,6 @@ import { AuthorInfo } from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 

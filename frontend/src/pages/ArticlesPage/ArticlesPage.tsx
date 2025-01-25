@@ -51,9 +51,15 @@ const ArticlesPage = () => {
                     >
                         <div className={s.catalogItem}>
                             <div className={s.articleInfo}>
-                                <p className={s.articleTitle}>Почему важно читать книги</p>
+                                <p className={s.articleTitle}>{article.title}</p>
                                 <p className={s.articleAuthor}>{article.author.firstName} {article.author.lastName}</p>
-                                <p className={s.articlePublishDate}>{article.publishDate}</p>
+                                <p className={s.articlePublishDate}>
+                                {new Intl.DateTimeFormat('ru-RU', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                }).format(new Date(article.publishDate! * 1000))}
+                                </p>
                             </div>
                         </div>  
                     </a>

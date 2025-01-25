@@ -68,7 +68,6 @@ const AdminMenu = () => {
                 <div className={s.adminMenuButtonsContainer}>
                     <p className={s.entity}>Статья</p>
                     <div className={s.buttonsContainer}>
-                        <button className={s.button} onClick={() => handleButtonClick('addArticle')}>Добавить статью</button>
                         <button className={s.button} onClick={() => handleButtonClick('editArticle')}>Редактировать статью</button>                    
                         <button className={s.button} onClick={() => handleButtonClick('removeArticle')}>Удалить статью</button>
                     </div>
@@ -83,37 +82,34 @@ const AdminMenu = () => {
             </div>
 
             {activeWindowMenu === 'addAuthor' && (
-                <AddAuthorBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <AddAuthorBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'addBook' && (
-                <AddBookBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <AddBookBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'removeAuthor' && (
-                <RemoveAuthorBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <RemoveAuthorBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'removeBook' && (
-                <RemoveBookBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <RemoveBookBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'editAuthor' && (
-                <EditAuthorBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <EditAuthorBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'editBook' && (
-                <EditBookBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
-            )}
-            {activeWindowMenu === 'addArticle' && (
-                <AddArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+                <EditBookBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'editArticle' && (
-                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={true}/>    
+                <EditArticleBlock onClose={closeWindow} isAdmin={true}/>    
             )}
             {activeWindowMenu === 'removeArticle' && (
-                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow} isAdmin={true}/>    
+                <RemoveArticleBlock onClose={closeWindow} isAdmin={true}/>    
             )}
             {activeWindowMenu === 'editUserRole' && (
-                <EditUserRoleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+                <EditUserRoleBlock onClose={closeWindow}/>    
             )}
             {activeWindowMenu === 'removeUser' && (
-                <RemoveUserBlock isOpen={activeWindowMenu} onClose={closeWindow}/>    
+                <RemoveUserBlock onClose={closeWindow}/>    
             )}
         </div>
     )

@@ -428,10 +428,6 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SaveBookFeedbackResponseData'
         '400':
           $ref: '#/components/responses/badRequest'
         '401':
@@ -1290,11 +1286,6 @@ components:
           type: string
       required:
         - starCount
-    SaveBookFeedbackResponseData:
-      type: object
-      properties:
-        id:
-          type: integer
     ListBookFeedbackResponseData:
       type: object
       properties:
@@ -1616,21 +1607,18 @@ components:
     feedbackInfo:
       type: object
       properties:
-        id:
-          type: integer
-        userID:
-          type: integer
+        user:
+          $ref: '#/components/schemas/userData'
         starCount:
           type: integer
         comment:
           type: string
         postedAt:
           type: integer
-          format: integer64
+          format: int64
           description: unix timestamp
       required:
-        - id
-        - userID
+        - user
         - starCount
         - postedAt
 

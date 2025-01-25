@@ -38,8 +38,10 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	infraUserBookQS := infraquery.NewUserBookQueryService(client)
 	infraBookQs := infraquery.NewBookQueryService(client)
 	infraArticleQS := infraquery.NewArticleQueryService(client)
+	infraBookFeedbackQS := infraquery.NewBookFeedbackQueryService(client)
 
 	userBookStorage := storage.NewUserBookStorage(ctx, client)
+	bookFeedbackStorage := storage.NewBookFeedbackStorage(ctx, client)
 	authorProvider := provider.NewAuthorProvider(client)
 	categoryProvider := provider.NewCategoryProvider(client)
 
@@ -55,34 +57,40 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	bookQueryService := query.NewBookQueryService(infraBookQs, authorProvider, categoryProvider)
 	articleService := service.NewArticleService(domainArticleService, checker)
 	articleQueryService := query.NewArticleQueryService(infraArticleQS)
+	bookFeedbackService := service.NewBookFeedbackService(bookFeedbackStorage)
+	bookFeedbackQueryService := query.NewBookFeedbackQueryService(infraBookFeedbackQS)
 
 	return &DependencyContainer{
-		UserService:          userService,
-		UserQueryService:     userQueryService,
-		AuthorService:        authorService,
-		AuthorQueryService:   authorQueryService,
-		CategoryQueryService: categoryQueryService,
-		FileService:          fileService,
-		UserBookService:      userBookService,
-		UserBookQueryService: userBookQueryService,
-		BookService:          bookService,
-		BookQueryService:     bookQueryService,
-		ArticleService:       articleService,
-		ArticleQueryService:  articleQueryService,
+		UserService:              userService,
+		UserQueryService:         userQueryService,
+		AuthorService:            authorService,
+		AuthorQueryService:       authorQueryService,
+		CategoryQueryService:     categoryQueryService,
+		FileService:              fileService,
+		UserBookService:          userBookService,
+		UserBookQueryService:     userBookQueryService,
+		BookService:              bookService,
+		BookQueryService:         bookQueryService,
+		ArticleService:           articleService,
+		ArticleQueryService:      articleQueryService,
+		BookFeedbackService:      bookFeedbackService,
+		BookFeedbackQueryService: bookFeedbackQueryService,
 	}
 }
 
 type DependencyContainer struct {
-	UserService          service.UserService
-	UserQueryService     query.UserQueryService
-	AuthorService        service.AuthorService
-	AuthorQueryService   query.AuthorQueryService
-	CategoryQueryService query.CategoryQueryService
-	FileService          service.FileService
-	UserBookService      service.UserBookService
-	UserBookQueryService query.UserBookQueryService
-	BookService          service.BookService
-	BookQueryService     query.BookQueryService
-	ArticleService       service.ArticleService
-	ArticleQueryService  query.ArticleQueryService
+	UserService              service.UserService
+	UserQueryService         query.UserQueryService
+	AuthorService            service.AuthorService
+	AuthorQueryService       query.AuthorQueryService
+	CategoryQueryService     query.CategoryQueryService
+	FileService              service.FileService
+	UserBookService          service.UserBookService
+	UserBookQueryService     query.UserBookQueryService
+	BookService              service.BookService
+	BookQueryService         query.BookQueryService
+	ArticleService           service.ArticleService
+	ArticleQueryService      query.ArticleQueryService
+	BookFeedbackService      service.BookFeedbackService
+	BookFeedbackQueryService query.BookFeedbackQueryService
 }

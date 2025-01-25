@@ -36,36 +36,42 @@ func NewPublicAPI(
 	bookQueryService query.BookQueryService,
 	articleService service.ArticleService,
 	articleQueryService query.ArticleQueryService,
+	bookFeedbackService service.BookFeedbackService,
+	bookFeedbackQueryService query.BookFeedbackQueryService,
 ) API {
 	return &publicAPI{
-		userService:          userService,
-		userQueryService:     userQueryService,
-		authorService:        authorService,
-		authorQueryService:   authorQueryService,
-		categoryQueryService: categoryQueryService,
-		fileService:          fileService,
-		userBookService:      userBookService,
-		userBookQueryService: userBookQueryService,
-		bookService:          bookService,
-		bookQueryService:     bookQueryService,
-		articleService:       articleService,
-		articleQueryService:  articleQueryService,
+		userService:              userService,
+		userQueryService:         userQueryService,
+		authorService:            authorService,
+		authorQueryService:       authorQueryService,
+		categoryQueryService:     categoryQueryService,
+		fileService:              fileService,
+		userBookService:          userBookService,
+		userBookQueryService:     userBookQueryService,
+		bookService:              bookService,
+		bookQueryService:         bookQueryService,
+		articleService:           articleService,
+		articleQueryService:      articleQueryService,
+		bookFeedbackService:      bookFeedbackService,
+		bookFeedbackQueryService: bookFeedbackQueryService,
 	}
 }
 
 type publicAPI struct {
-	userService          service.UserService
-	userQueryService     query.UserQueryService
-	authorService        service.AuthorService
-	authorQueryService   query.AuthorQueryService
-	categoryQueryService query.CategoryQueryService
-	fileService          service.FileService
-	userBookService      service.UserBookService
-	userBookQueryService query.UserBookQueryService
-	bookService          service.BookService
-	bookQueryService     query.BookQueryService
-	articleService       service.ArticleService
-	articleQueryService  query.ArticleQueryService
+	userService              service.UserService
+	userQueryService         query.UserQueryService
+	authorService            service.AuthorService
+	authorQueryService       query.AuthorQueryService
+	categoryQueryService     query.CategoryQueryService
+	fileService              service.FileService
+	userBookService          service.UserBookService
+	userBookQueryService     query.UserBookQueryService
+	bookService              service.BookService
+	bookQueryService         query.BookQueryService
+	articleService           service.ArticleService
+	articleQueryService      query.ArticleQueryService
+	bookFeedbackService      service.BookFeedbackService
+	bookFeedbackQueryService query.BookFeedbackQueryService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -451,13 +457,51 @@ func (p *publicAPI) EditBook(ctx context.Context, request api.EditBookRequestObj
 }
 
 func (p *publicAPI) SaveBookFeedback(ctx context.Context, request api.SaveBookFeedbackRequestObject) (api.SaveBookFeedbackResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	userID, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = p.bookFeedbackService.SaveFeedback(appmodel.BookFeedback{
+		UserID:    userID,
+		BookID:    request.BookID,
+		StarCount: request.Body.StarCount,
+		Comment:   request.Body.Comment,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return api.SaveBookFeedback200Response{}, nil
 }
 
 func (p *publicAPI) ListBookFeedback(ctx context.Context, request api.ListBookFeedbackRequestObject) (api.ListBookFeedbackResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	feedbackList, err := p.bookFeedbackQueryService.ListFeedback(ctx, request.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiFeedbackList := make([]api.FeedbackInfo, 0, len(feedbackList))
+	for _, feedback := range feedbackList {
+		apiFeedback := api.FeedbackInfo{
+			Comment:   feedback.Comment,
+			StarCount: feedback.StarCount,
+			PostedAt:  feedback.CreatedAt.Unix(),
+		}
+		user, err2 := p.userQueryService.GetUserData(ctx, feedback.UserID)
+		if err2 != nil {
+			return nil, err2
+		}
+		apiFeedback.User = api.UserData{
+			Id:         user.ID,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			AvatarPath: user.AvatarPath,
+		}
+		apiFeedbackList = append(apiFeedbackList, apiFeedback)
+	}
+
+	return api.ListBookFeedback200JSONResponse{Feedback: apiFeedbackList}, nil
 }
 
 func (p *publicAPI) GetBookInfo(ctx context.Context, request api.GetBookInfoRequestObject) (api.GetBookInfoResponseObject, error) {

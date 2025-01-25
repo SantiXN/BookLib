@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EditUserInfoRequest } from '../../../api';
 import useApi from '../../../api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
@@ -16,12 +16,13 @@ const ProfilePage = () => {
         firstName: 'firstName',
         lastName: 'lastName',
         email: 'email',
-        avatar: 'src',
+        avatarPath: 'src',
     });
     
     const [newData, setNewData] = useState({
         firstName: '',
-        lastName: ''
+        lastName: '',
+        avatarPath: '',
     });
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -35,12 +36,13 @@ const ProfilePage = () => {
             firstName: '',
             lastName: '',
             email: '',
-            avatar: '',
+            avatarPath: 'a',
         });
     
         setNewData({
             firstName: '',
             lastName: '',
+            avatarPath: 'a',
         });
     
         if (isAuthenticated) {
@@ -51,12 +53,13 @@ const ProfilePage = () => {
                                 firstName: response.user.firstName,
                                 lastName: response.user.lastName || '',
                                 email: response.user.email,
-                                avatar: response.user.avatarPath || '',
+                                avatarPath: response.user.avatarPath || '',
                             });
                             setUserRole(response.user.role || '');
                             setNewData({
                                 firstName: response.user.firstName,
                                 lastName: response.user.lastName || '',
+                                avatarPath: response.user.avatarPath || '',
                             });
                         }
                     })
@@ -89,6 +92,9 @@ const ProfilePage = () => {
         if (newData.lastName && newData.lastName !== formData.lastName) {
             request.lastName = newData.lastName;
         }
+        if (newData.avatarPath && newData.avatarPath !== formData.avatarPath) {
+            request.avatarPath = newData.avatarPath;
+        }
 
 
         UserApi.editUserInfo({ editUserInfoRequest: request})
@@ -119,25 +125,27 @@ const ProfilePage = () => {
             const formData = new FormData();
             formData.append('file', avatarFile); // Измените 'avatar' на 'file', если это необходимо
 
-            const response = await FileApi.uploadFile({ file: avatarFile });
-            console.log(response)
-            const request: EditUserInfoRequest = {};
-            // Проверяем, что ответ содержит URL аватара
-            if (response.filePath) {
+            const uploadResponse = await FileApi.uploadFile({ file: avatarFile });
+            console.log('Upload response:', uploadResponse);
+
+            if (uploadResponse.filePath) {
                 setFormData(prevData => ({
                     ...prevData,
-                    avatar: response.filePath,
+                    avatarPath: uploadResponse.filePath,
                 }));
-                request.avatarPath = response.filePath;
-                UserApi.editUserInfo({ editUserInfoRequest: request})
-                    .then(() => {
-                        navigate(0);
-                    })
-                    .catch((err) => console.error(err));
+
+                const editUserInfoRequest: EditUserInfoRequest = {
+                    avatarPath: uploadResponse.filePath,
+                };
+
+                const editResponse = await UserApi.editUserInfo({ editUserInfoRequest });
+                console.log('Edit user info response:', editResponse);
+                navigate(0);
             } else {
                 alert('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
             }
-        } catch (error) {
+        } catch (error: any) {
+            console.error('Ошибка при загрузке аватара:', error);
             alert('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
         } finally {
             setIsUploading(false);
@@ -204,12 +212,12 @@ const ProfilePage = () => {
                                 type='submit'
                                 disabled={!isDataChanged}
                             >
-                                Сохранить изменения
+                                Сохранить изменения {formData.avatarPath}
                             </button>
                         </form>
                     </div>
                     <div className={s.logotype}>
-                        <img className={s.avatar} alt={formData.firstName} src={preview || formData.avatar} />
+                        <img className={s.avatar} alt={formData.firstName} src={preview || formData.avatarPath} />
                         <input
                             type="file"
                             accept="image/jpeg, image/png"

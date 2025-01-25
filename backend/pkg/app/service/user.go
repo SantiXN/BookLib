@@ -29,7 +29,7 @@ type UserService interface {
 	CreateUser(createData CreateData) error
 	DeleteUser(ctx context.Context, userId int) error
 	ChangeRole(ctx context.Context, id int, role model.UserRole) error
-	EditUserInfo(ctx context.Context, firstName *string, lastName *string) error
+	EditUserInfo(ctx context.Context, firstName *string, lastName *string, avatarPath *string) error
 }
 
 type userService struct {
@@ -78,11 +78,11 @@ func (u *userService) ChangeRole(ctx context.Context, id int, role model.UserRol
 	return u.domainUserService.ChangeRole(id, role)
 }
 
-func (u *userService) EditUserInfo(ctx context.Context, firstName *string, lastName *string) error {
+func (u *userService) EditUserInfo(ctx context.Context, firstName *string, lastName *string, avatarPath *string) error {
 	id, err := utils.GetUserID(ctx)
 	if err != nil {
 		return err
 	}
 
-	return u.domainUserService.EditUserInfo(id, firstName, lastName)
+	return u.domainUserService.EditUserInfo(id, firstName, lastName, avatarPath)
 }

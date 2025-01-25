@@ -58,6 +58,7 @@ export function EditUserInfoRequestFromJSONTyped(json: any, ignoreDiscriminator:
         
         'firstName': json['firstName'] == null ? undefined : json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
+        'avatarPath': json['avatarPath'] == null ? undefined : json['avatarPath'],
     };
 }
 
@@ -74,6 +75,7 @@ export function EditUserInfoRequestToJSONTyped(value?: EditUserInfoRequest | nul
         
         'firstName': value['firstName'],
         'lastName': value['lastName'],
+        'avatarPath': value['avatarPath'],
     };
 }
 

@@ -23,6 +23,7 @@ type User interface {
 	SetRole(role UserRole)
 	SetFirstName(firstName string)
 	SetLastName(lastName string)
+	SetAvatarPath(avatarPath string)
 }
 
 type UserRole int
@@ -101,4 +102,8 @@ func (u *user) SetFirstName(firstName string) {
 
 func (u *user) SetLastName(lastName string) {
 	u.lastName = &lastName
+}
+
+func (u *user) SetAvatarPath(avatarPath string) {
+    u.avatarPath = &avatarPath
 }

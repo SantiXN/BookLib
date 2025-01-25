@@ -20,7 +20,7 @@ type UserService interface {
 	CreateUser(userData UserData) error
 	DeleteUser(id int) error
 	ChangeRole(id int, role model.UserRole) error
-	EditUserInfo(id int, firstName *string, lastName *string) error
+	EditUserInfo(id int, firstName *string, lastName *string, avatarPath *string) error
 	ValidateUser(email, password string) (int, error)
 }
 
@@ -86,7 +86,7 @@ func (u *userService) ChangeRole(id int, role model.UserRole) error {
 	return u.repo.Store(user)
 }
 
-func (u *userService) EditUserInfo(id int, firstName *string, lastName *string) error {
+func (u *userService) EditUserInfo(id int, firstName *string, lastName *string, avatarPath *string) error {
 	user, err := u.repo.FindOne(id)
 	if err != nil {
 		return err
@@ -97,6 +97,9 @@ func (u *userService) EditUserInfo(id int, firstName *string, lastName *string) 
 	}
 	if lastName != nil {
 		user.SetLastName(*lastName)
+	}
+	if avatarPath != nil {
+		user.SetAvatarPath(*avatarPath)
 	}
 	return u.repo.Store(user)
 }

@@ -1426,6 +1426,8 @@ components:
           type: string
         lastName:
           type: string
+        avatarPath:
+          type: string
     CreateArticleRequest:
       type: object
       properties:

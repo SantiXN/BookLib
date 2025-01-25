@@ -776,7 +776,7 @@ func (p *publicAPI) SearchBooks(ctx context.Context, request api.SearchBooksRequ
 }
 
 func (p *publicAPI) EditUserInfo(ctx context.Context, request api.EditUserInfoRequestObject) (api.EditUserInfoResponseObject, error) {
-	err := p.userService.EditUserInfo(ctx, request.Body.FirstName, request.Body.LastName)
+	err := p.userService.EditUserInfo(ctx, request.Body.FirstName, request.Body.LastName, request.Body.AvatarPath)
 	if err != nil {
 		return nil, err
 	}

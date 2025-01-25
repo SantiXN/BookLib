@@ -52,7 +52,6 @@ const AuthMenu = () => {
         e.preventDefault();
         setResponseError('');
 
-        console.log(localStorage.getItem('token'))
         UserApi.loginUser({loginUserRequest: {login: login, password: password}})
             .then((response) => {
                 if (response) {

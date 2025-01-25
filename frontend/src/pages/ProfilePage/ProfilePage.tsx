@@ -134,7 +134,7 @@ const ProfilePage = () => {
                     <h2 className={s.title}>Личная информация</h2>
                     <div style={{display: 'flex', alignItems: 'center'}}>
                         {userRole && userRole == 'admin' && (
-                            <Link to={'/editor'} style={{marginRight: '10px'}}>
+                            <Link to={'/admin'} style={{marginRight: '10px'}}>
                                 <button>
                                     Меню администратора
                                 </button>

@@ -25,7 +25,7 @@ const GenrePage = () => {
             const response = await BookApi.listBooksByCategory({ categoryID: Number(id), limit: booksInPage, page: page });
             const newBooks = parseBookCardsResponse(response);
             setBooks((prevBooks) => [...prevBooks, ...newBooks]);
-            setHasMore(newBooks.length > 0);
+            setHasMore(response.totalCount > books.length + newBooks.length);
         } catch (error) {
             console.error(error);
         } finally {

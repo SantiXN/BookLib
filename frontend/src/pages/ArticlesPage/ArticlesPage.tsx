@@ -11,21 +11,21 @@ const ArticlesPage = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
-    const articlesInPage = 20;
+    const articlesInPage = 15;
 
     const loadBooks = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await ArticleApi.listArticles({ limit: articlesInPage, page: page});
-            const newArticles = response.articles ? response.articles : [];
+            const response = await ArticleApi.listArticles({ limit: articlesInPage, page: page });
+            const newArticles = response.articles || []; // Защита от null
             setArticles((prevArticles) => [...prevArticles, ...newArticles]);
-            setHasMore(newArticles.length > 0);
+            setHasMore(response.totalCount > articles.length + newArticles.length);
         } catch (error) {
-            console.error(error);
+            console.error('Ошибка загрузки статей:', error);
         } finally {
             setLoading(false);
         }
-    }, [page]);
+    }, [page, articlesInPage]);
 
     useEffect(() => {
         loadBooks();

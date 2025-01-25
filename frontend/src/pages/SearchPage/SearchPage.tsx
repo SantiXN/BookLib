@@ -38,8 +38,9 @@ const SearchPage = () => {
                         limit: itemsInPage
                     });
                     if (response) {
-                        setBooks((prevBooks) => [...prevBooks, ...parseBookCardsResponse(response)]);
-                        setHasMore((response.books?.length ?? 0) > 0);
+                        const newBooks = parseBookCardsResponse(response);
+                        setBooks((prevBooks) => [...prevBooks, ...newBooks]);
+                        setHasMore((response.books?.length ?? 0) > newBooks.length);
                     }
                     break;
                 case 'authors':
@@ -49,8 +50,9 @@ const SearchPage = () => {
                         limit: itemsInPage
                     });
                     if (response) {
-                        setAuthors((prevAuthors) => [...prevAuthors, ...response.authors]);
-                        setHasMore((response.authors?.length ?? 0) > 0);
+                        const newAuthors = response.authors;
+                        setAuthors((prevAuthors) => [...prevAuthors, ...newAuthors]);
+                        setHasMore((response.authors?.length ?? 0) > authors.length + newAuthors.length);
                     }
                     break;
                 case 'articles':
@@ -60,8 +62,9 @@ const SearchPage = () => {
                         limit: itemsInPage
                     });
                     if (response) {
-                        setArticles((prevArticles) => [...prevArticles, ...response.articles]);
-                        setHasMore((response.articles?.length ?? 0) > 0);
+                        const newArticles = response.articles;
+                        setArticles((prevArticles) => [...prevArticles, ...newArticles]);
+                        setHasMore((response.articles?.length ?? 0) > articles.length + newArticles.length);
                     }
                     break;
                 default:
@@ -85,6 +88,16 @@ const SearchPage = () => {
     const handleLoadMore = () => {
         setPage((prevPage) => prevPage + 1);
     };
+
+    useEffect(() => {
+        // Сбрасываем данные и страницу при новом запросе
+        setBooks([]);
+        setArticles([]);
+        setAuthors([]);
+        setPage(1);
+        setHasMore(true);
+    }, [query, selectedCategory]);
+    
 
     const handleCategoryClick = (category: string) => {
         setSelectedCategory(category);

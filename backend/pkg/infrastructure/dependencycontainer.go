@@ -37,6 +37,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	infraCategoryQS := infraquery.NewCategoryQueryService(client)
 	infraUserBookQS := infraquery.NewUserBookQueryService(client)
 	infraBookQs := infraquery.NewBookQueryService(client)
+	infraArticleQS := infraquery.NewArticleQueryService(client)
 
 	userBookStorage := storage.NewUserBookStorage(ctx, client)
 	authorProvider := provider.NewAuthorProvider(client)
@@ -53,6 +54,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 	bookService := service.NewBookService(domainBookService, checker)
 	bookQueryService := query.NewBookQueryService(infraBookQs, authorProvider, categoryProvider)
 	articleService := service.NewArticleService(domainArticleService, checker)
+	articleQueryService := query.NewArticleQueryService(infraArticleQS)
 
 	return &DependencyContainer{
 		UserService:          userService,
@@ -66,6 +68,7 @@ func NewDependencyContainer(ctx context.Context, client sqlx.DB) *DependencyCont
 		BookService:          bookService,
 		BookQueryService:     bookQueryService,
 		ArticleService:       articleService,
+		ArticleQueryService:  articleQueryService,
 	}
 }
 
@@ -81,4 +84,5 @@ type DependencyContainer struct {
 	BookService          service.BookService
 	BookQueryService     query.BookQueryService
 	ArticleService       service.ArticleService
+	ArticleQueryService  query.ArticleQueryService
 }

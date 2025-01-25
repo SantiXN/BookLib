@@ -25,6 +25,27 @@ func (b *bookQueryService) ListBooks(limit, offset *int) {
 	panic("implement me")
 }
 
+func (b *bookQueryService) GetTotalCountByCategory(ctx context.Context, categoryID int) (int, error) {
+	const query = `
+        SELECT 
+            COUNT(b.id) 
+        FROM 
+            book b
+        JOIN 
+            category_book cb ON b.id = cb.book_id
+        WHERE 
+            cb.category_id = ?
+    `
+
+	var count int
+	err := b.client.GetContext(ctx, &count, query, categoryID)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (b *bookQueryService) IsBookExist(ctx context.Context, bookID int) (bool, error) {
 	const query = `
 		SELECT EXISTS(

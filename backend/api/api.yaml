@@ -1242,8 +1242,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/bookData'
+        totalCount:
+          type: integer
       required:
         - books
+        - totalCount
     ListLibraryBooksByStatusRequest:
       type: object
       properties:
@@ -1470,8 +1473,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/articleData'
+        totalCount:
+          type: integer
       required:
         - articles
+        - totalCount
     ManagementArticlesResponseData:
       type: object
       properties:
@@ -1667,9 +1673,6 @@ components:
         - firstName
         - email
 
-# HELP!!!
-# TODO: Подумать, что возвращать id или прямо структуру автора?
-# TODO: Возможно для статей тоже нужна обложка?
     articleInfo:
       type: object
       properties:
@@ -1679,18 +1682,22 @@ components:
           type: string
         content:
           type: string
-        authorID:
-          type: integer
+        author:
+          $ref: '#/components/schemas/userData'
         status:
           type: string
           enum:
             - published
             - unpublished
+        publishDate:
+          type: integer
+          format: int64
+          description: unix timestamp
       required:
         - id
         - title
         - content
-        - authorID
+        - author
         - status
 
     articleData:
@@ -1709,7 +1716,7 @@ components:
             - unpublished
         publishDate:
           type: integer
-          format: integer64
+          format: int64
           description: unix timestamp
       required:
         - id

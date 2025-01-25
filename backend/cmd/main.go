@@ -83,6 +83,7 @@ func main() {
 		dependencyContainer.BookService,
 		dependencyContainer.BookQueryService,
 		dependencyContainer.ArticleService,
+		dependencyContainer.ArticleQueryService,
 	)
 	publicAPIHandler := api.NewStrictHandler(
 		publicAPI,

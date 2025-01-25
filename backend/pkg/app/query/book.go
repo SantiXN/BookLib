@@ -15,6 +15,7 @@ type BookQueryService interface {
 	ListBooksByCategory(ctx context.Context, categoryID int, limit, offset *int) ([]model.Book, error)
 	ListBooksByAuthor(ctx context.Context, authorID int) ([]model.Book, error)
 	GetBook(ctx context.Context, id int) (model.Book, error)
+	GetTotalCountByCategory(ctx context.Context, categoryID int) (int, error)
 }
 
 func NewBookQueryService(
@@ -33,6 +34,10 @@ type bookQueryService struct {
 	storageQueryService BookQueryService
 	authorProvider      provider.AuthorProvider
 	categoryProvider    provider.CategoryProvider
+}
+
+func (b *bookQueryService) GetTotalCountByCategory(ctx context.Context, categoryID int) (int, error) {
+	return b.storageQueryService.GetTotalCountByCategory(ctx, categoryID)
 }
 
 func (b *bookQueryService) ListBooks(limit, offset *int) {

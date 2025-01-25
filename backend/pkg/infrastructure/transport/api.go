@@ -34,7 +34,8 @@ func NewPublicAPI(
 	userBookQueryService query.UserBookQueryService,
 	bookService service.BookService,
 	bookQueryService query.BookQueryService,
-	articleServie service.ArticleService,
+	articleService service.ArticleService,
+	articleQueryService query.ArticleQueryService,
 ) API {
 	return &publicAPI{
 		userService:          userService,
@@ -47,7 +48,8 @@ func NewPublicAPI(
 		userBookQueryService: userBookQueryService,
 		bookService:          bookService,
 		bookQueryService:     bookQueryService,
-		articleService:       articleServie,
+		articleService:       articleService,
+		articleQueryService:  articleQueryService,
 	}
 }
 
@@ -63,6 +65,7 @@ type publicAPI struct {
 	bookService          service.BookService
 	bookQueryService     query.BookQueryService
 	articleService       service.ArticleService
+	articleQueryService  query.ArticleQueryService
 }
 
 func (p *publicAPI) PublishArticle(ctx context.Context, request api.PublishArticleRequestObject) (api.PublishArticleResponseObject, error) {
@@ -95,18 +98,124 @@ func (p *publicAPI) CreateArticle(ctx context.Context, request api.CreateArticle
 }
 
 func (p *publicAPI) ListArticles(ctx context.Context, request api.ListArticlesRequestObject) (api.ListArticlesResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	var offset *int
+	if request.Params.Page != nil && request.Params.Limit != nil {
+		page := *request.Params.Page
+		limit := *request.Params.Limit
+		offsetExpr := (page - 1) * limit
+		offset = &offsetExpr
+	}
+	articles, err := p.articleQueryService.ListPublishedArticles(ctx, request.Params.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount, err := p.articleQueryService.GetTotalCountPublishedArticles(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseArticles []api.ArticleData
+	for _, article := range articles {
+		author, err := p.userQueryService.GetUserInfo(ctx, article.AuthorID)
+		if err != nil {
+			return nil, err
+		}
+
+		var publishDate *int64
+		if article.PublishDate != nil {
+			unixDate := article.PublishDate.Unix()
+			publishDate = &unixDate
+		}
+
+		responseArticle := api.ArticleData{
+			Id:    article.ID,
+			Title: article.Title,
+			Author: api.UserData{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			},
+			Status:      toAPIArticleDataStatus(article.Status),
+			PublishDate: publishDate,
+		}
+
+		responseArticles = append(responseArticles, responseArticle)
+	}
+
+	return api.ListArticles200JSONResponse{Articles: responseArticles, TotalCount: totalCount}, nil
 }
 
 func (p *publicAPI) ManagementArticles(ctx context.Context, request api.ManagementArticlesRequestObject) (api.ManagementArticlesResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	userID, err := utils.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	articles, err := p.articleQueryService.ListArticlesByAuthor(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseArticles []api.ArticleData
+	for _, article := range articles {
+		author, err := p.userQueryService.GetUserInfo(ctx, article.AuthorID)
+		if err != nil {
+			return nil, err
+		}
+
+		var publishDate *int64
+		if article.PublishDate != nil {
+			unixDate := article.PublishDate.Unix()
+			publishDate = &unixDate
+		}
+
+		responseArticle := api.ArticleData{
+			Id:    article.ID,
+			Title: article.Title,
+			Author: api.UserData{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			},
+			Status:      toAPIArticleDataStatus(article.Status),
+			PublishDate: publishDate,
+		}
+
+		responseArticles = append(responseArticles, responseArticle)
+	}
+
+	return api.ManagementArticles200JSONResponse{Articles: responseArticles}, nil
 }
 
 func (p *publicAPI) GetArticle(ctx context.Context, request api.GetArticleRequestObject) (api.GetArticleResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	article, err := p.articleQueryService.GetArticle(ctx, request.ArticleID)
+	if err != nil {
+		return nil, err
+	}
+
+	author, err := p.userQueryService.GetUserInfo(ctx, article.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+
+	var publishDate *int64
+	if article.PublishDate != nil {
+		unixDate := article.PublishDate.Unix()
+		publishDate = &unixDate
+	}
+
+	return api.GetArticle200JSONResponse{Article: api.ArticleInfo{
+		Id:      article.ID,
+		Title:   article.Title,
+		Content: article.Content,
+		Author: api.UserData{
+			Id:        author.ID,
+			FirstName: author.FirstName,
+			LastName:  author.LastName,
+		},
+		Status:      toAPIArticleInfoStatus(article.Status),
+		PublishDate: publishDate,
+	}}, nil
 }
 
 func (p *publicAPI) DeleteArticle(ctx context.Context, request api.DeleteArticleRequestObject) (api.DeleteArticleResponseObject, error) {
@@ -119,8 +228,7 @@ func (p *publicAPI) DeleteArticle(ctx context.Context, request api.DeleteArticle
 }
 
 func (p *publicAPI) EditArticle(ctx context.Context, request api.EditArticleRequestObject) (api.EditArticleResponseObject, error) {
-	unpublished := model.Unpublished
-	err := p.articleService.EditArticle(ctx, request.ArticleID, request.Body.NewTitle, request.Body.NewContent, &unpublished)
+	err := p.articleService.EditArticle(ctx, request.ArticleID, request.Body.NewTitle, request.Body.NewContent, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -452,6 +560,10 @@ func (p *publicAPI) ListBooksByCategory(ctx context.Context, request api.ListBoo
 	if err != nil {
 		return nil, err
 	}
+	totalCount, err := p.bookQueryService.GetTotalCountByCategory(ctx, request.CategoryID)
+	if err != nil {
+		return nil, err
+	}
 
 	apiBooks := make([]api.BookData, 0, len(books))
 	for _, book := range books {
@@ -478,7 +590,7 @@ func (p *publicAPI) ListBooksByCategory(ctx context.Context, request api.ListBoo
 		apiBooks = append(apiBooks, apiBook)
 	}
 
-	return api.ListBooksByCategory200JSONResponse{Books: apiBooks}, nil
+	return api.ListBooksByCategory200JSONResponse{Books: apiBooks, TotalCount: totalCount}, nil
 }
 
 func (p *publicAPI) ListCategories(ctx context.Context, request api.ListCategoriesRequestObject) (api.ListCategoriesResponseObject, error) {
@@ -753,4 +865,26 @@ func toAPIAuthorInfo(authorInfo query.AuthorInfo) api.AuthorInfo {
 		Description: authorInfo.Description,
 		AvatarPath:  authorInfo.AvatarPath,
 	}
+}
+
+func toAPIArticleInfoStatus(status model.ArticleStatus) api.ArticleInfoStatus {
+	switch status {
+	case model.Unpublished:
+		return api.ArticleInfoStatusUnpublished
+	case model.Published:
+		return api.ArticleInfoStatusPublished
+	}
+
+	return api.ArticleInfoStatusUnpublished
+}
+
+func toAPIArticleDataStatus(status model.ArticleStatus) api.ArticleDataStatus {
+	switch status {
+	case model.Unpublished:
+		return api.ArticleDataStatusUnpublished
+	case model.Published:
+		return api.ArticleDataStatusPublished
+	}
+
+	return api.ArticleDataStatusUnpublished
 }

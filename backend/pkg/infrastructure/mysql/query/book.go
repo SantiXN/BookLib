@@ -20,11 +20,6 @@ type bookQueryService struct {
 	client sqlx.DB
 }
 
-func (b *bookQueryService) ListBooks(limit, offset *int) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (b *bookQueryService) GetTotalCountByCategory(ctx context.Context, categoryID int) (int, error) {
 	const query = `
         SELECT 
@@ -201,6 +196,87 @@ func (b *bookQueryService) GetBook(ctx context.Context, id int) (model.Book, err
 		CoverPath:   book.CoverPath,
 		StarCount:   book.StarCount,
 	}, nil
+}
+
+func (b *bookQueryService) SearchBooks(ctx context.Context, searchString string, limit, offset *int) ([]model.Book, error) {
+	const baseQuery = `
+        SELECT 
+            b.id,
+            b.title,
+            b.description,
+            b.file_path,
+            b.cover_path,
+            COALESCE(
+                (SELECT AVG(br.star_count) 
+                  FROM book_review br 
+                  WHERE br.book_id = b.id
+                 ), 0) AS star_count
+        FROM 
+            book b
+        WHERE 
+            b.title LIKE ?
+        ORDER BY 
+            b.created_at DESC
+    `
+
+	var query string
+	var args []interface{}
+
+	searchPattern := "%" + searchString + "%"
+	args = append(args, searchPattern)
+
+	if limit != nil && offset != nil {
+		query = baseQuery + " LIMIT ? OFFSET ?"
+		args = append(args, *limit, *offset)
+	} else {
+		query = baseQuery
+	}
+
+	var sqlxBooks []sqlxBook
+	err := b.client.SelectContext(ctx, &sqlxBooks, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var books []model.Book
+	for _, sqlBook := range sqlxBooks {
+		book := model.Book{
+			ID:          sqlBook.ID,
+			Title:       sqlBook.Title,
+			Description: sqlBook.Description,
+			FilePath:    sqlBook.FilePath,
+			CoverPath:   sqlBook.CoverPath,
+			StarCount:   sqlBook.StarCount,
+			Authors:     nil,
+			Categories:  nil,
+		}
+
+		books = append(books, book)
+	}
+
+	return books, nil
+}
+
+func (b *bookQueryService) GetTotalCountBySearchString(ctx context.Context, searchString string) (int, error) {
+	const query = `
+        SELECT 
+            COUNT(*)
+        FROM 
+            book b
+        WHERE 
+            b.title LIKE ?
+    `
+
+	searchPattern := "%" + searchString + "%"
+	args := []interface{}{searchPattern}
+
+	var count int
+	err := b.client.GetContext(ctx, &count, query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 type sqlxBook struct {

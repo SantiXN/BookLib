@@ -14,6 +14,8 @@ type ArticleQueryService interface {
 	ListPublishedArticles(ctx context.Context, limit, offset *int) ([]model.Article, error)
 	ListArticlesByAuthor(ctx context.Context, authorID int) ([]model.Article, error)
 	GetTotalCountPublishedArticles(ctx context.Context) (int, error)
+	SearchArticles(ctx context.Context, searchString string, limit, offset *int) ([]model.Article, error)
+	GetTotalCountBySearch(ctx context.Context, searchString string) (int, error)
 }
 
 func NewArticleQueryService(storageQueryService ArticleQueryService) ArticleQueryService {
@@ -24,6 +26,14 @@ func NewArticleQueryService(storageQueryService ArticleQueryService) ArticleQuer
 
 type articleQueryService struct {
 	storageQueryService ArticleQueryService
+}
+
+func (a *articleQueryService) SearchArticles(ctx context.Context, searchString string, limit, offset *int) ([]model.Article, error) {
+	return a.storageQueryService.SearchArticles(ctx, searchString, limit, offset)
+}
+
+func (a *articleQueryService) GetTotalCountBySearch(ctx context.Context, searchString string) (int, error) {
+	return a.storageQueryService.GetTotalCountBySearch(ctx, searchString)
 }
 
 func (a *articleQueryService) GetTotalCountPublishedArticles(ctx context.Context) (int, error) {

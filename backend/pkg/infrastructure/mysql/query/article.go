@@ -160,6 +160,79 @@ func (a *articleQueryService) ListArticlesByAuthor(ctx context.Context, authorID
 	return result, nil
 }
 
+func (a *articleQueryService) SearchArticles(ctx context.Context, searchString string, limit, offset *int) ([]model.Article, error) {
+	const baseQuery = `
+        SELECT 
+            a.id,
+            a.name,
+            a.content,
+            a.created_by,
+            a.status,
+            a.updated_at
+        FROM 
+            article a
+        WHERE 
+            a.name LIKE ? AND a.status = 1
+        ORDER BY 
+            a.updated_at DESC
+    `
+
+	var query string
+	var args []interface{}
+
+	searchPattern := "%" + searchString + "%"
+	args = append(args, searchPattern)
+
+	if limit != nil && offset != nil {
+		query = baseQuery + " LIMIT ? OFFSET ?"
+		args = append(args, *limit, *offset)
+	} else {
+		query = baseQuery
+	}
+
+	var articles []sqlxArticle
+	err := a.client.SelectContext(ctx, &articles, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []model.Article
+	for _, article := range articles {
+		result = append(result, model.Article{
+			ID:          article.ID,
+			Title:       article.Name,
+			Content:     article.Content,
+			AuthorID:    article.AuthorID,
+			Status:      domainmodel.ArticleStatus(article.Status),
+			PublishDate: article.PublishedAt,
+		})
+	}
+
+	return result, nil
+}
+
+func (a *articleQueryService) GetTotalCountBySearch(ctx context.Context, searchString string) (int, error) {
+	const query = `
+        SELECT 
+            COUNT(*) 
+        FROM 
+            article a
+        WHERE 
+            a.name LIKE ? AND a.status = 1
+    `
+
+	searchPattern := "%" + searchString + "%"
+	args := []interface{}{searchPattern}
+
+	var count int
+	err := a.client.GetContext(ctx, &count, query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 type sqlxArticle struct {
 	ID          int        `db:"id"`
 	Name        string     `db:"name"`

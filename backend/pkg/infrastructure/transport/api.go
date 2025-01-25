@@ -614,18 +614,121 @@ func (p *publicAPI) ListCategories(ctx context.Context, request api.ListCategori
 }
 
 func (p *publicAPI) SearchArticles(ctx context.Context, request api.SearchArticlesRequestObject) (api.SearchArticlesResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	var offset *int
+	if request.Params.Page != nil && request.Params.Limit != nil {
+		page := *request.Params.Page
+		limit := *request.Params.Limit
+		offsetExpr := (page - 1) * limit
+		offset = &offsetExpr
+	}
+	articles, err := p.articleQueryService.SearchArticles(ctx, request.Body.SearchString, request.Params.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	totlaCount, err := p.articleQueryService.GetTotalCountBySearch(ctx, request.Body.SearchString)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseArticles []api.ArticleData
+	for _, article := range articles {
+		author, err := p.userQueryService.GetUserInfo(ctx, article.AuthorID)
+		if err != nil {
+			return nil, err
+		}
+
+		var publishDate *int64
+		if article.PublishDate != nil {
+			unixDate := article.PublishDate.Unix()
+			publishDate = &unixDate
+		}
+
+		responseArticle := api.ArticleData{
+			Id:    article.ID,
+			Title: article.Title,
+			Author: api.UserData{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			},
+			Status:      toAPIArticleDataStatus(article.Status),
+			PublishDate: publishDate,
+		}
+
+		responseArticles = append(responseArticles, responseArticle)
+	}
+
+	return api.SearchArticles200JSONResponse{Articles: responseArticles, TotalCount: totlaCount}, nil
 }
 
 func (p *publicAPI) SearchAuthors(ctx context.Context, request api.SearchAuthorsRequestObject) (api.SearchAuthorsResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	var offset *int
+	if request.Params.Page != nil && request.Params.Limit != nil {
+		page := *request.Params.Page
+		limit := *request.Params.Limit
+		offsetExpr := (page - 1) * limit
+		offset = &offsetExpr
+	}
+	authors, err := p.authorQueryService.SearchAuthors(ctx, request.Body.SearchString, request.Params.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	totalCount, err := p.authorQueryService.GetTotalCountBySearchString(ctx, request.Body.SearchString)
+	if err != nil {
+		return nil, err
+	}
+
+	apiAuthors := make([]api.AuthorInfo, 0, len(authors))
+	for _, authorInfo := range authors {
+		apiAuthor := toAPIAuthorInfo(authorInfo)
+		apiAuthors = append(apiAuthors, apiAuthor)
+	}
+
+	return api.SearchAuthors200JSONResponse{Authors: apiAuthors, TotalCount: totalCount}, nil
 }
 
 func (p *publicAPI) SearchBooks(ctx context.Context, request api.SearchBooksRequestObject) (api.SearchBooksResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+	var offset *int
+	if request.Params.Page != nil && request.Params.Limit != nil {
+		page := *request.Params.Page
+		limit := *request.Params.Limit
+		offsetExpr := (page - 1) * limit
+		offset = &offsetExpr
+	}
+	books, err := p.bookQueryService.SearchBooks(ctx, request.Body.SearchString, request.Params.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	totalCount, err := p.bookQueryService.GetTotalCountBySearchString(ctx, request.Body.SearchString)
+	if err != nil {
+		return nil, err
+	}
+	apiBooks := make([]api.BookData, 0, len(books))
+	for _, book := range books {
+		apiBook := api.BookData{
+			Id:        book.ID,
+			Title:     book.Title,
+			CoverPath: book.CoverPath,
+			StarCount: float32(math.Round(float64(book.StarCount)*10) / 10),
+		}
+
+		authors := book.Authors
+		apiAuthors := make([]api.AuthorInfo, 0, len(authors))
+		for _, author := range authors {
+			apiAuthor := api.AuthorInfo{
+				Id:        author.ID,
+				FirstName: author.FirstName,
+				LastName:  author.LastName,
+			}
+
+			apiAuthors = append(apiAuthors, apiAuthor)
+		}
+		apiBook.Authors = apiAuthors
+
+		apiBooks = append(apiBooks, apiBook)
+	}
+
+	return api.SearchBooks200JSONResponse{Books: apiBooks, TotalCount: totalCount}, nil
 }
 
 func (p *publicAPI) EditUserInfo(ctx context.Context, request api.EditUserInfoRequestObject) (api.EditUserInfoResponseObject, error) {

@@ -31,6 +31,12 @@ export interface EditBookRequest {
      * @memberof EditBookRequest
      */
     newDescription?: string;
+    /**
+     *
+     * @type {string}
+     * @memberof EditBookRequest
+     */
+    newCoverPath?: string;
 }
 
 /**
@@ -52,6 +58,7 @@ export function EditBookRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'newTitle': json['newTitle'] == null ? undefined : json['newTitle'],
         'newDescription': json['newDescription'] == null ? undefined : json['newDescription'],
+        'newCoverPath': json['newCoverPath'] == null ? undefined : json['newCoverPath'],
     };
 }
 
@@ -68,6 +75,7 @@ export function EditBookRequestToJSONTyped(value?: EditBookRequest | null, ignor
         
         'newTitle': value['newTitle'],
         'newDescription': value['newDescription'],
+        'newCoverPath': value['newCoverPath'],
     };
 }
 

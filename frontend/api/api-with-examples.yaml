@@ -1070,6 +1070,8 @@ components:
           type: string
         newDescription:
           type: string
+        newCoverPath:
+          type: string
     ListCategoriesResponseData:
       type: object
       properties:

@@ -13,7 +13,7 @@ var supportedFormats = map[string]string{
 	"application/pdf": ".pdf",
 	"image/jpeg":      ".jpg",
 	"image/png":       ".png",
-	"image/webp":       ".webp",
+	"image/webp":      ".webp",
 }
 
 var (

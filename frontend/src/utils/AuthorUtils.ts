@@ -11,7 +11,8 @@ export function parseAuthorResponse(response: GetAuthorInfoResponseData): Parsed
         id: response.author.id,
         firstName: response.author.firstName,
         description: response.author.description,
-        lastName: response.author.lastName ? response.author.lastName : ''
+        lastName: response.author.lastName ? response.author.lastName : '',
+        avatarPath: response.author.avatarPath ? response.author.avatarPath : ''
     }
 }
 

@@ -36,13 +36,13 @@ const ProfilePage = () => {
             firstName: '',
             lastName: '',
             email: '',
-            avatarPath: 'a',
+            avatarPath: '',
         });
     
         setNewData({
             firstName: '',
             lastName: '',
-            avatarPath: 'a',
+            avatarPath: '',
         });
     
         if (isAuthenticated) {
@@ -123,10 +123,9 @@ const ProfilePage = () => {
             setIsUploading(true);
 
             const formData = new FormData();
-            formData.append('file', avatarFile); // Измените 'avatar' на 'file', если это необходимо
+            formData.append('file', avatarFile);
 
             const uploadResponse = await FileApi.uploadFile({ file: avatarFile });
-            console.log('Upload response:', uploadResponse);
 
             if (uploadResponse.filePath) {
                 setFormData(prevData => ({

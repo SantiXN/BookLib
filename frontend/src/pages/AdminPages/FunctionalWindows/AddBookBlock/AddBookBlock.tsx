@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css';
-import { AuthorInfo, CategoryInfo } from '../../../../../api';
+import {AuthorInfo, CategoryInfo, EditUserInfoRequest} from '../../../../../api';
 import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
@@ -8,7 +8,7 @@ interface BlockProps {
 }
 
 const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
-    const { AuthorApi, BookApi, CategoryApi } = useApi();
+    const { AuthorApi, BookApi, CategoryApi, FileApi } = useApi();
 
     const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     const [categories, setCategories] = useState<CategoryInfo[]>([]);
@@ -86,17 +86,27 @@ const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (isFormFieldsEmpty) return;
+        let bookFilePath = '';
+        let bookCoverPath = '';
+
+        try {
+            bookFilePath = await SaveFile(bookFile);
+            bookCoverPath = await SaveFile(bookCover);
+        } catch (error: unknown) {
+            console.error('Error adding file:', error);
+        }
+
         const request = {
             addBookRequest: {
                 title,
                 description,
                 authorIDs: selectedAuthors.map(author => author.id),
                 categoryIDs: selectedCategories.map(category => category.id),
-                filePath: bookFile.name,
-                coverPath: bookCover.name
+                filePath: bookFilePath,
+                coverPath: bookCoverPath
                 
             }
         };
@@ -117,6 +127,17 @@ const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
                 alert('Не удалось добавить книгу. Попробуйте позже.');
             });
     };
+
+    const SaveFile = async (file: File | null) => {
+        if (File !== null)
+        {
+            const uploadResponse = await FileApi.uploadFile({ file: file });
+            if (uploadResponse.filePath) {
+                return "http://localhost:8080" + uploadResponse.filePath;
+            }
+        }
+        throw('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
+    }
 
     const close = () => {
         const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');

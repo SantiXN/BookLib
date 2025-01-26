@@ -17,7 +17,7 @@ const ReadPage = () => {
             .then((response) => {
                 if (response.book) {
                     console.log(response.book)
-                    setFileUrl(`/${response.book.filePath}`);
+                    setFileUrl(`${response.book.filePath}`);
                 }
             })
             .catch(() => alert('При загрузке книги произошла ошибка'));

@@ -448,7 +448,7 @@ func (p *publicAPI) DeleteBook(ctx context.Context, request api.DeleteBookReques
 }
 
 func (p *publicAPI) EditBook(ctx context.Context, request api.EditBookRequestObject) (api.EditBookResponseObject, error) {
-	err := p.bookService.EditBookInfo(ctx, request.BookID, request.Body.NewTitle, request.Body.NewDescription, nil)
+	err := p.bookService.EditBookInfo(ctx, request.BookID, request.Body.NewTitle, request.Body.NewDescription, request.Body.NewCoverPath)
 	if err != nil {
 		return nil, err
 	}

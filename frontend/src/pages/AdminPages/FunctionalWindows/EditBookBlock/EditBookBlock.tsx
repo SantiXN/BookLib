@@ -8,7 +8,7 @@ interface BlockProps {
 }
 
 const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
-    const { BookApi} = useApi();
+    const { BookApi, FileApi} = useApi();
 
     const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
     const [selectedBook, setSelectedBook] = useState<BookInfo | null>(null);
@@ -71,14 +71,21 @@ const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!isBookDataChanged) return;
+        let bookCoverPath = '';
+
+        try {
+            bookCoverPath = await SaveFile(bookCoverFile);
+        } catch (error: unknown) {
+            console.error('Error adding file:', error);
+        }
 
         const request: EditBookRequest = {};
         if (title !== selectedBook?.title) request.newTitle = title;
         if (description !== selectedBook?.description) request.newDescription = description;
-        // Book cover
+        request.newCoverPath = bookCoverPath;
 
         BookApi.editBook({bookID: selectedBook?.id || 0, editBookRequest: request})
             .then(() => {
@@ -86,6 +93,17 @@ const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
                 clearFieldsAndCloseWindow();
             })
     };
+
+    const SaveFile = async (file: File | null) => {
+        if (File !== null)
+        {
+            const uploadResponse = await FileApi.uploadFile({ file: file });
+            if (uploadResponse.filePath) {
+                return "http://localhost:8080" + uploadResponse.filePath;
+            }
+        }
+        throw('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
+    }
 
     const close = () => {
         const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');

@@ -26,8 +26,8 @@ const ArticlePage = () => {
 
     return (
         <div className={s.articleContainer}>
-            <p className={s.title}>{data?.title}</p>
-            <p className={s.author}>Автор: {data?.author.firstName} {data?.author.lastName}</p>
+            <h1 className={s.title}>{data?.title}</h1>
+            <h2 className={s.author}>Автор: {data?.author.firstName} {data?.author.lastName}</h2>
             <div className={s.articleBody}>
                 <ReactMarkdown children={data?.content} remarkPlugins={[gfm]} />
             </div>

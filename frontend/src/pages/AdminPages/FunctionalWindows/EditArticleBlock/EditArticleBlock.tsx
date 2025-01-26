@@ -96,6 +96,7 @@ const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
             })
             .then(() => {
                 alert('Статья успешно отредактирована');
+                onClose();
             })
             .catch((error) => {
                 console.error('Ошибка редактирования статьи', error);

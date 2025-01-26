@@ -219,13 +219,12 @@ const ProfilePage = () => {
                                     name="lastName"
                                     value={newData.lastName}
                                     onChange={handleChange}
-                                    required
                                 />
                             </div>
                             <button
-                                className={`${s.submitButton} ${!isDataChanged && s.disabledButton}`}
+                                className={`${s.submitButton} ${(!isDataChanged || newData.firstName == '') && s.disabledButton}`}
                                 type='submit'
-                                disabled={!isDataChanged}
+                                disabled={!isDataChanged || newData.firstName == ''}
                             >
                                 Сохранить изменения
                             </button>

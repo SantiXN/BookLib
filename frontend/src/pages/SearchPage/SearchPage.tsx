@@ -15,7 +15,7 @@ const SearchPage = () => {
     const initialCategory = searchParams.get('category') || 'books';
     const initialPage = parseInt(searchParams.get('page') || '1', 10);
 
-    const itemsInPage = 15;
+    const itemsInPage = 6;
 
     const [books, setBooks] = useState<ParsedBookCard[]>([]);
     const [articles, setArticles] = useState<ArticleData[]>([]);
@@ -40,7 +40,7 @@ const SearchPage = () => {
                     if (response) {
                         const newBooks = parseBookCardsResponse(response);
                         setBooks((prevBooks) => [...prevBooks, ...newBooks]);
-                        setHasMore((response.books?.length ?? 0) > newBooks.length);
+                        setHasMore(response.totalCount > books.length + newBooks.length);
                     }
                     break;
                 case 'authors':
@@ -52,7 +52,7 @@ const SearchPage = () => {
                     if (response) {
                         const newAuthors = response.authors;
                         setAuthors((prevAuthors) => [...prevAuthors, ...newAuthors]);
-                        setHasMore((response.authors?.length ?? 0) > authors.length + newAuthors.length);
+                        setHasMore(response.totalCount > authors.length + newAuthors.length);
                     }
                     break;
                 case 'articles':
@@ -64,7 +64,7 @@ const SearchPage = () => {
                     if (response) {
                         const newArticles = response.articles;
                         setArticles((prevArticles) => [...prevArticles, ...newArticles]);
-                        setHasMore((response.articles?.length ?? 0) > articles.length + newArticles.length);
+                        setHasMore(response.totalCount > articles.length + newArticles.length);
                     } 
                     break;
                 default:
@@ -167,7 +167,13 @@ const SearchPage = () => {
                                     <div className={s.searchArticle}>
                                         <p className={`${s.articleTitle} ${s.textEllipsis}`}>{article.title}</p>
                                         <p className={`${s.articleAuthor} ${s.textEllipsis}`}>{article.author.firstName} {article.author.lastName}</p>
-                                        <p className={`${s.articlePublishDate} ${s.textEllipsis}`}>{article.publishDate}</p>
+                                        <p className={`${s.articlePublishDate} ${s.textEllipsis}`}>
+                                        {new Intl.DateTimeFormat('ru-RU', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                        }).format(new Date(article.publishDate! * 1000))}
+                                        </p>
                                     </div>
                                 </a>
                             ))}

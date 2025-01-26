@@ -232,7 +232,7 @@ const ProfilePage = () => {
                         </form>
                     </div>
                     <div className={s.logotype}>
-                        <img className={s.avatar} alt={formData.firstName} src={preview || formData.avatarPath} />
+                        <img className={s.avatar} alt={formData.firstName} src={preview || formData.avatarPath || `http://localhost:8080/uploads/default.jpg`} />
                         <input
                             type="file"
                             accept="image/jpeg, image/png, image/webp"

@@ -47,7 +47,7 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
                     feedbacks.map((review, index) => (
                         <div className={s.review} key={index}>
                             <div className={s.reviewHeader}>
-                                <img className={s.reviewAvatar} src={review.user.avatarPath} alt="Avatar" />
+                                <img className={s.reviewAvatar} src={review.user.avatarPath ? review.user.avatarPath : 'http://localhost:8080/uploads/default.jpg'} alt="Avatar" />
                                 <p className={s.reviewAuthor}>
                                     {`${review.user.firstName}${review.user.lastName ? ' ' + review.user.lastName : ''}`}
                                 </p>

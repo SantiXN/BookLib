@@ -7,10 +7,9 @@ import { ParsedBookInfo } from '../../types/BookTypes';
 import { parseAuthorInfoInBookResponse } from '../../utils/AuthorUtils';
 import { parseBookInfoResponse } from '../../utils/BookUtils';
 import { ParsedAuthorInfo } from '../../types/AuthorTypes';
-import { parseFeedbacksInBookResponse } from '../../utils/FeedbackUtils';
-import { ParsedFeedbackInfo } from '../../types/FeedbackTypes';
 import ErrorMessage from '../../component/common/ErrorMessage/ErrorMessage';
 import LoadingMessage from '../../component/common/LoadingMessage/LoadingMessage';
+import { FeedbackInfo } from '../../../api';
 
 const BookPage = () => {
     const { BookApi } = useApi();
@@ -29,7 +28,7 @@ const BookPage = () => {
 
     const [bookInfo, setBookInfo] = useState<ParsedBookInfo | null>(null);
     const [authorInfo, setAuthorInfo] = useState<ParsedAuthorInfo[]>([]);
-    const [feedbackInfo, setFeedbackInfo] = useState<ParsedFeedbackInfo[]>([]);
+    const [feedbackInfo, setFeedbackInfo] = useState<FeedbackInfo[]>([]);
 
     const { id } = useParams<{ id: string }>();
     const curBookId = id ? Number(id) : 0;
@@ -50,13 +49,12 @@ const BookPage = () => {
             BookApi.listBookFeedback({bookID: curBookId})
             .then((response) => {
                 if (response.feedback) {
-                    setFeedbackInfo(parseFeedbacksInBookResponse(response))
+                    setFeedbackInfo(response.feedback)
                 }
             })
 
         BookApi.checkBookInLibrary({ bookID: curBookId })
             .then((response) => {
-                console.log('status', response.contains)
                 if (response.contains) {
                     setIsAddedToRead(response.contains.valueOf());
                 }
@@ -112,7 +110,7 @@ const BookPage = () => {
                             Жанр:
                         </span>
                         {bookInfo?.categories.map((category, index) => (
-                            <a href={`/genre/${category.id}`}> {`${category.category}`}</a>
+                            <a key={index} href={`/genre/${category.id}`}> {`${category.category}`}</a>
                         ))}
                     </p>
                     <div className={s.descriptionContainer}>

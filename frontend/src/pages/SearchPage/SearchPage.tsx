@@ -65,12 +65,13 @@ const SearchPage = () => {
                         const newArticles = response.articles;
                         setArticles((prevArticles) => [...prevArticles, ...newArticles]);
                         setHasMore((response.articles?.length ?? 0) > articles.length + newArticles.length);
-                    }
+                    } 
                     break;
                 default:
                     break;
             }
         } catch (err) {
+            setHasMore(false);
             console.error('Failed to fetch search items: ', err);
         } finally {
             setLoading(false);
@@ -172,6 +173,12 @@ const SearchPage = () => {
                             ))}
                         </div>
                     )}
+                    {((selectedCategory == 'books' && books.length == 0)
+                        || (selectedCategory == 'authors' && authors.length == 0)
+                        || (selectedCategory == 'articles' && articles.length == 0)) && (
+                            <p>Совпадений не найдено!</p>
+                        )
+                    }
                 </div>
             </div>
             {loading && <p>Loading...</p>}

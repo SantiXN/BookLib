@@ -134,7 +134,7 @@ const RemoveArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton}`}>
+                                className={`${s.button} ${s.formButton} ${!articleInfo ? s.disabledButton : ''}`}>
                                 Удалить
                             </button>
                         </div>

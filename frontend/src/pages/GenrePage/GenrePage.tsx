@@ -17,7 +17,7 @@ const GenrePage = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
-    const booksInPage = 20;
+    const booksInPage = 5;
 
     const loadBooks = useCallback(async () => {
         setLoading(true);

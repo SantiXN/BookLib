@@ -220,7 +220,7 @@ const AddBookBlock: React.FC<BlockProps> = ({ onClose }) => {
                             <label className={s.formLabel} htmlFor='book-cover'>Изображение</label>
                             <div className={s.customFileContainer}>
                                 <input
-                                    accept=".jpg,.jpeg,.png"
+                                    accept=".jpg,.jpeg,.png,.webp"
                                     id="book-cover"
                                     type="file"
                                     className={s.fileInput}

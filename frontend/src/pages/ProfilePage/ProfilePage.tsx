@@ -106,7 +106,7 @@ const ProfilePage = () => {
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+        if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp')) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreview(reader.result as string);
@@ -235,7 +235,7 @@ const ProfilePage = () => {
                         <img className={s.avatar} alt={formData.firstName} src={preview || formData.avatarPath} />
                         <input
                             type="file"
-                            accept="image/jpeg, image/png"
+                            accept="image/jpeg, image/png, image/webp"
                             onChange={handleAvatarChange}
                             style={{ display: 'none' }}
                             id="avatar-upload"

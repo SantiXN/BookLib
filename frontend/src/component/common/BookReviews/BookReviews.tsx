@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import s from './BookReviews.module.css';
 import ReviewForm from './ReviewForm';
-import useApi from '../../../../api/ApiClient';
 import { FeedbackInfo } from '../../../../api';
+import useApi from '../../../../api/ApiClient';
 
 interface BookReviewsProps {
     feedbackInfo: FeedbackInfo[];
@@ -10,8 +10,25 @@ interface BookReviewsProps {
 }
 
 const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
+    const [feedbacks, setFeedbacks] = useState<FeedbackInfo[]>(feedbackInfo);
+    const { UserApi } = useApi();
 
     const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+
+    useEffect(() => {
+        UserApi.getAuthorizedUser()
+            .then((response) => {
+                if (response.user) {
+                    const authorizedUserId = response.user.id;
+    
+                    const sortedFeedback = [...feedbackInfo].sort((a) => {
+                        if (a.user.id === authorizedUserId) return -1;
+                        return 0;
+                    });
+                    setFeedbacks(sortedFeedback);
+                }
+            });
+    }, [feedbackInfo]);
 
     const openReviewForm = () => setIsReviewFormOpen(true);
     const closeReviewForm = () => setIsReviewFormOpen(false);
@@ -26,8 +43,8 @@ const BookReviews: React.FC<BookReviewsProps> = ({ feedbackInfo, bookID }) => {
                 <ReviewForm isOpen={isReviewFormOpen} onClose={closeReviewForm} bookID={bookID} />
             </div>
             <div className={s.reviews}>
-                {feedbackInfo.length > 0 ? (
-                    feedbackInfo.map((review, index) => (
+                {feedbacks.length > 0 ? (
+                    feedbacks.map((review, index) => (
                         <div className={s.review} key={index}>
                             <div className={s.reviewHeader}>
                                 <img className={s.reviewAvatar} src={review.user.avatarPath} alt="Avatar" />

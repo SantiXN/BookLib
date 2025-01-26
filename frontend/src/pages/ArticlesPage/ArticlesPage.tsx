@@ -15,16 +15,21 @@ const ArticlesPage = () => {
 
     const loadBooks = useCallback(async () => {
         setLoading(true);
-        try {
-            const response = await ArticleApi.listArticles({ limit: articlesInPage, page: page });
-            const newArticles = response.articles || []; // Защита от null
-            setArticles((prevArticles) => [...prevArticles, ...newArticles]);
-            setHasMore(response.totalCount > articles.length + newArticles.length);
-        } catch (error) {
-            console.error('Ошибка загрузки статей:', error);
-        } finally {
-            setLoading(false);
-        }
+        ArticleApi.listArticles({ limit: articlesInPage, page: page })
+            .then((response) => {
+                if (response.articles) {
+                    const newArticles = response.articles || []; // Защита от null
+                    setArticles((prevArticles) => [...prevArticles, ...newArticles]);
+                    setHasMore(response.totalCount > articles.length + newArticles.length);
+                } else {
+                    setHasMore(false);
+                }
+            })
+            .catch((error) => {
+                setHasMore(false);
+                console.error(error);
+            })
+            .finally(() => setLoading(false));
     }, [page, articlesInPage]);
 
     useEffect(() => {
@@ -71,6 +76,11 @@ const ArticlesPage = () => {
                     <button className={s.loadMoreButton} onClick={handleLoadMore}>
                         Загрузить еще
                     </button>
+                </div>
+            )}
+            {!hasMore && articles.length == 0 && (
+                <div className={s.loadMoreContainer}>
+                    <p>Здесь пока ничего нет, но скоро обязательно появится!</p>
                 </div>
             )}
         </div>

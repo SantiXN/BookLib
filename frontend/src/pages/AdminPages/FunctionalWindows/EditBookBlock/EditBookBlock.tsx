@@ -175,7 +175,7 @@ const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
                                 className={`${s.button} ${s.formButton} ${!isBookDataChanged ? s.disabledButton : ""}`}
                                 disabled={!isBookDataChanged}
                             >
-                                Добавить
+                                Изменить
                             </button>
                         </div>
                     </form>

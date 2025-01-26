@@ -41,7 +41,7 @@ const BookPage = () => {
                 setLoading(false);
             })
             .catch((err) => {
-                setError('Не удалось загрузить данные. Попробуйте снова позже');
+                setError('Книга с данным ID не найдена. Проверьте правильность ссылки');
                 setLoading(false);
                 console.error('Ошибка при запросе данных: ', err);
             });

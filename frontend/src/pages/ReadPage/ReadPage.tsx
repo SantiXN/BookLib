@@ -16,7 +16,6 @@ const ReadPage = () => {
         BookApi.getBookInfo({ bookID: curBookId })
             .then((response) => {
                 if (response.book) {
-                    console.log(response.book)
                     setFileUrl(`${response.book.filePath}`);
                 }
             })

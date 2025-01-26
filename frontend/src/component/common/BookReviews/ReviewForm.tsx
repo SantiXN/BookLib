@@ -63,7 +63,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, bookID }) => {
             setTimeout(() => {
                 setSuccessMessage(false);
                 onClose();
-            }, 3000);
+                window.location.reload();
+            }, 1000);
         } catch (error) {
             console.error('Ошибка при отправке отзыва:', error);
             alert('Не удалось отправить отзыв. Попробуйте позже.');
@@ -107,6 +108,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ isOpen, onClose, bookID }) => {
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                             />
+                            <p>Примечание: если вы публиковали отзыв ранее, то ваш отзыв перезапишется.</p>
                             <div className={s.publicateReviewButtonContainer}>
                                 <button
                                     type="submit"

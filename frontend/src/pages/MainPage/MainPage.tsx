@@ -15,7 +15,7 @@ const MainPage = () => {
 
     const [fantasyBooks, setFantasyBooks] = useState<ParsedBookCard[]>([]);
     const [mysteryBooks, setMysteryBooks] = useState<ParsedBookCard[]>([]);
-    const [detectiveBooks, setDetectiveBooks] = useState<ParsedBookCard[]>([]);
+    const [classicBooks, setClassicBooks] = useState<ParsedBookCard[]>([]);
 
     useEffect(() => {
         const fetchAllBooks = async () => {    
@@ -26,11 +26,11 @@ const MainPage = () => {
                     BookApi.listBooksByCategory({ categoryID: 3 }).then(parseBookCardsResponse),
                 ];
     
-                const [fantasy, mystery, detective] = await Promise.all(requests);
+                const [fantasy, mystery, classic] = await Promise.all(requests);
     
                 setFantasyBooks(fantasy || []);
                 setMysteryBooks(mystery || []);
-                setDetectiveBooks(detective || []);
+                setClassicBooks(classic || []);
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
                 setError(
@@ -90,11 +90,11 @@ const MainPage = () => {
                     </div>
                 </div>
             )}
-            {detectiveBooks.length > 0 && (
+            {classicBooks.length > 0 && (
                 <div className={s.bookCardByTheme}>
-                    <p className={s.title}>Детективы</p>
+                    <p className={s.title}>Классика</p>
                     <div className={s.block}>
-                        {detectiveBooks.map((book, index) => (
+                        {classicBooks.map((book, index) => (
                             <BookCard 
                                 key={index}
                                 title={book.title} 

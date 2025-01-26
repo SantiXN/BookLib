@@ -2,7 +2,7 @@ import BookCard from '../../component/common/BookCard/BookCard';
 import s from './AuthorPage.module.css'
 import { ParsedBookCard } from '../../types/BookTypes';
 import { parseBookCardsResponse } from '../../utils/BookUtils';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useApi from '../../../api/ApiClient';
 import { ListAuthorBooksRequest, GetAuthorInfoRequest } from '../../../api';
 import { useParams } from 'react-router-dom';
@@ -70,11 +70,16 @@ const AuthorPage = () => {
     return (
         <div className={s.authorContainer}>
             <div className={s.authorBody}>
-                <img className={s.authorImage} src='src/images/avatar/image.png' alt=''/>
+                <img className={s.authorImage} src={'http://localhost:8080/uploads/default.jpg'} alt=''/>
                 <div className={s.authorInfo}>
                     <p className={s.authorName}>{`${authorInfo?.firstName} ${authorInfo?.lastName}`}</p>
                     <p className={s.authorDescription}>
-                        {authorInfo?.description}
+                        {authorInfo?.description && authorInfo?.description.split('\n').map((line, index) => (
+                            <React.Fragment key={index}>
+                                {line}
+                                <br />
+                            </React.Fragment>
+                        ))}
                     </p>
                 </div>
             </div>

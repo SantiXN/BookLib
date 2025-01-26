@@ -95,6 +95,7 @@
     margin-top: 20px;
     border-radius: 200px;
     background-color: #BABABA;
+    object-fit: cover;
 }
 
 .submitButton {

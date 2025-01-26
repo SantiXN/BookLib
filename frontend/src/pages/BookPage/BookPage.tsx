@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BookReviews from '../../component/common/BookReviews/BookReviews';
 import s from './BookPage.module.css'
 import useApi from '../../../api/ApiClient';
@@ -116,7 +116,12 @@ const BookPage = () => {
                     <div className={s.descriptionContainer}>
                         <span className={s.descrpitionTitle}>Описание</span>
                         <p className={s.bookCardDescription}>
-                            {bookInfo?.description}
+                            {bookInfo?.description.split('\n').map((line, index) => (
+                            <React.Fragment key={index}>
+                                {line}
+                                <br />
+                            </React.Fragment>
+                        ))}
                         </p>
                     </div>
                 </div>

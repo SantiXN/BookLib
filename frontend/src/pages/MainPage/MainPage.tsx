@@ -14,7 +14,7 @@ const MainPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     const [fantasyBooks, setFantasyBooks] = useState<ParsedBookCard[]>([]);
-    const [mysteryBooks, setMysteryBooks] = useState<ParsedBookCard[]>([]);
+    const [detectiveBooks, setDetectiveBooks] = useState<ParsedBookCard[]>([]);
     const [classicBooks, setClassicBooks] = useState<ParsedBookCard[]>([]);
 
     useEffect(() => {
@@ -22,14 +22,14 @@ const MainPage = () => {
             try {
                 const requests = [
                     BookApi.listBooksByCategory({ categoryID: 1 }).then(parseBookCardsResponse),
-                    BookApi.listBooksByCategory({ categoryID: 2 }).then(parseBookCardsResponse),
+                    BookApi.listBooksByCategory({ categoryID: 7}).then(parseBookCardsResponse),
                     BookApi.listBooksByCategory({ categoryID: 3 }).then(parseBookCardsResponse),
                 ];
     
-                const [fantasy, mystery, classic] = await Promise.all(requests);
+                const [fantasy, detective, classic] = await Promise.all(requests);
     
                 setFantasyBooks(fantasy || []);
-                setMysteryBooks(mystery || []);
+                setDetectiveBooks(detective || []);
                 setClassicBooks(classic || []);
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
@@ -72,11 +72,11 @@ const MainPage = () => {
                     </div>
                 </div>
                 )}
-            {mysteryBooks.length > 0 && (
+            {detectiveBooks.length > 0 && (
                 <div className={s.bookCardByTheme}>
-                    <p className={s.title}>Мистика</p>
+                    <p className={s.title}>Детективы</p>
                     <div className={s.block}>
-                        {mysteryBooks.map((book, index) => (
+                        {detectiveBooks.map((book, index) => (
                             <BookCard 
                                 key={index}
                                 title={book.title} 

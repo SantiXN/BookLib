@@ -32,7 +32,7 @@ export interface EditUserInfoRequest {
      */
     lastName?: string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof EditUserInfoRequest
      */

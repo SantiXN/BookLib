@@ -147,6 +147,21 @@
     height: 150px;
 }
 
+.multipleInput option {
+    padding: 2px 0;
+    position: relative; /* Для позиционирования псевдоэлемента */
+    display: block; /* Убедитесь, что каждый элемент отображается как блочный */
+}
+
+.multipleInput option:not(:last-child)::after {
+    content: '';
+    display: block;
+    height: 1px; /* Толщина линии */
+    background-color: #ddd; /* Цвет линии */
+    margin: 2px 0; /* Отступы между линией и текстом */
+    width: 100%; /* Ширина линии */
+}
+
 .mdEditor {
     height: 600px;
     border-radius: 5px;

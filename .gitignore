@@ -2,3 +2,6 @@
 /backend/vendor/
 *.pdf
 *.jpg
+*.webp
+*.png
+*.jpeg

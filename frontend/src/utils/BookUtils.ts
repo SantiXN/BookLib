@@ -1,8 +1,9 @@
 import { ListBooksByCategoryResponseData } from '../../api/models/ListBooksByCategoryResponseData'
 import { GetBookInfoResponseData } from '../../api/models/GetBookInfoResponseData';
 import { ParsedBookInfo, ParsedBookCard } from '../types/BookTypes'; 
+import { ListAuthorBooksResponseData } from '../../api';
 
-export function parseBookCardsResponse(response: ListBooksByCategoryResponseData): ParsedBookCard[] {
+export function parseBookCardsResponse(response: ListBooksByCategoryResponseData | ListAuthorBooksResponseData): ParsedBookCard[] {
     if (!response.books) {
         return [];
     }

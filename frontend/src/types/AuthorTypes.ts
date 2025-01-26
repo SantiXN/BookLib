@@ -3,5 +3,6 @@ export type ParsedAuthorInfo = {
     firstName: string;
     lastName: string;
     description?: string;
+    avatarPath?: string;
 }
 

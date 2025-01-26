@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { EditUserInfoRequest } from '../../../api';
 import useApi from '../../../api/ApiClient';
 import { useAuth } from '../../context/AuthContext';
@@ -170,9 +170,25 @@ const ProfilePage = () => {
             <div>
                 <div className={s.topBlock}>
                     <h2 className={s.title}>Личная информация</h2>
-                    <button type="button" onClick={handleLogout} style={{ marginLeft: '10px' }}>
-                        Выйти
-                    </button>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        {userRole && userRole == 'admin' && (
+                            <Link to={'/admin'} style={{marginRight: '10px'}}>
+                                <button>
+                                    Меню администратора
+                                </button>
+                            </Link>
+                        )}
+                        {userRole && userRole != '' && userRole != 'user' && (
+                            <Link to={'/editor'} style={{marginRight: '10px'}}>
+                                <button>
+                                    Меню редактора
+                                </button>
+                            </Link>
+                        )}
+                        <button type="button" onClick={handleLogout}>
+                            Выйти
+                        </button>
+                    </div>
                 </div>
                 <div className={s.infoContainer}>
                     <div className={s.formContainer}>

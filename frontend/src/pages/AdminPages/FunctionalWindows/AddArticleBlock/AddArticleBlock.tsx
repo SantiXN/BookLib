@@ -1,62 +1,76 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import MarkdownEditor from '@uiw/react-markdown-editor';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+const AddArticleBlock: React.FC<BlockProps> = ({ onClose }) => {
+    const { ArticleApi } = useApi();
+
+    const [createdArticleId, setCreatedArticleId] = useState<number | null>(null);
 
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [content, setContent] = useState('');
 
-    const isFieldsEmpty = !(title.trim() && description.trim())
-
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
-            onClose();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);    
+    const isFieldsEmpty = !(title.trim() && content.trim())   
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
     };    
     
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescription(e.target.value);
-    };    
+    const handleChangeDescription = (value: string) => {
+        setContent(value);
+    } 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (isFieldsEmpty) return;
+
+        ArticleApi.createArticle({ createArticleRequest: { title: title, content: content} })
+            .then((response) => {
+                if (response) {
+                    console.log(response);
+                    alert('Статья успешно создана');
+                    setCreatedArticleId(response.id!)
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                alert('Ошибка создания статьи');
+            });
     };   
+
+    const handleStatusChange = () => {
+        if (!createdArticleId) {
+            alert('Ошибка при опубликовании статьи');
+            return;
+        }
+
+        ArticleApi.publishArticle({ articleID: createdArticleId })
+            .then(() => {
+                alert('Статья успешно опубликована!');
+                onClose();
+            })
+            .catch((err) => alert(`Ошибка публикации статьи: ${err}`));
+    }
     
+    const close = () => {
+        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        if (!confirmDelete) return;
+
+        onClose();
+    }
+
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={`${s.block} ${s.articleBlock}`}>
+            <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить статью</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
@@ -73,20 +87,26 @@ const AddArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                                 />
                             </label>
                         </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea className={`${s.formTextArea} ${s.articleTextArea}`} 
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </label>
+                        <div className={s.formFieldContainer} style={{width: '1200px'}}>
+                            <label className={s.formLabel}>Описание</label>
+                            <MarkdownEditor
+                                className={s.mdEditor}
+                                onChange={(value) => handleChangeDescription(value)}
+                                value={content}
+                                visible={true}/>
                         </div>
-                        <div className={s.actionButtonContainer}>
+                        <div className={s.actionButtonContainer} style={{gap: '10px'}}>
                             <button
                                 type="submit"
                                 className={`${s.button} ${s.formButton} ${isFieldsEmpty ? s.disabledButton : ""}`}
                                 disabled={isFieldsEmpty}
+                            >
+                                Создать
+                            </button>
+                            <button
+                                type='button'
+                                className={`${s.button} ${s.formButton} ${!createdArticleId ? s.disabledButton : ""}`}
+                                onClick={handleStatusChange}
                             >
                                 Опубликовать
                             </button>

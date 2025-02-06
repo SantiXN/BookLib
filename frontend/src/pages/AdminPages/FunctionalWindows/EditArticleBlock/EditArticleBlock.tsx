@@ -1,129 +1,199 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { ArticleData, ArticleInfo, ArticleInfoStatusEnum, EditArticleRequest } from '../../../../../api';
+import useApi from '../../../../../api/ApiClient';
+import MarkdownEditor from '@uiw/react-markdown-editor';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
+    isAdmin: boolean;
 }
 
-const EditArticleBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+const EditArticleBlock: React.FC<BlockProps> = ({ onClose, isAdmin }) => {
+    const { ArticleApi } = useApi();
 
-    const [articles, setArticles] = useState<string[]>([]);
-    const [article, setArticle] = useState('');
+    const [articles, setArticles] = useState<ArticleData[]>([]);
+    const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
+    const [selectedArticle, setSelectedArticle] = useState<ArticleInfo | null>(null);
 
     useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+        if (!isAdmin) {
+            ArticleApi.managementArticles()
+            .then((response) => {
+                if (response.articles) {
+                    setArticles(response.articles);
                 }
-                const data: string[] = await response.json();
-                setArticles(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
-
-        fetchArticles();
+            });
+        }
     }, []);
 
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [status, setStatus] = useState('');
+    const [content, setContent] = useState('');
 
-    const isFieldsChanged = false; // изменять, если поля отличаются от выбранной статьи
+    const isFieldsChanged = selectedArticle 
+        ? title !== selectedArticle.title || content !== selectedArticle.content || status !== selectedArticle.status 
+        : false;  
 
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
-            onClose();        
-        }
-    };
+    const handleChangeDescription = (value: string) => {
+        setContent(value);
+    } 
+    
+    const handleArticleChange = (id: number | null) => {
+        if (!id) return;
+        ArticleApi.getArticle({articleID: id})
+            .then((response) => {
+                if (response.article) {
+                    setSelectedArticle(response.article);
+                    setTitle(response.article.title);
+                    setStatus(response.article.status);
+                    setContent(response.article.content);
+                }
+                else {
+                    console.error('Ошибка получения статьи');
+                }
+            });
+    }
 
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    };
+    const handleArticleChangeFromInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const articleId = Number(e.target.value);
+        setSelectedArticleId(articleId);
+    }
 
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);    
-
-    const handleArticleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setArticle(e.target.value);
+    const handleArticleChangeFromSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const articleId = Number(e.target.value);
+        setSelectedArticleId(articleId);
+        handleArticleChange(articleId);
     };    
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
     };    
-    
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setDescription(e.target.value);
-    };    
+
+    const updateStatus = () => {
+        if (status != ArticleInfoStatusEnum.Unpublished || !selectedArticleId) return;
+
+        ArticleApi.publishArticle({ articleID: selectedArticleId })
+            .then(() => {
+                setStatus(ArticleInfoStatusEnum.Published);
+                alert("Статья опубликована!");
+            })
+    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!selectedArticle || !isFieldsChanged) return;
+
+        const updatedFields: EditArticleRequest = {};
+        if (title !== selectedArticle.title) updatedFields.newTitle = title;
+        if (content !== selectedArticle.content) updatedFields.newContent = content;
+
+        ArticleApi
+            .editArticle({
+                articleID: selectedArticle.id,
+                editArticleRequest: updatedFields
+            })
+            .then(() => {
+                alert('Статья успешно отредактирована');
+                onClose();
+            })
+            .catch((error) => {
+                console.error('Ошибка редактирования статьи', error);
+            });
     };   
+
+    const close = () => {
+        //const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        //if (!confirmDelete) return;
+
+        onClose();
+    }
     
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={`${s.block} ${s.articleBlock}`}>
+            <div className={`${s.block} ${s.articleBlock}`}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать статью</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Статья</label>
-                            <select id="author" className={s.input} value={article} onChange={handleArticleChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {articles.map((art, index) => (
-                                    <option key={index} value={art}>
-                                        {art}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Название статьи
+                        {!isAdmin && (
+                            <div className={s.formFieldContainer}>
+                                <label className={s.formLabel} htmlFor='author'>Статья</label>
+                                <select id="author" className={s.input} value={selectedArticle?.id || ''} onChange={handleArticleChangeFromSelect}>
+                                    <option value='' disabled>Выберите...</option>
+                                    {articles.map((art, index) => (
+                                        <option key={index} value={art.id}>
+                                            {art.title} (id={art.id})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {isAdmin && (
+                            <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
+                                <label className={s.formLabel} htmlFor='articleId'>ID статьи</label>
                                 <input
-                                    className={s.input}
-                                    id='title'
-                                    type='text'
-                                    placeholder='Название'
-                                    value={title}
-                                    onChange={handleTitleChange}
+                                    className={`${s.input} ${s.autoWidth}`}
+                                    id='articleId'
+                                    type='number'  
+                                    value={selectedArticleId || ''}
+                                    onChange={(value) => handleArticleChangeFromInput(value)}
                                 />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea className={`${s.formTextArea} ${s.articleTextArea}`} 
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </label>
-                        </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleArticleChange(selectedArticleId)}
+                                    disabled={!selectedArticleId}
+                                    className={`${s.button} ${!selectedArticleId ? s.disabledButton : ''}`}
+                                >
+                                    Поиск
+                                </button>
+                            </div>
+                        )}
+                        {selectedArticle && (
+                            <div style={{width: '1200px'}}>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Название статьи
+                                        <input
+                                            className={s.input}
+                                            id='title'
+                                            type='text'
+                                            placeholder='Название'
+                                            value={title}
+                                            onChange={handleTitleChange}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>Описание</label>
+                                    <MarkdownEditor
+                                        className={s.mdEditor}
+                                        onChange={(value) => handleChangeDescription(value)}
+                                        value={content}
+                                        visible={true}/>
+                                </div>
+                                {selectedArticle.status == ArticleInfoStatusEnum.Unpublished && status !== ArticleInfoStatusEnum.Published && (
+                                    <div>
+                                        Статья не опубликована  
+                                        <button
+                                            type='button'
+                                            onClick={updateStatus}
+                                            style={{marginLeft: '10px'}}
+                                        >
+                                            Опубликовать
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
                                 className={`${s.button} ${s.formButton} ${!isFieldsChanged ? s.disabledButton : ""}`}
-                                disabled={isFieldsChanged}
+                                disabled={!isFieldsChanged}
                             >
                                 Редактировать
                             </button>

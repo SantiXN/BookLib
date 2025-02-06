@@ -14,14 +14,14 @@ const BookCard: React.FC<BookCardProps> = ({ title, author, coverImage, rating, 
     return (
         <div className={classname}> 
             <div className={s.bookCard}>
-                <a href={toDirect} className={s.bookCardLink} target="_blank">
-                    <img src={`/src/images/book/${coverImage}`} alt={`${title}`} className={s.bookCardImage} />
+                <a href={toDirect} className={s.bookCardLink}>
+                    <img src={`${coverImage}`} alt={`${title}`} className={s.bookCardImage} />
                     <p className={s.bookCardTitle}>{title}</p>
                     <div className={s.bookCardInfo}>
                     <p className={s.bookCardAuthor}>{author}</p>
                         <div className={s.bookCardRating}>
                             <div className={s.bookCardRatingLogo}></div>
-                            <p>{rating}</p>
+                            <p style={{color: '#000'}}>{rating}</p>
                         </div>
                     </div>
                 </a>

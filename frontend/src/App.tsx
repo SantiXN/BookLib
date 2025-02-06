@@ -4,61 +4,49 @@ import s from './app.module.css';
 import Footer from './component/Footer/Footer.tsx';
 import Header from './component/Header/Header.tsx';
 import AuthorPage from './pages/AuthorPage/AuthorPage.tsx';
-
-const PersonalAccount = () => {
-    return (
-        <div>
-            <h1>Личный кабинет</h1>
-            {/* Контент личного кабинета */}
-        </div>
-    );
-};
-
-const Book = () => {
-    return (
-        <div>
-            <h1>Книга ID: </h1>
-            {/* Дополнительная информация о книге */}
-        </div>
-    );
-};
-
-const Info = () => {
-    return (
-        <div>
-            <h1>Информация</h1>
-            {/* Информация о приложении или другие детали */}
-        </div>
-    );
-};
-
-const AdminEditor = () => {
-    return (
-        <div>
-            <h1>Административная панель</h1>
-            {/* Функции для администрирования */}
-        </div>
-    );
-};
+import AdminMenu from './pages/AdminPages/AdminMenu/AdminMenu.tsx';
+import EditorMenu from './pages/AdminPages/EditorMenu/EditorMenu.tsx';
+import ArticlePage from './pages/ArticlePage/ArticlePage.tsx';
+import BookPage from './pages/BookPage/BookPage.tsx';
+import MainPage from './pages/MainPage/MainPage.tsx';
+import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
+import UserLibraryPage from './pages/UserLibraryPage/UserLibraryPage.tsx';
+import GenrePage from './pages/GenrePage/GenrePage.tsx';
+import ArticlesPage from './pages/ArticlesPage/ArticlesPage.tsx';
+import SearchPage from './pages/SearchPage/SearchPage.tsx';
+import AuthPage from './pages/AuthPage/AuthPage.tsx';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
+import ErrorPage from './pages/ErrorPage/ErrorPage.tsx';
+import ReadPage from './pages/ReadPage/ReadPage.tsx';
 
 const App = () => {
   return (
-      <Router>
-        <Header />
-          <div className={s.container}>
-              <Routes>
-                  <Route path="/account" element={<PersonalAccount />} />
-                  <Route path="/book/:id" element={<Book />} />
-                  <Route path="/info" element={<Info />} />
-                  <Route path="/admin" element={<AdminEditor />} />
-              </Routes>
-                
-            <AuthorPage />
-          </div>
-        <Footer />
-      </Router>
+    <AuthProvider>
+    <Router>
+      <Header />
+      <div className={s.container}>
+        <Routes>
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="*" element={<ErrorPage />} />
+          <Route path="/" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+          <Route path="/book/:id" element={<ProtectedRoute><BookPage /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminMenu /></ProtectedRoute>} />
+          <Route path="/editor" element={<ProtectedRoute><EditorMenu /></ProtectedRoute>} />
+          <Route path="/author/:id" element={<ProtectedRoute><AuthorPage /></ProtectedRoute>} />
+          <Route path="/article/:id" element={<ProtectedRoute><ArticlePage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/library" element={<ProtectedRoute><UserLibraryPage /></ProtectedRoute>} />
+          <Route path="/genre/:id" element={<ProtectedRoute><GenrePage /></ProtectedRoute>} />
+          <Route path="/articles" element={<ProtectedRoute><ArticlesPage /></ProtectedRoute>} />
+          <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+          <Route path="/book/:id/read" element={<ProtectedRoute><ReadPage /></ProtectedRoute>} />
+        </Routes>
+      </div>
+      <Footer />
+    </Router>
+  </AuthProvider>
   );
 };
 
-
-export default App
+export default App;

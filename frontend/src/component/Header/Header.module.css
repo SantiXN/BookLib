@@ -45,7 +45,7 @@
     color: #FFFFFF;
     width: 110px;
     height: 40px;
-    border-radius: 5px;
+    border-radius: 15px;
     background-color: #2441C1;
     font-size: 18px;
     cursor: pointer;
@@ -56,10 +56,12 @@
 }
 
 .megaDropdown {
+    z-index: 1;
     position: absolute;
     display: none; /* Скрываем по умолчанию */
     border-radius: 10px;
     border: 1px solid #000000;
+    background-color: #fff;
 }
 
 .catalog:hover .megaDropdown, .userMenu:hover .megaDropdown {
@@ -71,6 +73,7 @@
 }
 
 .dropdownList {
+    text-align: center;
     list-style-type: none;
     padding: 0;
 }
@@ -109,6 +112,10 @@
     font-size: 16px;
     color: #000000;
     text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .link:hover {

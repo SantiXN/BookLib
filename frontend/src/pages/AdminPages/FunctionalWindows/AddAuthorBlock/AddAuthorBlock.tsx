@@ -1,49 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import useApi from '../../../../../api/ApiClient';
+import { CreateAuthorRequest } from '../../../../../api';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+const AddAuthorBlock: React.FC<BlockProps> = ({ onClose }) => {
+    const { AuthorApi } = useApi();
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [description, setDescription] = useState('');
-    const isFormFieldsEmpty = !(firstName.trim() && lastName.trim() && description.trim());
-
-    const close = () => {
-        setFirstName('');
-        setLastName('');
-        setDescription('');
-
-        onClose();
-    }
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            close();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            close();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
 
     const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFirstName(e.target.value);
@@ -58,16 +27,44 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
     };    
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            // Здесь можно добавить логику для авторизации
+        e.preventDefault();
+        if (!firstName) return;
+
+        setFirstName(firstName.trim());
+        setLastName(lastName.trim());
+        setDescription(description.trim());
+
+        const request: CreateAuthorRequest = {firstName};
+        if (lastName) request.lastName = lastName;
+        if (description) request.description = description;
+
+        AuthorApi.createAuthor({ createAuthorRequest: request })
+            .then((response) => {
+                alert(`Автор успешно добавлен! ID: ${response.id}`);
+                onClose();
+                setFirstName('');
+                setLastName('');
+                setDescription('');
+            })
+            .catch((error) => {
+                console.error('Error adding author:', error);
+                alert('Не удалось добавить автора. Попробуйте позже.');
+            })
     };
+
+    const close = () => {
+        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        if (!confirmDelete) return;
+
+        onClose();
+    }
 
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block}>
+            <div className={s.block} style={{width: '600px'}}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Добавить автора</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
@@ -107,8 +104,8 @@ const AddAuthorBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
                             </label>
                         </div>
                         <div className={s.actionButtonContainer}>
-                            <button type="submit" className={`${s.button} ${s.formButton} ${isFormFieldsEmpty ? s.disabledButton : ''}`}
-                                disabled={isFormFieldsEmpty}
+                            <button type="submit" className={`${s.button} ${s.formButton} ${!firstName ? s.disabledButton : ''}`}
+                                disabled={!firstName}
                                 >
                                     Добавить
                             </button>

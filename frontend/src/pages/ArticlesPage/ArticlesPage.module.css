@@ -1,0 +1,89 @@
+.container {
+    display: block;
+    width: 100%;
+}
+
+.title {
+    font-size: 30px;
+    margin: 15px 0 5px 20px;
+    color: #000;
+}
+
+.catalogHeader {
+    height: min-content;
+}
+
+.filteringContainer {
+    display: flex;
+}
+
+.catalog {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.catalogItemLink {
+    display: flex;
+    color: inherit;
+    width: 100%;
+}
+
+.catalogItemLink:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.catalogItem {
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    transition: transform 0.2s;
+    width: 100%;
+}
+
+.catalogItem:hover {
+    transform: scale(1.05);
+}
+
+.articleInfo {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 120px);
+    margin-left: 15px;
+}
+
+.articleTitle {
+    font: 24px Inter;
+    margin: 0;
+    margin-top: 10px;
+    margin-right: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.articleAuthor {
+    font: 18px Inter;
+    margin: 5px 0;
+    color: #000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loadMoreContainer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.articlePublishDate {
+    color: #a39b9b;
+    margin: 0;
+}

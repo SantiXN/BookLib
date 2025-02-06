@@ -1,99 +1,60 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from '../FunctionalWindow.module.css'
+import { BookInfo, EditBookRequest } from '../../../../../api';
+import useApi from '../../../../../api/ApiClient';
 
 interface BlockProps {
-    isOpen: string | null;
     onClose: () => void;
 }
 
-const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
-    const [authors, setAuthors] = useState<string[]>([]);
-    const [books, setBooks] = useState<string[]>([]);
-    const [book, setBook] = useState('');
+const EditBookBlock: React.FC<BlockProps> = ({ onClose }) => {
+    const { BookApi, FileApi} = useApi();
+
+    const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
+    const [selectedBook, setSelectedBook] = useState<BookInfo | null>(null);
     
-    // Изменение полей должно происходить по выбранной книге
     const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
-    const [bookFile, setBookFile] = useState<File | null>(null);
     const [bookCoverFile, setBookCoverFile] = useState<File | null>(null);
 
-    const isBookDataChanged = false; // изменять, если изменились поля
-
     useEffect(() => {
-        const fetchAuthors = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
-                }
-                const data: string[] = await response.json();
-                setAuthors(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
+        if (selectedBook) {
+            setTitle(selectedBook.title);
+            if (selectedBook.description) {
+                setDescription(selectedBook.description!);
             }
-        };
+        }
+    }, [selectedBook]);    
 
-        const fetchbooks = async () => {
-            try {
-                const response = await fetch('https://api.example.com/options');
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
-                }
-                const data: string[] = await response.json();
-                setBooks(data);
-            } catch (err) {
-                //setError(err.message || 'Неизвестная ошибка');
-            } finally {
-                //setLoading(false);
-            }
-        };
+    const isBookDataChanged = selectedBook 
+        ? title !== selectedBook.title ||
+          description !== selectedBook.description ||
+          bookCoverFile !== null
+        : false;
 
-        fetchbooks();
-        fetchAuthors();
-    }, []);
-
-    const close = () => {
+    const clearFieldsAndCloseWindow = () => {
         setTitle('');
-        setAuthor('');
         setDescription('');
         setBookCoverFile(null);
-        setBookFile(null);
         onClose();
     };
 
-    const containerRef = useRef<HTMLDivElement>(null);
-    
-    const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-            console.log('click');
-            close();        
-        }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            close();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen != null) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscapeKey);
-        };
-    }, [isOpen]);
-
-    const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setBook(e.target.value);
+    const handleBookChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const bookId = Number(e.target.value);
+        setSelectedBookId(bookId);
     }; 
+
+    const handleBookSearch = () => {
+        if (!selectedBookId) return;
+
+        BookApi.getBookInfo({ bookID: selectedBookId })
+            .then((response) => {
+                if (response.book) {
+                    setSelectedBook(response.book);
+                }
+            })
+            .catch(() => alert('Книга с заданным ID не найдена'));
+    }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -103,10 +64,6 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         setDescription(e.target.value);
     };    
 
-    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setAuthor(e.target.value);
-    }; 
-
     const handleBookCoverFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedBookCover = event.target.files?.[0];
         if (selectedBookCover) {
@@ -114,118 +71,129 @@ const EditBookBlock: React.FC<BlockProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    const handleBookFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedBookFile = event.target.files?.[0];
-        if (selectedBookFile) {
-            setBookFile(selectedBookFile);
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!isBookDataChanged) return;
+        let bookCoverPath = '';
+
+        try {
+            bookCoverPath = await SaveFile(bookCoverFile);
+        } catch (error: unknown) {
+            console.error('Error adding file:', error);
         }
+
+        const request: EditBookRequest = {};
+        if (title !== selectedBook?.title) request.newTitle = title;
+        if (description !== selectedBook?.description) request.newDescription = description;
+        request.newCoverPath = bookCoverPath;
+
+        BookApi.editBook({bookID: selectedBook?.id || 0, editBookRequest: request})
+            .then(() => {
+                alert('Книга успешно отредактирована');
+                clearFieldsAndCloseWindow();
+            })
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log('Title:', title);
-        console.log('Description:', description);
-        console.log('Book cover file:', bookCoverFile);
-        console.log('Book file:', bookFile);
-    };
+    const SaveFile = async (file: File | null) => {
+        if (File !== null)
+        {
+            const uploadResponse = await FileApi.uploadFile({ file: file });
+            if (uploadResponse.filePath) {
+                return "http://localhost:8080" + uploadResponse.filePath;
+            }
+        }
+        throw('Не удалось загрузить аватар. Пожалуйста, попробуйте еще раз.');
+    }
+
+    const close = () => {
+        const confirmDelete = window.confirm('Вы точно хотите закрыть окно?');
+        if (!confirmDelete) return;
+
+        clearFieldsAndCloseWindow();
+    }
         
     return (
         <div className={s.container}>
-            <div ref={containerRef} className={s.block}>
+            <div className={s.block}>
                 <div className={s.menuHeader}>
                     <p className={s.menuTitle}>Редактировать книгу</p>
-                    <span onClick={onClose} className={s.closeIcon} />
+                    <span onClick={close} className={s.closeIcon} />
                 </div>
                 <div className={s.menuContainer}>
                     <form className={s.form} onSubmit={handleSubmit}>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='book'>Книга</label>
-                            <select id="book" className={s.input} value={book} onChange={handleBookChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {books.map((book, index) => (
-                                    <option key={index} value={book}>
-                                        {book}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className={`${s.formFieldContainer} ${s.inputContainerFromId}`}>
+                            <label className={s.formLabel} htmlFor='bookId'>ID книги</label>
+                            <input 
+                                className={`${s.input} ${s.autoWidth}`}
+                                id='bookId'
+                                type='number'  
+                                value={selectedBookId || ''}
+                                onChange={(value) => handleBookChange(value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleBookSearch}
+                                disabled={!selectedBookId}
+                                className={`${s.button} ${!selectedBookId ? s.disabledButton : ''}`}
+                            >
+                                Поиск
+                            </button>
                         </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Название
-                                <input
-                                    className={s.input}
-                                    id="title"
-                                    type="text"
-                                    placeholder="Название"
-                                    value={title}
-                                    onChange={handleTitleChange}
-                                />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='author'>Автор</label>
-                            <select id="author" className={s.input} value={author} onChange={handleAuthorChange}>
-                                <option value='' disabled>Выберите...</option>
-                                {authors.map((author, index) => (
-                                    <option key={index} value={author}>
-                                        {author}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel}>
-                                Описание
-                                <textarea
-                                    className={s.formTextArea}
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </label>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='book-cover'>Изображение</label>
-                            <div className={s.customFileContainer}>
-                                <input
-                                    accept=".jpg,.jpeg,.png"
-                                    id="book-cover"
-                                    type="file"
-                                    className={s.fileInput}
-                                    onChange={handleBookCoverFileChange}
-                                />
-                                <label
-                                    htmlFor="book-cover"
-                                    className={`${s.customFileLabel}`}
-                                >
-                                    {bookCoverFile ? bookCoverFile.name : "Выберите файл"}
-                                </label>
+                        {selectedBook && (
+                            <div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Название
+                                        <input
+                                            className={s.input}
+                                            id="title"
+                                            type="text"
+                                            placeholder="Название"
+                                            value={title}
+                                            onChange={handleTitleChange}
+                                            disabled={!selectedBook}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel}>
+                                        Описание
+                                        <textarea
+                                            className={s.formTextArea}
+                                            value={description}
+                                            onChange={handleDescriptionChange}
+                                            disabled={!selectedBook}
+                                        />
+                                    </label>
+                                </div>
+                                <div className={s.formFieldContainer}>
+                                    <label className={s.formLabel} htmlFor='book-cover'>Изображение</label>
+                                    <div className={s.customFileContainer}>
+                                        <input
+                                            accept=".jpg,.jpeg,.png,.webp"
+                                            id="book-cover"
+                                            type="file"
+                                            className={s.fileInput}
+                                            onChange={handleBookCoverFileChange}
+                                            disabled={!selectedBook}
+                                        />
+                                        <label
+                                            htmlFor="book-cover"
+                                            className={`${s.customFileLabel}`}
+                                        >
+                                            {bookCoverFile ? bookCoverFile.name : "Выберите файл"}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className={s.formFieldContainer}>
-                            <label className={s.formLabel} htmlFor='book-file'>Книга</label>
-                            <div className={s.customFileContainer}>
-                                <input
-                                    accept=".pdf"
-                                    id="book-file"
-                                    type="file"
-                                    className={s.fileInput}
-                                    onChange={handleBookFileChange}
-                                />
-                                <label
-                                    htmlFor="book-file"
-                                    className={`${s.customFileLabel}`}
-                                >
-                                    {bookFile ? bookFile.name : "Выберите файл"}
-                                </label>
-                            </div>
-                        </div>
+                        )}
                         <div className={s.actionButtonContainer}>
                             <button
                                 type="submit"
-                                className={`${s.button} ${s.formButton} ${isBookDataChanged ? s.disabledButton : ""}`}
-                                disabled={isBookDataChanged}
+                                className={`${s.button} ${s.formButton} ${!isBookDataChanged ? s.disabledButton : ""}`}
+                                disabled={!isBookDataChanged}
                             >
-                                Добавить
+                                Изменить
                             </button>
                         </div>
                     </form>

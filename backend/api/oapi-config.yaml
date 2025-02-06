@@ -1,0 +1,8 @@
+output: ./api/generated.go
+package: api
+generate:
+  - types
+  - client
+  - chi-server
+  - strict-server
+  - spec

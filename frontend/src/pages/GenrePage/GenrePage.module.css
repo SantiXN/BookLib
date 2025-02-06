@@ -1,0 +1,106 @@
+.container {
+    display: block;
+    width: 100%;
+}
+
+.title {
+    font-size: 30px;
+    margin: 15px 0 5px 20px;
+    color: #000;
+}
+
+.catalogHeader {
+    height: min-content;
+}
+
+.filteringContainer {
+    display: flex;
+}
+
+.catalog {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.catalogItemLink {
+    display: flex;
+    color: inherit;
+}
+
+.catalogItemLink:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.catalogItem {
+    margin: 5px 0;
+    display: flex;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    transition: transform 0.2s;
+    width: calc(100% - 120px);
+}
+
+.catalogItem:hover {
+    transform: scale(1.05);
+}
+
+.bookCover {
+    height: 150px;
+}
+
+.bookInfo {
+    display: block;
+    margin-left: 30px;
+    width: 1200px;
+}
+
+.bookTitle {
+    font: 24px Inter;
+    margin: 0;
+    margin-top: 15px;
+    margin-right: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bookAuthors {
+    font: 18px Inter;
+    margin: 15px 0;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bookRatingBlock {
+    display: flex;
+}
+
+.bookRating {
+    margin: 0;
+    margin-left: 10px;
+    margin-top: 1px;
+    font: 20px Inter;
+}
+
+.ratingLogo {
+    background: url("../../images/svg/star.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 28px;
+    height: 25px;
+}
+
+.loadMoreContainer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

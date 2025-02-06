@@ -12,7 +12,7 @@
 }
 
 .block {
-    width: 600px;
+    width: auto;
     display: flex;
     flex-direction: column;
     background-color: #F6F6F6;
@@ -47,7 +47,6 @@
     align-items: center;
     justify-content: center;
 }
-
 
 .input {
     width: 100%;
@@ -87,9 +86,9 @@
     outline: none;
     min-width: 100%;
     max-width: 100%;
-    min-height: 50px;
+    min-height: 200px;
     max-height: 500px;
-    height: 50px;
+    height: 200px;
     font-size: 20px;
     border: 1px solid #E5E5E5;
     border-radius: 10px;
@@ -140,10 +139,46 @@
     justify-content: center;
 }
 
-.articleBlock {
-    width: 1200px;
-}
-
 .articleTextArea {
     min-height: 200px;
+}
+
+.multipleInput {
+    height: 150px;
+}
+
+.multipleInput option {
+    padding: 2px 0;
+    position: relative; /* Для позиционирования псевдоэлемента */
+    display: block; /* Убедитесь, что каждый элемент отображается как блочный */
+}
+
+.multipleInput option:not(:last-child)::after {
+    content: '';
+    display: block;
+    height: 1px; /* Толщина линии */
+    background-color: #ddd; /* Цвет линии */
+    margin: 2px 0; /* Отступы между линией и текстом */
+    width: 100%; /* Ширина линии */
+}
+
+.mdEditor {
+    height: 600px;
+    border-radius: 5px;
+}
+
+.inputContainerFromId {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.autoWidth {
+    width: auto;
+}
+
+.selectedValues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 10px;
 }

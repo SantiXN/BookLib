@@ -8,12 +8,11 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"booklib/pkg/domain/model"
-	inframysql "booklib/pkg/infrastructure/mysql"
 )
 
 func NewCategoryRepository(
 	ctx context.Context,
-	client inframysql.ClientContext,
+	client sqlx.DB,
 ) model.CategoryRepository {
 	return &categoryRepository{
 		ctx:    ctx,
@@ -23,7 +22,7 @@ func NewCategoryRepository(
 
 type categoryRepository struct {
 	ctx    context.Context
-	client inframysql.ClientContext
+	client sqlx.DB
 }
 
 func (repo *categoryRepository) FindOne(id int) (model.Category, error) {

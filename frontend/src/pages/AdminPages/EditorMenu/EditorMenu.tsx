@@ -1,15 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from './EditorMenu.module.css'
 import AddArticleBlock from '../FunctionalWindows/AddArticleBlock/AddArticleBlock';
 import EditArticleBlock from '../FunctionalWindows/EditArticleBlock/EditArticleBlock';
 import RemoveArticleBlock from '../FunctionalWindows/RemoveArticleBlock/RemoveArticleBlock';
+import { useNavigate } from 'react-router-dom';
+import useApi from '../../../../api/ApiClient';
+import { UserInfoRoleEnum } from '../../../../api';
 
 const EditorMenu = () => {
+    const { UserApi } = useApi();
+
+    const navigate = useNavigate();
+    const [isEditor, setIsEditor] = useState(false);
+    
+    useEffect(() => {
+        UserApi.getAuthorizedUser()
+            .then((response) => {
+                if (response.user.role == UserInfoRoleEnum.User) {
+                    alert('Ошибка прав доступа!')
+                    navigate('/');
+                } else {
+                    setIsEditor(true);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+                navigate('/');
+            });
+    }, [navigate]);
+
     const [activeWindowMenu, setActiveWindowMenu] = useState<string | null>(null);
 
     const handleButtonClick = (window: string) => setActiveWindowMenu(window); 
 
     const closeWindow = () => setActiveWindowMenu(null);
+
+    if (!isEditor) return null;
 
     return (
         <div className={s.adminMenuContainer}>
@@ -23,13 +49,13 @@ const EditorMenu = () => {
             </div>
 
             {activeWindowMenu === 'addArticle' && (
-                <AddArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <AddArticleBlock onClose={closeWindow}/>
             )}
             {activeWindowMenu === 'editArticle' && (
-                <EditArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <EditArticleBlock onClose={closeWindow} isAdmin={false}/>
             )}
             {activeWindowMenu === 'removeArticle' && (
-                <RemoveArticleBlock isOpen={activeWindowMenu} onClose={closeWindow}/>
+                <RemoveArticleBlock onClose={closeWindow} isAdmin={false}/>
             )}
         </div>
     )

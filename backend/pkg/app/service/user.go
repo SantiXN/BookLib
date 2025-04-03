@@ -52,13 +52,14 @@ func (u *userService) ValidateUser(email, password string) (int, error) {
 }
 
 func (u *userService) CreateUser(createData CreateData) error {
-	return u.domainUserService.CreateUser(service.UserData{
+	_, err := u.domainUserService.CreateUser(service.UserData{
 		FirstName: createData.FirstName,
 		LastName:  createData.LastName,
 		Email:     createData.Email,
 		Password:  createData.Password,
 		Role:      model.DefaultUser,
 	})
+	return err
 }
 
 func (u *userService) DeleteUser(ctx context.Context, userId int) error {

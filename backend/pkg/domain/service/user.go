@@ -2,9 +2,14 @@ package service
 
 import (
 	"errors"
+	"regexp"
 
 	"booklib/pkg/domain/model"
 	"booklib/pkg/infrastructure/utils"
+)
+
+const (
+	emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 )
 
 type UserData struct {
@@ -17,7 +22,7 @@ type UserData struct {
 }
 
 type UserService interface {
-	CreateUser(userData UserData) error
+	CreateUser(userData UserData) (int, error)
 	DeleteUser(id int) error
 	ChangeRole(id int, role model.UserRole) error
 	EditUserInfo(id int, firstName *string, lastName *string, avatarPath *string) error
@@ -36,21 +41,22 @@ type userService struct {
 	repo model.UserRepository
 }
 
-func (u *userService) CreateUser(userData UserData) error {
+func (u *userService) CreateUser(userData UserData) (int, error) {
 	exist, err := u.repo.IsEmailExist(userData.Email)
-	if err != nil {
-		return err
+	if err != nil || exist {
+		return 0, errors.New(model.ErrUserAlreadyExist.Error())
 	}
-	if exist {
-		return errors.New(model.ErrUserAlreadyExist.Error())
+	valid := u.isValidEmail(userData.Email)
+	if !valid {
+		return 0, errors.New("invalid email")
 	}
 	id, err := u.repo.NextID()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	hashedPassword, err := utils.HashPassword(userData.Password)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	user := model.NewUser(
 		id,
@@ -62,7 +68,12 @@ func (u *userService) CreateUser(userData UserData) error {
 		userData.AvatarPath,
 	)
 
-	return u.repo.Store(user)
+	err = u.repo.Store(user)
+	if err != nil {
+		return 0, err
+	}
+
+	return user.ID(), nil
 }
 
 func (u *userService) DeleteUser(id int) error {
@@ -106,4 +117,9 @@ func (u *userService) EditUserInfo(id int, firstName *string, lastName *string, 
 
 func (u *userService) ValidateUser(email, password string) (int, error) {
 	return u.repo.GetID(email, password)
+}
+
+func (u *userService) isValidEmail(email string) bool {
+	re := regexp.MustCompile(emailRegex)
+	return re.MatchString(email)
 }

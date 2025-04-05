@@ -48,7 +48,7 @@ func (u *userService) CreateUser(userData UserData) (int, error) {
 	}
 	valid := u.isValidEmail(userData.Email)
 	if !valid {
-		return 0, errors.New("invalid email")
+		return 0, errors.New(model.ErrInvalidEmail.Error())
 	}
 	id, err := u.repo.NextID()
 	if err != nil {
@@ -104,6 +104,9 @@ func (u *userService) EditUserInfo(id int, firstName *string, lastName *string, 
 	}
 
 	if firstName != nil {
+		if *firstName == "" {
+			return errors.New(model.ErrInvalidFirstName.Error())
+		}
 		user.SetFirstName(*firstName)
 	}
 	if lastName != nil {

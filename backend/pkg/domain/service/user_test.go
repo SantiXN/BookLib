@@ -1,10 +1,10 @@
 package service
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"booklib/pkg/domain/model"
 )
@@ -22,13 +22,12 @@ var (
 )
 
 func TestCreateUser(t *testing.T) {
-	existingUser := model.NewUser(0, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
 	tests := []struct {
-		name         string
-		data         UserData
-		want         UserData
-		existingUser *model.User
-		wantErr      bool
+		name        string
+		data        UserData
+		mockSetup   func(*mockUserRepository)
+		expectedID  int
+		expectedErr error
 	}{
 		{
 			name: "successful create user with valid data",
@@ -40,16 +39,13 @@ func TestCreateUser(t *testing.T) {
 				Role:       model.DefaultUser,
 				AvatarPath: &avatarPath,
 			},
-			want: UserData{
-				FirstName:  firstName,
-				LastName:   &lastName,
-				Email:      email,
-				Password:   password,
-				Role:       model.DefaultUser,
-				AvatarPath: &avatarPath,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("IsEmailExist", email).Return(false, nil)
+				m.On("NextID").Return(1, nil)
+				m.On("Store", mock.AnythingOfType("*model.user")).Return(nil)
 			},
-			existingUser: nil,
-			wantErr:      false,
+			expectedID:  1,
+			expectedErr: nil,
 		},
 		{
 			name: "failed create user with existing email",
@@ -61,8 +57,11 @@ func TestCreateUser(t *testing.T) {
 				Role:       model.DefaultUser,
 				AvatarPath: &avatarPath,
 			},
-			existingUser: &existingUser,
-			wantErr:      true,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("IsEmailExist", email).Return(true, nil)
+			},
+			expectedID:  0,
+			expectedErr: model.ErrUserAlreadyExist,
 		},
 		{
 			name: "failed create user with invalid email",
@@ -74,303 +73,337 @@ func TestCreateUser(t *testing.T) {
 				Role:       model.DefaultUser,
 				AvatarPath: &avatarPath,
 			},
-			existingUser: nil,
-			wantErr:      true,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("IsEmailExist", invalidEmail).Return(false, nil)
+			},
+			expectedID:  0,
+			expectedErr: model.ErrInvalidEmail,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := newMockUserRepository([]*model.User{tt.existingUser})
-			service := NewUserService(repository)
+			repo := new(mockUserRepository)
+			tt.mockSetup(repo)
+			service := NewUserService(repo)
 
 			id, err := service.CreateUser(tt.data)
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
+
+			assert.Equal(t, tt.expectedID, id)
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
 			}
-
-			user, err := repository.FindOne(id)
-			assert.NoError(t, err)
-
-			assert.Equal(t, tt.data.FirstName, user.FirstName())
-			assert.Equal(t, tt.data.LastName, user.LastName())
-			assert.Equal(t, tt.data.Email, user.Email())
-			assert.Equal(t, tt.data.Role, user.Role())
-			assert.Equal(t, tt.data.AvatarPath, user.AvatarPath())
+			repo.AssertExpectations(t)
 		})
 	}
 }
 
 func TestDeleteUser(t *testing.T) {
-	existingUser := model.NewUser(0, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
 	tests := []struct {
-		name         string
-		id           int
-		existingUser *model.User
-		wantErr      bool
+		name        string
+		id          int
+		mockSetup   func(*mockUserRepository)
+		expectedErr error
 	}{
 		{
-			name:         "successful delete user",
-			id:           0,
-			existingUser: &existingUser,
-			wantErr:      false,
+			name: "successful delete user",
+			id:   1,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("IsUserExist", 1).Return(true, nil)
+				m.On("Delete", 1).Return(nil)
+			},
+			expectedErr: nil,
 		},
 		{
-			name:         "failed delete non existent user",
-			id:           0,
-			existingUser: nil,
-			wantErr:      true,
+			name: "failed delete non existent user",
+			id:   1,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("IsUserExist", 1).Return(false, nil)
+			},
+			expectedErr: model.ErrUserNotFound,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := newMockUserRepository([]*model.User{tt.existingUser})
-			service := NewUserService(repository)
+			repo := new(mockUserRepository)
+			tt.mockSetup(repo)
+			service := NewUserService(repo)
 
 			err := service.DeleteUser(tt.id)
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
+
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
 			}
-
-			exist, err := repository.IsUserExist(tt.id)
-			assert.NoError(t, err)
-			assert.False(t, exist)
+			repo.AssertExpectations(t)
 		})
 	}
 }
 
 func TestChangeRole(t *testing.T) {
-	existingUser := model.NewUser(1, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
+	user := model.NewUser(1, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
 	tests := []struct {
-		name         string
-		id           int
-		existingUser *model.User
-		wantErr      bool
+		name        string
+		id          int
+		role        model.UserRole
+		mockSetup   func(*mockUserRepository)
+		expectedErr error
 	}{
 		{
-			name:         "successful change role",
-			id:           1,
-			existingUser: &existingUser,
-			wantErr:      false,
+			name: "successful change role",
+			id:   1,
+			role: model.Admin,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(user, nil)
+				m.On("Store", mock.AnythingOfType("*model.user")).Return(nil)
+			},
+			expectedErr: nil,
 		},
 		{
-			name:         "failed change role with non existent user",
-			id:           1,
-			existingUser: nil,
-			wantErr:      true,
+			name: "failed change role with non existent user",
+			id:   1,
+			role: model.Admin,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(nil, model.ErrUserNotFound)
+			},
+			expectedErr: model.ErrUserNotFound,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := newMockUserRepository([]*model.User{tt.existingUser})
-			service := NewUserService(repository)
+			repo := new(mockUserRepository)
+			tt.mockSetup(repo)
+			service := NewUserService(repo)
 
-			err := service.ChangeRole(tt.id, model.DefaultUser)
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
+			err := service.ChangeRole(tt.id, tt.role)
+
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
 			}
-
-			user, err := repository.FindOne(tt.id)
-			assert.NoError(t, err)
-			assert.Equal(t, user.Role(), model.DefaultUser)
+			repo.AssertExpectations(t)
 		})
 	}
 }
 
 func TestEditUserInfo(t *testing.T) {
-	existingUser := model.NewUser(1, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
+	user := model.NewUser(1, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
+	newFirstName := "newFirstName"
+	newLastName := "newLastName"
+	newAvatarPath := "newAvatarPath"
+	emptyString := ""
+
 	tests := []struct {
-		name          string
-		id            int
-		newFirstName  string
-		newLastName   string
-		newAvatarPath string
-		existingUser  *model.User
-		wantErr       bool
+		name        string
+		id          int
+		firstName   *string
+		lastName    *string
+		avatarPath  *string
+		mockSetup   func(*mockUserRepository)
+		expectedErr error
 	}{
 		{
-			name:          "successful edit info",
-			id:            1,
-			newFirstName:  "newFirstName",
-			newLastName:   "newLastName",
-			newAvatarPath: "newAvatarPath",
-			existingUser:  &existingUser,
-			wantErr:       false,
+			name:       "successful edit all info",
+			id:         1,
+			firstName:  &newFirstName,
+			lastName:   &newLastName,
+			avatarPath: &newAvatarPath,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(user, nil)
+				m.On("Store", mock.AnythingOfType("*model.user")).Return(nil)
+			},
+			expectedErr: nil,
 		},
 		{
-			name:         "failed edit info to non existent user",
-			id:           1,
-			existingUser: nil,
-			wantErr:      true,
+			name:       "successful edit first name only",
+			id:         1,
+			firstName:  &newFirstName,
+			lastName:   nil,
+			avatarPath: nil,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(user, nil)
+				m.On("Store", mock.AnythingOfType("*model.user")).Return(nil)
+			},
+			expectedErr: nil,
+		},
+		{
+			name:       "successful edit last name only",
+			id:         1,
+			firstName:  nil,
+			lastName:   &newLastName,
+			avatarPath: nil,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(user, nil)
+				m.On("Store", mock.AnythingOfType("*model.user")).Return(nil)
+			},
+			expectedErr: nil,
+		},
+		{
+			name:       "successful edit avatar path only",
+			id:         1,
+			firstName:  nil,
+			lastName:   nil,
+			avatarPath: &newAvatarPath,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(user, nil)
+				m.On("Store", mock.AnythingOfType("*model.user")).Return(nil)
+			},
+			expectedErr: nil,
+		},
+		{
+			name:       "failed edit info to non existent user",
+			id:         1,
+			firstName:  &newFirstName,
+			lastName:   &newLastName,
+			avatarPath: &newAvatarPath,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(nil, model.ErrUserNotFound)
+			},
+			expectedErr: model.ErrUserNotFound,
+		},
+		{
+			name:       "failed edit first name to empty string",
+			id:         1,
+			firstName:  &emptyString,
+			lastName:   nil,
+			avatarPath: nil,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("FindOne", 1).Return(user, nil)
+			},
+			expectedErr: model.ErrInvalidFirstName,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := newMockUserRepository([]*model.User{tt.existingUser})
-			service := NewUserService(repository)
+			repo := new(mockUserRepository)
+			tt.mockSetup(repo)
+			service := NewUserService(repo)
 
-			err := service.EditUserInfo(tt.id, &tt.newFirstName, &tt.newLastName, &tt.newAvatarPath)
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
+			err := service.EditUserInfo(tt.id, tt.firstName, tt.lastName, tt.avatarPath)
+
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
 			}
-
-			user, err := repository.FindOne(tt.id)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.newFirstName, user.FirstName())
-			assert.Equal(t, tt.newLastName, *user.LastName())
-			assert.Equal(t, tt.newAvatarPath, *user.AvatarPath())
+			repo.AssertExpectations(t)
 		})
 	}
 }
 
 func TestValidateUser(t *testing.T) {
-	existingUser := model.NewUser(1, firstName, &lastName, email, password, model.DefaultUser, &avatarPath)
 	tests := []struct {
-		name         string
-		id           int
-		email        string
-		password     string
-		existingUser model.User
-		wantErr      bool
+		name        string
+		email       string
+		password    string
+		mockSetup   func(*mockUserRepository)
+		expectedID  int
+		expectedErr error
 	}{
 		{
-			name:         "successful validate user",
-			id:           1,
-			email:        existingUser.Email(),
-			password:     existingUser.Password(),
-			existingUser: existingUser,
-			wantErr:      false,
+			name:     "successful validate user",
+			email:    email,
+			password: password,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("GetID", email, password).Return(1, nil)
+			},
+			expectedID:  1,
+			expectedErr: nil,
 		},
 		{
-			name:         "failed validate user with incorrect email",
-			id:           1,
-			email:        "incorrect email",
-			password:     existingUser.Password(),
-			existingUser: existingUser,
-			wantErr:      true,
+			name:     "failed validate user with incorrect email",
+			email:    invalidEmail,
+			password: password,
+			mockSetup: func(m *mockUserRepository) {
+				m.On("GetID", invalidEmail, password).Return(0, model.ErrUserNotFound)
+			},
+			expectedID:  0,
+			expectedErr: model.ErrUserNotFound,
 		},
 		{
-			name:         "failed validate user with incorrect password",
-			id:           1,
-			email:        existingUser.Email(),
-			password:     "incorrect password",
-			existingUser: existingUser,
-			wantErr:      true,
+			name:     "failed validate user with incorrect password",
+			email:    email,
+			password: "invalidPassword",
+			mockSetup: func(m *mockUserRepository) {
+				m.On("GetID", email, "invalidPassword").Return(0, model.ErrUserNotFound)
+			},
+			expectedID:  0,
+			expectedErr: model.ErrUserNotFound,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := newMockUserRepository([]*model.User{&tt.existingUser})
-			service := NewUserService(repository)
+			repo := new(mockUserRepository)
+			tt.mockSetup(repo)
+			service := NewUserService(repo)
 
-			_, err := service.ValidateUser(tt.email, tt.password)
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
+			id, err := service.ValidateUser(tt.email, tt.password)
+
+			assert.Equal(t, tt.expectedID, id)
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
 			}
-
-			user, err := repository.FindOne(tt.id)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.email, user.Email())
-			assert.Equal(t, tt.password, user.Password())
+			repo.AssertExpectations(t)
 		})
 	}
 }
 
-func newMockUserRepository(users []*model.User) *mockUserRepository {
-	maxID := 0
-	userMap := make(map[int]model.User)
-	for _, userPtr := range users {
-		if userPtr == nil {
-			continue
-		}
-		user := *userPtr
-		userMap[user.ID()] = user
-		maxID = max(maxID, user.ID())
-	}
-	maxID++
-
-	return &mockUserRepository{
-		nextID:  maxID,
-		userMap: userMap,
-	}
-}
-
 type mockUserRepository struct {
-	nextID  int
-	userMap map[int]model.User
+	mock.Mock
 }
 
 func (m *mockUserRepository) NextID() (int, error) {
-	m.nextID++
-	return m.nextID, nil
+	args := m.Called()
+	return args.Int(0), args.Error(1)
 }
 
 func (m *mockUserRepository) Store(user model.User) error {
-	m.userMap[user.ID()] = user
-	return nil
+	args := m.Called(user)
+	return args.Error(0)
 }
 
 func (m *mockUserRepository) IsUserExist(id int) (bool, error) {
-	_, ok := m.userMap[id]
-	return ok, nil
+	args := m.Called(id)
+	return args.Bool(0), args.Error(1)
 }
 
 func (m *mockUserRepository) IsEmailExist(email string) (bool, error) {
-	for _, user := range m.userMap {
-		if user.Email() == email {
-			return true, nil
-		}
-	}
-
-	return false, nil
+	args := m.Called(email)
+	return args.Bool(0), args.Error(1)
 }
 
 func (m *mockUserRepository) GetID(email, password string) (int, error) {
-	for _, user := range m.userMap {
-		if user.Email() == email && user.Password() == password {
-			return user.ID(), nil
-		}
-	}
-
-	return 0, errors.New("user not found")
+	args := m.Called(email, password)
+	return args.Int(0), args.Error(1)
 }
 
 func (m *mockUserRepository) FindOne(id int) (model.User, error) {
-	user, ok := m.userMap[id]
-	if !ok {
-		return nil, errors.New("user not found")
+	args := m.Called(id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
 	}
-
-	return user, nil
+	return args.Get(0).(model.User), args.Error(1)
 }
 
 func (m *mockUserRepository) FindAll(ids []int) ([]model.User, error) {
-	var users []model.User
-	for _, id := range ids {
-		user, ok := m.userMap[id]
-		if ok {
-			users = append(users, user)
-		}
+	args := m.Called(ids)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
 	}
-
-	return users, nil
+	return args.Get(0).([]model.User), args.Error(1)
 }
 
 func (m *mockUserRepository) Delete(id int) error {
-	delete(m.userMap, id)
-	return nil
+	args := m.Called(id)
+	return args.Error(0)
 }
